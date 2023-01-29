@@ -1,0 +1,85 @@
+# corpus-unpdf Docs
+
+PDF, as a file format, is the bane of programmatic text analysis.
+
+It's not a document format like `.txt`, `.docx`, `.md`, etc. where elements of a document such as (a) layout, (b) words, (c) lines, etc. can be extracted easily.
+
+Instead, PDFs are set of instructions that produce a human-comprehensible, yet machine-confusing outputs.
+
+Humans can eyeball these outputs and understand the result. Machines however can only parse and make a guess as to its contents. Put another way:
+
+> pdf = humans good, machines bad
+
+In light of this context, this library is an attempt to parse Philippine Supreme Court decisions issued in PDF format and extract its raw "as guessed" output.
+
+## Setup
+
+### Common libraries
+
+Install common libraries in MacOS with `homebrew`:
+
+```sh
+brew install tesseract
+brew install imagemagick
+brew info imagemagick # check version
+```
+
+The last command gets you the local folder installed which will be needed in creating the virtual environment:
+
+```text
+==> imagemagick: stable 7.1.0-58 (bottled), HEAD
+Tools and libraries to manipulate images in many formats
+https://imagemagick.org/index.php
+/opt/homebrew/Cellar/imagemagick/7.1.0-58_1 (807 files, 31MB) * <---- first part is the local folder
+x x x
+```
+
+### Virtual environment
+
+Create an .env file and use the folder as the environment variable `MAGICK_HOME`:
+
+```.env
+MAGICK_HOME=/opt/homebrew/Cellar/imagemagick/7.1.0-58_1
+```
+
+This configuration will allow `pdfplumber` to detect `imagemagick`.
+
+Effect of not setting `MAGICK_HOME`:
+
+```py
+>>> import pdfplumber
+>>> pdfplumber.open<(testpath>).pages[0].to_image(resolution=300) # ERROR
+```
+
+```text
+OSError: cannot find library; tried paths: []
+
+During handling of the above exception, another exception occurred:
+
+ImportError                               Traceback (most recent call last)
+...
+ImportError: MagickWand shared library not found.
+You probably had not installed ImageMagick library.
+Try to install:
+  brew install freetype imagemagick
+```
+
+With `MAGICK_HOME`:
+
+```py
+>>> import pdfplumber
+>>> pdfplumber.open<(testpath>).pages[0].to_image
+PIL.Image.Image # image library and type detected
+```
+
+Proceed to create the environment using `poetry update` which will install the following into a separate virtual environment:
+
+```toml
+[tool.poetry.dependencies]
+python = "^3.11"
+python-dotenv = "^0.21"
+pdfplumber = "^0.7.6" # from pdf to txt
+pillow = "^9.4.0" # from pdf to img
+opencv-python = "^4.7.0.68" # img manipulation
+pytesseract = "^0.3.10" # map manipulated img
+```
