@@ -32,6 +32,10 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Install tesseract
+        run: sudo apt-get -y update && sudo apt-get install -y tesseract-ocr tesseract-ocr-fra # see https://github.com/madmaze/pytesseract/blob/master/.github/workflows/ci.yaml
+      - name: Print tesseract version
+        run: echo $(tesseract --version) # see https://github.com/madmaze/pytesseract/blob/master/.github/workflows/ci.yaml
       - name: Install ghostscript & imagemagick
         run: sudo apt update && sudo apt install ghostscript libmagickwand-dev # see https://github.com/jsvine/pdfplumber/blob/stable/.github/workflows/tests.yml
       - name: Remove policy.xml
