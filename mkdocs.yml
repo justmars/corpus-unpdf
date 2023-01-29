@@ -20,11 +20,12 @@ theme:
         name: Switch to light mode
 nav:
   - Overview: index.md
-  - Image-Lines Parsing via OCR:
-    - Image: images/image.md
+  - pdfplumber-style: blocks.md
+  - opencv + tesseract:
     - Lines: images/lines.md
     - Text: images/text.md
-  - Block Parsing from PDF: blocks.md
+    - Image: images/image.md
+
 extra:
   social:
     - icon: fontawesome/brands/github

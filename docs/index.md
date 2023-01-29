@@ -12,6 +12,11 @@ Humans can eyeball these outputs and understand the result. Machines however can
 
 In light of this context, this library is an attempt to parse Philippine Supreme Court decisions issued in PDF format and extract its raw "as guessed" output.
 
+## Modes
+
+1. Simple extraction via [pdfplumber][all-pages-of-a-pdf-as-blocks]
+2. OCR-based extraction via [opencv + tesseract][corpus_unpdf.images.pdf_layout.PageLayout.get_texts]
+
 ## Setup
 
 ### Common libraries
@@ -32,6 +37,23 @@ Tools and libraries to manipulate images in many formats
 https://imagemagick.org/index.php
 /opt/homebrew/Cellar/imagemagick/7.1.0-58_1 (807 files, 31MB) * <---- first part is the local folder
 x x x
+```
+
+Note that both `tesseract` and `imagemagick` libraries are also made preconditions in `.github/workflows/main.yaml`:
+
+```yaml
+steps:
+  # see https://github.com/madmaze/pytesseract/blob/master/.github/workflows/ci.yaml
+  - name: Install tesseract
+    run: sudo apt-get -y update && sudo apt-get install -y tesseract-ocr tesseract-ocr-fra
+  - name: Print tesseract version
+    run: echo $(tesseract --version)
+
+  # see https://github.com/jsvine/pdfplumber/blob/stable/.github/workflows/tests.yml
+  - name: Install ghostscript & imagemagick
+    run: sudo apt update && sudo apt install ghostscript libmagickwand-dev
+  - name: Remove policy.xml
+    run: sudo rm /etc/ImageMagick-6/policy.xml # this needs to be removed or the test won't run
 ```
 
 ### Virtual environment
