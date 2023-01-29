@@ -35,7 +35,7 @@ jobs:
       - name: Install ghostscript & imagemagick
         run: sudo apt update && sudo apt install ghostscript libmagickwand-dev # see https://github.com/jsvine/pdfplumber/blob/stable/.github/workflows/tests.yml
       - name: Remove policy.xml
-        run: sudo rm /etc/ImageMagick-7/policy.xml # see https://github.com/jsvine/pdfplumber/blob/stable/.github/workflows/tests.yml
+        run: sudo rm /etc/ImageMagick-6/policy.xml # see https://github.com/jsvine/pdfplumber/blob/stable/.github/workflows/tests.yml
       - name: Setup Poetry
         uses: Gr1N/setup-poetry@v8
         with:
