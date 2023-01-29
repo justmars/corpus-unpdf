@@ -1,5 +1,11 @@
+import pathlib
+import tomllib
+
 import corpus_unpdf
 
 
 def test_version():
-    assert "0.0.1" == corpus_unpdf.__version__
+    path = pathlib.Path("pyproject.toml")
+    data = tomllib.loads(path.read_text())
+    version = data["tool"]["poetry"]["version"]
+    assert version == corpus_unpdf.__version__
