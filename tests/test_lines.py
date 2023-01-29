@@ -1,5 +1,4 @@
 import pytest
-from _collections_abc import dict_keys
 from PIL import Image
 
 from corpus_unpdf import extract_page_lines, get_img
