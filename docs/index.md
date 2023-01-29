@@ -4,7 +4,7 @@ PDF, as a file format, is the bane of programmatic text analysis.
 
 It's not a document format like `.txt`, `.docx`, `.md`, etc. where elements of a document such as (a) layout, (b) words, (c) lines, etc. can be extracted easily.
 
-Instead, PDFs are set of instructions that produce a human-comprehensible, yet machine-confusing outputs.
+Instead, PDFs are a set of instructions that produce a human-comprehensible, yet machine-confusing outputs.
 
 Humans can eyeball these outputs and understand the result. Machines however can only parse and make a guess as to its contents. Put another way:
 
