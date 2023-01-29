@@ -1,5 +1,5 @@
 site_name: corpus-unpdf Docs
-site_description: Experimental methods to use libraries to parse court content.
+site_description: Parse Philippine Supreme Court decisions issued in PDF format as text.
 site_url: https://lawsql.com
 site_author: Marcelino Veloso III
 repo_url: https://github.com/justmars/corpus-unpdf

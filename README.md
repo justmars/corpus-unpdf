@@ -1,8 +1,5 @@
-# corpus-pdf-ocr
+# corpus-unpdf
 
-Given Supreme Court decisions in PDF format with a possible footnote indicator
-in the page, extract the body and annex separately then join them together.
+Parse Philippine Supreme Court decisions issued in PDF format as text.
 
-# TODOs
-
-1. check decision 32498 as PDF
+See applying 32498 as image PDF vs. others using blocks

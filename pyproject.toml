@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "corpus-unpdf"
 version = "0.0.1"
-description = "Methods to extract pdf to text"
+description = "Parse Philippine Supreme Court decisions issued in PDF format as text."
 authors = ["Marcelino G. Veloso III <mars@veloso.one>"]
 readme = "README.md"
 license = "MIT"
