@@ -4,11 +4,13 @@ PDF, as a file format, is the bane of programmatic text analysis.
 
 It's not a document format like `.txt`, `.docx`, `.md`, etc. where elements of a document such as (a) layout, (b) words, (c) lines, etc. can be extracted easily.
 
-Instead, PDFs are a set of instructions that produce a human-comprehensible, yet machine-confusing outputs.
+Instead, PDFs can be equated to instructions producing human-_comprehensible_, yet machine-_confusing_ outputs.
 
 Humans can eyeball these outputs and understand the result. Machines however can only parse and make a guess as to its contents. Put another way:
 
-> pdf = humans good, machines bad
+!!! note
+
+    PDF = humans good, machines bad
 
 In light of this context, this library is an attempt to parse Philippine Supreme Court decisions issued in PDF format and extract its raw "as guessed" output.
 
@@ -32,10 +34,10 @@ brew info imagemagick # check version
 The last command gets you the local folder installed which will be needed in creating the virtual environment:
 
 ```text
-==> imagemagick: stable 7.1.0-58 (bottled), HEAD
+==> imagemagick: stable 7.1.0-59 (bottled), HEAD
 Tools and libraries to manipulate images in many formats
 https://imagemagick.org/index.php
-/opt/homebrew/Cellar/imagemagick/7.1.0-58_1 (807 files, 31MB) * <---- first part is the local folder
+/opt/homebrew/Cellar/imagemagick/7.1.0-59 (807 files, 31MB) * <---- first part is the local folder
 x x x
 ```
 
@@ -58,10 +60,17 @@ steps:
 
 ### Virtual environment
 
+!!! warning "Update `.env` whenever `imagemagick` changes"
+
+    The shared dependency is based on `MAGICK_HOME` folder. This can't seem to be
+    fetched by python (at least in 3.11) so we need to help it along by explicitly
+    declaring its location. The folder can change when a new version is installed
+    via `brew upgrade imagemagick`
+
 Create an .env file and use the folder as the environment variable `MAGICK_HOME`:
 
 ```.env
-MAGICK_HOME=/opt/homebrew/Cellar/imagemagick/7.1.0-58_1
+MAGICK_HOME=/opt/homebrew/Cellar/imagemagick/7.1.0-59
 ```
 
 This configuration will allow `pdfplumber` to detect `imagemagick`.
