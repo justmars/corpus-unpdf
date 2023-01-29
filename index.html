@@ -19,7 +19,7 @@
         <link rel="next" href="blocks/">
       
       <link rel="icon" href="assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.0.7">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.0.8">
     
     
       
@@ -27,7 +27,7 @@
       
     
     
-      <link rel="stylesheet" href="assets/stylesheets/main.558e4712.min.css">
+      <link rel="stylesheet" href="assets/stylesheets/main.0d440cfe.min.css">
       
         
         <link rel="stylesheet" href="assets/stylesheets/palette.2505c338.min.css">
@@ -489,11 +489,12 @@
 <h1 id="corpus-unpdf-docs">corpus-unpdf Docs</h1>
 <p>PDF, as a file format, is the bane of programmatic text analysis.</p>
 <p>It's not a document format like <code>.txt</code>, <code>.docx</code>, <code>.md</code>, etc. where elements of a document such as (a) layout, (b) words, (c) lines, etc. can be extracted easily.</p>
-<p>Instead, PDFs are set of instructions that produce a human-comprehensible, yet machine-confusing outputs.</p>
+<p>Instead, PDFs can be equated to instructions producing human-<em>comprehensible</em>, yet machine-<em>confusing</em> outputs.</p>
 <p>Humans can eyeball these outputs and understand the result. Machines however can only parse and make a guess as to its contents. Put another way:</p>
-<blockquote>
-<p>pdf = humans good, machines bad</p>
-</blockquote>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>PDF = humans good, machines bad</p>
+</div>
 <p>In light of this context, this library is an attempt to parse Philippine Supreme Court decisions issued in PDF format and extract its raw "as guessed" output.</p>
 <h2 id="modes">Modes</h2>
 <ol>
@@ -508,10 +509,10 @@
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a>brew<span class="w"> </span>info<span class="w"> </span>imagemagick<span class="w"> </span><span class="c1"># check version</span>
 </code></pre></div>
 <p>The last command gets you the local folder installed which will be needed in creating the virtual environment:</p>
-<div class="highlight"><span class="filename">Text Only</span><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>==&gt; imagemagick: stable 7.1.0-58 (bottled), HEAD
+<div class="highlight"><span class="filename">Text Only</span><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>==&gt; imagemagick: stable 7.1.0-59 (bottled), HEAD
 <a id="__codelineno-1-2" name="__codelineno-1-2" href="#__codelineno-1-2"></a>Tools and libraries to manipulate images in many formats
 <a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>https://imagemagick.org/index.php
-<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>/opt/homebrew/Cellar/imagemagick/7.1.0-58_1 (807 files, 31MB) * &lt;---- first part is the local folder
+<a id="__codelineno-1-4" name="__codelineno-1-4" href="#__codelineno-1-4"></a>/opt/homebrew/Cellar/imagemagick/7.1.0-59 (807 files, 31MB) * &lt;---- first part is the local folder
 <a id="__codelineno-1-5" name="__codelineno-1-5" href="#__codelineno-1-5"></a>x x x
 </code></pre></div>
 <p>Note that both <code>tesseract</code> and <code>imagemagick</code> libraries are also made preconditions in <code>.github/workflows/main.yaml</code>:</p>
@@ -529,8 +530,15 @@
 <a id="__codelineno-2-12" name="__codelineno-2-12" href="#__codelineno-2-12"></a><span class="w">    </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sudo rm /etc/ImageMagick-6/policy.xml</span><span class="w"> </span><span class="c1"># this needs to be removed or the test won&#39;t run</span>
 </code></pre></div>
 <h3 id="virtual-environment">Virtual environment</h3>
+<div class="admonition warning">
+<p class="admonition-title">Update <code>.env</code> whenever <code>imagemagick</code> changes</p>
+<p>The shared dependency is based on <code>MAGICK_HOME</code> folder. This can't seem to be
+fetched by python (at least in 3.11) so we need to help it along by explicitly
+declaring its location. The folder can change when a new version is installed
+via <code>brew upgrade imagemagick</code></p>
+</div>
 <p>Create an .env file and use the folder as the environment variable <code>MAGICK_HOME</code>:</p>
-<div class="highlight"><span class="filename">Text Only</span><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>MAGICK_HOME=/opt/homebrew/Cellar/imagemagick/7.1.0-58_1
+<div class="highlight"><span class="filename">Text Only</span><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>MAGICK_HOME=/opt/homebrew/Cellar/imagemagick/7.1.0-59
 </code></pre></div>
 <p>This configuration will allow <code>pdfplumber</code> to detect <code>imagemagick</code>.</p>
 <p>Effect of not setting <code>MAGICK_HOME</code>:</p>
