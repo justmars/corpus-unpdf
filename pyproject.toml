@@ -5,6 +5,19 @@ description = "Parse Philippine Supreme Court decisions issued in PDF format as 
 authors = ["Marcelino G. Veloso III <mars@veloso.one>"]
 readme = "README.md"
 license = "MIT"
+homepage = "https://lawsql.com"
+repository = "https://github.com/justmars/corpus-unpdf"
+documentation = "https://justmars.github.io/corpus-unpdf"
+classifiers = [
+  "Programming Language :: Python :: 3.11",
+  "Topic :: Scientific/Engineering :: Image Processing",
+  "Topic :: Scientific/Engineering :: Information Analysis",
+  "Typing :: Typed",
+  "Development Status :: 4 - Beta",
+  "Intended Audience :: Legal Industry",
+  "Framework :: Pytest",
+]
+
 
 [tool.poetry.dependencies]
 python = "^3.11"
