@@ -16,6 +16,8 @@ pytesseract = "^0.3.10"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.2.1"
+pytest-env = "^0.8.1"
+pytest-datadir = "^1.4.1"
 pre-commit = "^2.21"
 jupyter = "^1.0.0"
 mkdocs = "^1.4.2"
@@ -26,6 +28,9 @@ mkdocs-material = "^9.0.6"
 minversion = "7.2"
 addopts = "-ra -q --cov=tests/"
 testpaths = ["tests"]
+
+[tool.pytest.ini_options]
+env = ["MAGICK_HOME=/opt/homebrew/Cellar/imagemagick/7.1.0-58_1"]
 
 [tool.ruff]
 ignore = ["F401"]
