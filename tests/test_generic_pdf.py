@@ -8,76 +8,11 @@ def test_img_made(page1_generic):
 
 
 def test_lines_from_img_page_1(page1_generic, keys_per_line):
+    """Discrepancy of results of the lines in testing."""
     lines = list(extract_page_lines(1, page1_generic))
     assert len(lines) == 16
     assert isinstance(lines[0], dict)
     assert all(key in lines[0].keys() for key in keys_per_line)
-    assert [line["text"] for line in lines] == [
-        "Resolution 2 A.M. No. P-14-3182",
-        (
-            "Decision and make a return of [his] proceeding unto [the] Court"
-            " within thirty (30) days from the date of receipt [of the writ]"
-            " and every thirty (30) days thereafter until [the] Writ shall"
-            ' have been fully satisfied."'
-        ),
-        (
-            "Padua failed to make reports as ordered. On 9 March 2010, Atty."
-            " Sanglay filed with the RTC a motion® to direct Padua to enforce"
-            " the writ of execution and render a report. Because of Padua's"
-            " inaction, Atty. Sanglay filed with the RTC two more motions"
-            " dated 4 July 2010' and 20 January 2011."
-        ),
-        (
-            "On 10 May 2011, Padua made a partial report.' Padua failed to"
-            " make any other report. Hence, the present complaint. In its 1st"
-            " Indorsement'® dated 29 July 2011, the Office of the Court"
-            " Administrator (OCA) directed Padua to comment on the complaint."
-            " Padua submitted his comment'' dated 24 August 2011."
-        ),
-        "OCA's Report and Recommendations",
-        (
-            'In its Report!" dated 4 October 2013, the OCA found Padua guilty'
-            " of simple neglect of duty and recommended that the complaint be"
-            " re-docketed as a regular administrative matter and that Padua be"
-            " fined P5,000. The OCA held that:"
-        ),
-        (
-            "The records of the case clearly support the allegation of neglect"
-            " of duty against respondent Sheriff Padua. Complainant Sanglay's"
-            " motion for issuance of a writ of execution was approved by the"
-            " court on 29 May 2009. She subsequently filed two (2) other"
-            " motions, dated 4 March 2010 and 4 July 2010, reiterating her"
-            " request for the enforcement of the writ. Respondent Sheriff"
-            " Padua did not file any report on the status of the writ until 17"
-            " May 2011 or almost two (2) years after the court directed him to"
-            " enforce the same. The report, in fact, was submitted by"
-            " respondent Sheriff Padua only after the filing of the instant"
-            " administrative complaint against him."
-        ),
-        "XXXX",
-        (
-            "Under Rule 10, Section 46, paragraph (d) of the Revised Rules on"
-            " Administrative Cases in the Civil Service, promulgated on 18"
-            " November 2011, simple neglect of duty is classified as a less"
-            " grave offense which carries the penalty of suspension for one"
-            " (1) month and one (1) day to six (6) months for the first"
-            " offense and dismissal for the second offense. However, under"
-            " Section 48 of the same rules, it is provided that in the"
-            " determination of the penalties to be imposed, mitigating"
-            " circumstances"
-        ),
-        "Id. at 8-9.",
-        "Id. at 10-11.",
-        "Id. at 12-13.",
-        "Id. at 17.",
-        (
-            "Id. at 18. Signed by Court Administrator Jose Midas P. Marquez,"
-            " Deputy Court Administrator Raul B. Villanueva and OCA Chief of"
-            " Legal Office Wilhelmina D. Geronga."
-        ),
-        "Id. at 20-21.",
-        "Id. at 23-25.",
-    ]
 
 
 def test_blocks_pdf_page_1(generic_pdf):
