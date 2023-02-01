@@ -43,7 +43,7 @@ addopts = "-ra -q --cov=tests/"
 testpaths = ["tests"]
 
 [tool.pytest.ini_options]
-env = ["MAGICK_HOME=/opt/homebrew/Cellar/imagemagick/7.1.0-59"]
+env = ["MAGICK_HOME=/opt/homebrew/Cellar/imagemagick/7.1.0-60"]
 
 [tool.ruff]
 ignore = ["F401"]
