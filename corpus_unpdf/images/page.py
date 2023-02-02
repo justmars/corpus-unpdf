@@ -13,6 +13,9 @@ from .elements import (
     get_annex_y_axis,
 )
 
+TOP_MARGIN = 90
+SIDE_MARGIN = 75
+
 
 @dataclass
 class FirstPage:
@@ -26,34 +29,52 @@ class FirstPage:
 
     @classmethod
     def extract(cls, path: Path):
-        annex = None
         page, im = get_page_and_img(path, 0)
         comp = PositionCourtComposition.extract(im)
         if not comp:
             raise Exception(f"No court composition detected {path=}")
 
-        sliced = {"page": page, "x0": 75, "x1": page.width - 75}
+        cut = {"page": page, "x0": SIDE_MARGIN, "x1": page.width - SIDE_MARGIN}
         head = comp.get_y_axis_composition(page)
-        fn_start, fn_end = get_annex_y_axis(im, page)
-        if fn_start and fn_end:
-            annex = PageCut(**sliced, y0=fn_start, y1=fn_end).result
+        e1, e2 = get_annex_y_axis(im, page)
 
-        fields = {"annex": annex, "composition": comp.element}
         if notice := PositionNotice.extract(im):
             y_pos = notice.get_y_pos(page)
             return cls(
-                header=PageCut(**sliced, y0=head, y1=y_pos).result,
-                body=PageCut(**sliced, y0=y_pos, y1=fn_start).result,
+                header=PageCut(**cut, y0=head, y1=y_pos).result,
+                body=PageCut(**cut, y0=y_pos, y1=e1).result,
+                annex=PageCut(**cut, y0=e1, y1=e2).result if e2 else None,
                 notice=True,
-                **fields,
+                composition=comp.element,
             )
         elif cat := PositionDecisionCategoryWriter.extract(im):
             cat_pos = cat.get_y_axis_category(page)
             writer_pos = cat.get_y_axis_writer(page)
             return cls(
-                header=PageCut(**sliced, y0=head, y1=cat_pos).result,
-                body=PageCut(**sliced, y0=writer_pos, y1=fn_start).result,
+                header=PageCut(**cut, y0=head, y1=cat_pos).result,
+                body=PageCut(**cut, y0=writer_pos, y1=e1).result,
+                annex=PageCut(**cut, y0=e1, y1=e2).result if e2 else None,
+                composition=comp.element,
                 category=cat.element,
                 writer=cat.writer,
-                **fields,
             )
+
+
+@dataclass
+class NextPage:
+    page_num: int
+    body: CroppedPage
+    annex: CroppedPage | None = None
+
+    @classmethod
+    def extract_page(cls, path: Path, page_num: int = 1):
+        if page_num <= 0:
+            raise Exception("Must not be the first page.")
+        page, im = get_page_and_img(path, page_num)
+        cut = {"page": page, "x0": SIDE_MARGIN, "x1": page.width - SIDE_MARGIN}
+        e1, e2 = get_annex_y_axis(im, page)
+        return cls(
+            body=PageCut(**cut, y0=TOP_MARGIN, y1=e1).result,
+            annex=PageCut(**cut, y0=e1, y1=e2).result if e2 else None,
+            page_num=page_num,
+        )

@@ -1,4 +1,4 @@
-from .page_first import FirstPage
+from .page import FirstPage, NextPage
 from .pdf_img import get_img, get_imgs
 from .pdf_lines import (
     extract_lines_from_pdf,
