@@ -3,10 +3,10 @@ import pytesseract
 import cv2
 import numpy
 import pdfplumber
+
 from pdfplumber.page import Page
 from PIL import Image
 from difflib import SequenceMatcher
-from enum import Enum
 
 
 def get_page_and_img(

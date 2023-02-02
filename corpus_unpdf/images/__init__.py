@@ -5,3 +5,4 @@ from .pdf_lines import (
     extract_slices,
 )
 from .pdf_txt import set_file
+from .page1 import FirstPage
