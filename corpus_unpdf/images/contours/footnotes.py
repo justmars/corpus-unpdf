@@ -1,5 +1,7 @@
 import cv2
+
 from .resources import get_contours
+
 
 def get_pos_footnote_start(img: cv2.Mat) -> float | None:
     """The footnote line; since we know full image's shape, we can extract max height,
@@ -19,4 +21,3 @@ def get_pos_footnote_start(img: cv2.Mat) -> float | None:
         if w > 400 and y > im_h / 2 and h < 40:
             return y / im_h
     return None
-

@@ -48,17 +48,20 @@ def get_percentage_page_1_header(img: cv2.Mat) -> float | None:
         y0_in_top_third = y < im_h / 3
         width_long = w > 200
         height_regular = h > 30
-        if all([
-            x0_in_center_left,
-            x1_in_center_right,
-            y0_in_top_third,
-            width_long,
-            height_regular,
-        ]):
+        if all(
+            [
+                x0_in_center_left,
+                x1_in_center_right,
+                y0_in_top_third,
+                width_long,
+                height_regular,
+            ]
+        ):
             limited.append((y + h) / im_h)
     if limited:
         return max(limited)
     return None
+
 
 def get_percentage_page_1_start(img: cv2.Mat) -> float | None:
     """The start decision line of non-resolutions; since we know full image's shape,
@@ -97,7 +100,6 @@ def get_percentage_height_of_footnote_line(img: cv2.Mat) -> float | None:
         if w > 400 and y > im_h / 2 and h < 40:
             return y / im_h
     return None
-
 
 
 def extract_slices(img: cv2.Mat, base_img: cv2.Mat):
