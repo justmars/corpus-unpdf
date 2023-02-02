@@ -1,11 +1,12 @@
 from difflib import SequenceMatcher
 from pathlib import Path
+from typing import NamedTuple
 
 import cv2
 import numpy
 import pdfplumber
 import pytesseract
-from pdfplumber.page import Page
+from pdfplumber.page import CroppedPage, Page
 from PIL import Image
 
 
@@ -75,3 +76,28 @@ def get_centered_coordinates(
                 if SequenceMatcher(None, a=txt_a, b=txt_b).ratio() > 0.7:
                     return x, y, w, h
     return None
+
+
+class PageCut(NamedTuple):
+    """Slice `page` vertically based on criteria:
+
+    page (Page): the pdfplumber.page.Page based on `im`
+    x0 (float): The x axis where the slice will start
+    x1 (float): The x axis where the slice will terminate
+    y0 (float): The y axis where the slice will start
+    y1 (float): The y axis where the slice will terminate
+    """
+
+    page: Page
+    x0: float
+    x1: float
+    y0: float
+    y1: float
+
+    @property
+    def result(self) -> CroppedPage:
+        return self.page.crop(
+            (self.x0, self.y0, self.x1, self.y1),
+            relative=False,
+            strict=True,
+        )

@@ -6,6 +6,7 @@ from .firstpage import (
 )
 from .footnotes import get_pos_footnote_start
 from .resources import (
+    PageCut,
     get_centered_coordinates,
     get_contours,
     get_page_and_img,
