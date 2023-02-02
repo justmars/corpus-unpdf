@@ -1,12 +1,13 @@
-import cv2
-
 import re
+from pathlib import Path
+
+import cv2
+import pytesseract
+
 from corpus_unpdf.images.contours import (
     get_contours,
     get_reverse_pages_and_imgs,
 )
-from pathlib import Path
-import pytesseract
 
 ORDERED = re.compile(r"so\s+ordered.*", re.I)
 BY_AUTHORITY = re.compile(r"by\s+authority\s+of.*", re.I)

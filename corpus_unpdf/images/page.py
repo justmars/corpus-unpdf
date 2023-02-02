@@ -63,7 +63,7 @@ class Decision:
     pages: list[DecisionPage] = field(default_factory=list)
 
     @classmethod
-    def start_page(
+    def make_start_page(
         cls,
         page: Page,
         im: cv2.Mat,
@@ -97,25 +97,23 @@ class Decision:
             )
         return None
 
-    def unpack_next_pages(self, target: Path) -> Self:
-        if not (end := get_endpageline(target)):
-            raise Exception(f"No terminal detected {target=}")
-        for page in pdfplumber.open(target).pages:
+    def make_next_pages(self, path: Path, last_num: int, last_y: int) -> Self:
+        for page in pdfplumber.open(path).pages:
             if (num := page.page_number) != 1:
-                if num == end[0]:
-                    nxt = DecisionPage.extract(target, num, end[1])
-                    self.pages.append(nxt)
+                if num == last_num:
+                    self.pages.append(DecisionPage.extract(path, num, last_y))
                     break
                 else:
-                    nxt = DecisionPage.extract(target, num)
-                    self.pages.append(nxt)
+                    self.pages.append(DecisionPage.extract(path, num))
         return self
 
     @classmethod
-    def set_pages(cls, target: Path) -> Self:
+    def convert(cls, target: Path) -> Self:
         page, im = get_page_and_img(target, 0)
         if not (comp := PositionCourtComposition.extract(im)):
             raise Exception(f"No court composition detected {target=}")
-        if not (caso := Decision.start_page(page, im, comp)):
+        if not (caso := Decision.make_start_page(page, im, comp)):
             raise Exception(f"First page unprocessed {target=}")
-        return caso.unpack_next_pages(target)
+        if not (terminal := get_endpageline(target)):
+            raise Exception(f"No terminal detected {target=}")
+        return caso.make_next_pages(target, terminal[0], terminal[1])
