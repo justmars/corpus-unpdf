@@ -1,6 +1,5 @@
 import cv2
 
-
 from corpus_unpdf.images.contours.resources import get_contours
 
 

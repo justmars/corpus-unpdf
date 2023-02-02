@@ -1,9 +1,10 @@
-from corpus_unpdf.images.contours import get_centered_coordinates
-from typing import NamedTuple
 from enum import Enum
-from typing import Self
+from typing import NamedTuple, Self
+
 import cv2
 from pdfplumber.page import Page
+
+from corpus_unpdf.images.contours import get_centered_coordinates
 
 
 class CourtCompositionChoices(Enum):

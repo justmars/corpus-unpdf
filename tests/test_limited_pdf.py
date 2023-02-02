@@ -4,8 +4,7 @@ from corpus_unpdf import extract_blocks, extract_page_lines
 
 
 def test_not_working_blocks_pdf_page_1(limited_pdf):
-    """Note: Can't parse some PDFs via pdfplumber, used in `extract_blocks()`
-    """
+    """Note: Can't parse some PDFs via pdfplumber, used in `extract_blocks()`"""
     assert not [blk for blk in extract_blocks(limited_pdf) if blk["page"] == 1]
 
 

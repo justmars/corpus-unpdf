@@ -1,12 +1,12 @@
+from difflib import SequenceMatcher
 from pathlib import Path
-import pytesseract
+
 import cv2
 import numpy
 import pdfplumber
-
+import pytesseract
 from pdfplumber.page import Page
 from PIL import Image
-from difflib import SequenceMatcher
 
 
 def get_page_and_img(

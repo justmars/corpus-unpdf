@@ -1,10 +1,12 @@
-import cv2
-from .resources import get_contours, get_page_and_img
-from .footnotes import get_pos_footnote_start
-from typing import NamedTuple, Self
-import pytesseract
 from pathlib import Path
+from typing import NamedTuple, Self
+
+import cv2
+import pytesseract
 from pdfplumber.page import CroppedPage, Page
+
+from .footnotes import get_pos_footnote_start
+from .resources import get_contours, get_page_and_img
 
 
 def looks_centric(im_w, im_h, x, y, w, h) -> bool:

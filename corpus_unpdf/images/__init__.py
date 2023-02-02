@@ -1,3 +1,4 @@
+from .page_first import FirstPage
 from .pdf_img import get_img, get_imgs
 from .pdf_lines import (
     extract_lines_from_pdf,
@@ -5,4 +6,3 @@ from .pdf_lines import (
     extract_slices,
 )
 from .pdf_txt import set_file
-from .page1 import FirstPage
