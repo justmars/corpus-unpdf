@@ -1,3 +1,4 @@
+from collections.abc import Iterator
 from difflib import SequenceMatcher
 from pathlib import Path
 from typing import NamedTuple
@@ -20,6 +21,26 @@ def get_page_and_img(
         cv2_image = cv2.cvtColor(numpy.array(img.original), cv2.COLOR_RGB2BGR)
         return page, cv2_image
     raise Exception("Could not get CV2-formatted image.")
+
+
+def get_reverse_pages_and_imgs(
+    pdfpath: str | Path,
+) -> Iterator[tuple[Page, cv2.Mat]]:
+    """Start from the end to get to the first page."""
+    pdf = pdfplumber.open(pdfpath)
+    max_pages = len(pdf.pages)
+    index = max_pages - 1
+    while True:
+        page = pdf.pages[index]
+        img = page.to_image(resolution=300)
+        if isinstance(img.original, Image.Image):
+            cv2_image = cv2.cvtColor(
+                numpy.array(img.original), cv2.COLOR_RGB2BGR
+            )
+            yield page, cv2_image
+        if index == 0:
+            break
+        index -= 1
 
 
 def get_contours(img: cv2.Mat, rectangle_size: tuple[int, int]):
