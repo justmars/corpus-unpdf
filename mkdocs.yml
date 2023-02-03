@@ -24,6 +24,7 @@ nav:
   - Markers: markers.md
   - Utils: utils.md
 extra:
+  homepage: https://mv3.dev
   social:
     - icon: fontawesome/brands/github
       link: https://github.com/justmars
