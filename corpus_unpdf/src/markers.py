@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import NamedTuple, Self
 
-import cv2
+import numpy
 import pytesseract
 
 from .common import get_centered_coordinates
@@ -16,6 +16,9 @@ class NoticeChoices(Enum):
 
 
 class CourtCompositionChoices(Enum):
+    """How the Supreme Court sits. At present, this includes four
+    options. Might need to add cases for _special_ divisions."""
+
     ENBANC = "En Banc"
     DIV1 = "First Division"
     DIV2 = "Second Division"
@@ -23,17 +26,21 @@ class CourtCompositionChoices(Enum):
 
 
 class DecisionCategoryChoices(Enum):
+    """The classification of a decision issued by the Supreme Court."""
+
     CASO = "Decision"
     RESO = "Resolution"
 
 
 class PositionNotice(NamedTuple):
+    """When present, signifies that this was issued by authority of the Court."""
+
     element: NoticeChoices
     coordinates: tuple[int, int, int, int]
     position_pct_height: float
 
     @classmethod
-    def extract(cls, im: cv2.Mat) -> Self | None:
+    def extract(cls, im: numpy.ndarray) -> Self | None:
         im_h, _, _ = im.shape
         for member in NoticeChoices:
             if xywh := get_centered_coordinates(im, member.value):
@@ -52,7 +59,7 @@ class PositionCourtComposition(NamedTuple):
     composition_pct_height: float
 
     @classmethod
-    def extract(cls, im: cv2.Mat) -> Self | None:
+    def extract(cls, im: numpy.ndarray) -> Self | None:
         im_h, _, _ = im.shape
         for member in CourtCompositionChoices:
             if xywh := get_centered_coordinates(im, member.value):
@@ -73,12 +80,12 @@ class PositionDecisionCategoryWriter(NamedTuple):
     writer_pct_height: float
 
     @classmethod
-    def extract(cls, im: cv2.Mat) -> Self | None:
+    def extract(cls, im: numpy.ndarray) -> Self | None:
         im_h, _, _ = im.shape
         for member in DecisionCategoryChoices:
             if xywh := get_centered_coordinates(im, member.value):
-                y = xywh[1]
-                y0, y1 = y + 100, y + 225
+                _, y, _, h = xywh
+                y0, y1 = y + h, y + 270
                 writer_box = im[y0:y1]
                 return cls(
                     element=member,

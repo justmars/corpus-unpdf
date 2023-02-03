@@ -2,6 +2,7 @@ import re
 from pathlib import Path
 
 import cv2
+import numpy
 import pytesseract
 from pdfplumber.page import Page
 
@@ -11,7 +12,9 @@ ORDERED = re.compile(r"so\s+ordered.*", re.I)
 BY_AUTHORITY = re.compile(r"by\s+authority\s+of.*", re.I)
 
 
-def get_header_coordinates(img: cv2.Mat) -> tuple[int, int, int, int] | None:
+def get_header_coordinates(
+    img: numpy.ndarray,
+) -> tuple[int, int, int, int] | None:
     im_h, im_w, _ = img.shape
     contours = get_contours(img, (50, 50))
     for cnt in contours:
@@ -21,7 +24,7 @@ def get_header_coordinates(img: cv2.Mat) -> tuple[int, int, int, int] | None:
     return None
 
 
-def get_header_terminal(im: cv2.Mat, page: Page) -> float | None:
+def get_header_terminal(im: numpy.ndarray, page: Page) -> float | None:
     im_h, _, _ = im.shape
     hd = get_header_coordinates(im)
     if hd:
@@ -45,13 +48,14 @@ def get_endpageline(target: Path) -> tuple[int, int] | None:
                 if x < MIDPOINT:
                     candidate = pytesseract.image_to_string(sliced).strip()
                     if ORDERED.search(candidate):
-                        print(f"{x=}, {y=}, {w=}, {h=}, {candidate=}")
+                        # print(f"{x=}, {y=}, {w=}, {h=}, {candidate=}")
                         # cv2.rectangle(im, (x,y), (x+w, y+h), (36, 255, 12), 3)
                         return num, y_pos
                 if x > MIDPOINT - 100:
                     candidate = pytesseract.image_to_string(sliced).strip()
                     if BY_AUTHORITY.search(candidate):
-                        print(f"{x=}, {y=}, {w=}, {h=}, {candidate=}")
+                        # print(f"{x=}, {y=}, {w=}, {h=}, {candidate=}")
+                        # cv2.rectangle(im, (x,y), (x+w, y+h), (36, 255, 12), 3)
                         return num, y_pos
     # cv2.imwrite("temp/sample_boxes.png", im); see cv2.rectangle
     return None

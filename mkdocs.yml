@@ -20,6 +20,9 @@ theme:
         name: Switch to light mode
 nav:
   - Overview: index.md
+  - Pages: pages.md
+  - Markers: markers.md
+  - Utils: utils.md
 extra:
   social:
     - icon: fontawesome/brands/github

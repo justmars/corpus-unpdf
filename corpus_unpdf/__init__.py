@@ -1,3 +1,3 @@
 __version__ = "0.0.2"
 
-from .__main__ import Decision, DecisionPage
+from .decision import Decision, DecisionPage, get_decision

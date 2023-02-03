@@ -3,7 +3,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Self
 
-import cv2
+import numpy
 import pdfplumber
 from pdfplumber.page import CroppedPage, Page
 
@@ -77,11 +77,11 @@ class DecisionPage:
             raise Exception("Could not find header.")
 
         e1, e2 = get_annex_y_axis(im, page)
-        annex = PageCut(**cut, y0=e1, y1=e2).result if e2 else None
+        annex = PageCut(**cut, y0=e1, y1=e2).slice if e2 else None
         if terminal_y:
             e1 = terminal_y
         return cls(
-            body=PageCut(**cut, y0=head, y1=e1).result,
+            body=PageCut(**cut, y0=head, y1=e1).slice,
             annex=annex,
             page_num=page_num,
         )
@@ -89,6 +89,8 @@ class DecisionPage:
 
 @dataclass
 class Decision:
+    """Metadata of a given pdf Decision by using `.convert()`."""
+
     header: CroppedPage
     composition: CourtCompositionChoices
     writer: str | None = None
@@ -110,7 +112,7 @@ class Decision:
     def make_start_page(
         cls,
         page: Page,
-        im: cv2.Mat,
+        im: numpy.ndarray,
         start: PositionCourtComposition,
     ) -> Self | None:
         """The first page can either be a:
@@ -118,15 +120,9 @@ class Decision:
         1. regular `Decision` page which contains a `writer`, `category`, and `header`;
         2. a `Notice` page which will be marked by a `notice`.
 
-        Note the two kinds of measurements involved. The `page` element is based
-        on pdfplumber's points; the `im` element is based on pixels. For parity, get
-        the ratio is first determined by various `.get_y_axis_()` functions to get
-        the `page` point; it is only after this is retrieved that slicing the page
-        can be done. See related [answer](https://stackoverflow.com/a/73404598)
-
         Args:
             page (Page): The pdfplumber variant of the first page
-            im (cv2.Mat): Image of the `page` that will help us get a page's
+            im (numpy.ndarray): Image of the `page` that will help us get a page's
                 end points `e1` and `e2`
             start (PositionCourtComposition): The previously found y-axis
                 based component for slicing the `page`'s `im`
@@ -140,24 +136,24 @@ class Decision:
 
         if ntc := PositionNotice.extract(im):
             notice_pos = ntc.position_pct_height * page.height
-            body = PageCut(**cut, y0=notice_pos, y1=e1).result
-            annex = PageCut(**cut, y0=e1, y1=e2).result if e2 else None
+            body = PageCut(**cut, y0=notice_pos, y1=e1).slice
+            annex = PageCut(**cut, y0=e1, y1=e2).slice if e2 else None
             return cls(
                 notice=True,
                 composition=start.element,
-                header=PageCut(**cut, y0=head, y1=notice_pos).result,
+                header=PageCut(**cut, y0=head, y1=notice_pos).slice,
                 pages=[DecisionPage(page_num=1, body=body, annex=annex)],
             )
         elif category := PositionDecisionCategoryWriter.extract(im):
             cat_pos = category.category_pct_height * page.height
             writer_pos = category.writer_pct_height * page.height
-            body = PageCut(**cut, y0=writer_pos, y1=e1).result
-            annex = PageCut(**cut, y0=e1, y1=e2).result if e2 else None
+            body = PageCut(**cut, y0=writer_pos, y1=e1).slice
+            annex = PageCut(**cut, y0=e1, y1=e2).slice if e2 else None
             return cls(
                 composition=start.element,
                 category=category.element,
                 writer=category.writer,
-                header=PageCut(**cut, y0=head, y1=cat_pos).result,
+                header=PageCut(**cut, y0=head, y1=cat_pos).slice,
                 pages=[DecisionPage(page_num=1, body=body, annex=annex)],
             )
         return None
@@ -185,22 +181,37 @@ class Decision:
                     self.pages.append(DecisionPage.extract(path, num))
         return self
 
-    @classmethod
-    def convert(cls, path: Path) -> Self:
-        """From a pdf file, get metadata filled Decision with pages
-        cropped into bodies and annexes until the terminal page.
 
-        Args:
-            path (Path): Path to the pdf file.
+def get_decision(path: Path) -> Decision:
+    """From a pdf file, get metadata filled Decision with pages
+    cropped into bodies and annexes until the terminal page.
 
-        Returns:
-            Self: Instance of a Decision with pages populated
-        """
-        page, im = get_page_and_img(path, 0)
-        if not (comp := PositionCourtComposition.extract(im)):
-            raise Exception(f"No court composition detected {path=}")
-        if not (caso := Decision.make_start_page(page, im, comp)):
-            raise Exception(f"First page unprocessed {path=}")
-        if not (terminal := get_endpageline(path)):
-            raise Exception(f"No terminal detected {path=}")
-        return caso.make_next_pages(path, terminal[0], terminal[1])
+    Example:
+        >>> from pathlib import Path
+        >>> x = Path().cwd() / "tests" / "data" / "decision.pdf"
+        >>> decision = get_decision(x)
+        >>> decision.category
+        <DecisionCategoryChoices.RESO: 'Resolution'>
+        >>> decision.composition
+        <CourtCompositionChoices.DIV2: 'Second Division'>
+        >>> decision.writer
+        'CARPIO, J.:'
+        >>> isinstance(next(decision.lines), Bodyline)
+        True
+        >>> isinstance(next(decision.notes), Footnote)
+        True
+
+    Args:
+        path (Path): Path to the pdf file.
+
+    Returns:
+        Self: Instance of a Decision with pages populated
+    """  # noqa: E501
+    page, im = get_page_and_img(path, 0)
+    if not (comp := PositionCourtComposition.extract(im)):
+        raise Exception(f"No court composition detected {path=}")
+    if not (caso := Decision.make_start_page(page, im, comp)):
+        raise Exception(f"First page unprocessed {path=}")
+    if not (terminal := get_endpageline(path)):
+        raise Exception(f"No terminal detected {path=}")
+    return caso.make_next_pages(path, terminal[0], terminal[1])

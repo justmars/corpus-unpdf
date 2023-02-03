@@ -1,17 +1,20 @@
 import cv2
+import numpy
 from pdfplumber.page import Page
 
 from .common import get_contours
 from .markers import PERCENT_OF_MAX_PAGE
 
 
-def get_footnote_coordinates(img: cv2.Mat) -> tuple[int, int, int, int] | None:
+def get_footnote_coordinates(
+    img: numpy.ndarray,
+) -> tuple[int, int, int, int] | None:
     """The footnote line; since we know full image's shape, we can extract max height,
     then use this as the denominator (e.g. 3900) and the matching line described
     in boundingRect as the numerator.
 
     Args:
-        img (cv2.Mat): The open CV image
+        img (numpy.ndarray): The open CV image
 
     Returns:
         float | None: percentage (e.g. ~0.893) of the y-axis
@@ -25,12 +28,14 @@ def get_footnote_coordinates(img: cv2.Mat) -> tuple[int, int, int, int] | None:
     return None
 
 
-def get_annex_y_axis(im: cv2.Mat, page: Page) -> tuple[float, float | None]:
+def get_annex_y_axis(
+    im: numpy.ndarray, page: Page
+) -> tuple[float, float | None]:
     """Given an `im`, detect the footnote line of the annex and return
     relevant points in the y-axis as a tuple.
 
     Args:
-        im (cv2.Mat): the openCV image that may contain a footnote line
+        im (numpy.ndarray): the openCV image that may contain a footnote line
         page (Page): the pdfplumber.page.Page based on `im`
 
     Returns:
