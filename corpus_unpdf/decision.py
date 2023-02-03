@@ -34,7 +34,6 @@ class DecisionPage:
     `footnotes` refer to each item in the annex's text (in the given page
     num); footnote splitting is based on regex.
 
-
     Returns:
         DecisionPage: Page with individual components mapped out.
     """
@@ -89,7 +88,7 @@ class DecisionPage:
 
 @dataclass
 class Decision:
-    """Metadata of a given pdf Decision by using `.convert()`."""
+    """Metadata of a pdf file parsed via `get_decision()`"""
 
     header: CroppedPage
     composition: CourtCompositionChoices
@@ -161,7 +160,7 @@ class Decision:
     def make_next_pages(self, path: Path, last_num: int, last_y: int) -> Self:
         """After the first page is created, add subsequent pages taking into
         account the terminal page and line. When the terminal page `last_num`
-        is reached, stop the for loop.
+        is reached, stop the for-loop.
 
         Args:
             path (Path): Path to the pdf file.
