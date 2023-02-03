@@ -20,7 +20,7 @@ theme:
         name: Switch to light mode
 nav:
   - Overview: index.md
-  - Pages: pages.md
+  - Decision: decision.md
   - Markers: markers.md
   - Utils: utils.md
 extra:

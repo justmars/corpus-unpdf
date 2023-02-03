@@ -26,16 +26,15 @@ from .src import (
 
 @dataclass
 class DecisionPage:
-    """Each `page_num` should have a `body`, and optionally an `annex`.
+    """Metadata of a single page of the pdf file parsed via `get_decision()`
 
-    `lines`  are segments of the body's text (in the given page
-    num); segments are split based on regex.
-
-    `footnotes` refer to each item in the annex's text (in the given page
-    num); footnote splitting is based on regex.
-
-    Returns:
-        DecisionPage: Page with individual components mapped out.
+    Field | Description
+    --:|:--
+    `page_num` | The page number of the Decision page
+    `body` | The main content above the annex, if existing
+    `lines` | Segments of the `body`'s text in the given `page_num`
+    `annex` | Portion of page containing the footnotes; some pages are annex-free
+    `footnotes` | Each footnote item in the `annex`'s text in the given `page_num`
     """
 
     page_num: int
@@ -56,7 +55,7 @@ class DecisionPage:
         page_num: int = 2,
         terminal_y: int | None = None,
     ) -> Self:
-        """Each non-first page follows a certain format.
+        """Each `page_num` should have a `body`, and optionally an `annex`
 
         Args:
             path (Path): Path to the pdf file.
@@ -65,7 +64,7 @@ class DecisionPage:
                 The y-axis point of the terminal page. Defaults to None.
 
         Returns:
-            Self: A component page element of a Decision.
+            Self: Page with individual components mapped out.
         """
         if page_num <= 1:
             raise Exception("Must not be the first page.")
@@ -88,12 +87,22 @@ class DecisionPage:
 
 @dataclass
 class Decision:
-    """Metadata of a pdf file parsed via `get_decision()`"""
+    """Metadata of a pdf file parsed via `get_decision()`
+
+    Field | Description
+    --:|:--
+    header | The top portion of the page, usually excluded from metadata
+    composition | The composition of the Supreme Court that decided the case
+    category | When available, whether the case is a "Decision" or a "Resolution"
+    writer | When available, the writer of the case
+    notice | When True, means that there is no `category` available
+    pages | A list of [Decision Pages with bodies/annexes][decision-page]
+    """
 
     header: CroppedPage
     composition: CourtCompositionChoices
-    writer: str | None = None
     category: DecisionCategoryChoices | None = None
+    writer: str | None = None
     notice: bool = False
     pages: list[DecisionPage] = field(default_factory=list)
 
@@ -185,7 +194,7 @@ def get_decision(path: Path) -> Decision:
     """From a pdf file, get metadata filled Decision with pages
     cropped into bodies and annexes until the terminal page.
 
-    Example:
+    Examples:
         >>> from pathlib import Path
         >>> x = Path().cwd() / "tests" / "data" / "decision.pdf"
         >>> decision = get_decision(x)
