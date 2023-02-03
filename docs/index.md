@@ -14,11 +14,6 @@ Humans can eyeball these outputs and understand the result. Machines however can
 
 In light of this context, this library is an attempt to parse Philippine Supreme Court decisions issued in PDF format and extract its raw "as guessed" output.
 
-## Modes
-
-1. Simple extraction via [pdfplumber][all-pages-of-a-pdf-as-blocks]
-2. OCR-based extraction via [opencv + tesseract][corpus_unpdf.images.pdf_layout.PageLayout.get_texts]
-
 ## Setup
 
 ### Common libraries
