@@ -178,7 +178,7 @@ class Decision:
 
         Returns:
             Self: The Decision instance containing any added pages from
-            the for loop.
+                the for loop.
         """
         for page in pdfplumber.open(path).pages:
             if (num := page.page_number) != 1:
