@@ -3,11 +3,33 @@ from pathlib import Path
 
 import cv2
 import pytesseract
+from pdfplumber.page import Page
 
 from .common import get_contours, get_reverse_pages_and_imgs
 
 ORDERED = re.compile(r"so\s+ordered.*", re.I)
 BY_AUTHORITY = re.compile(r"by\s+authority\s+of.*", re.I)
+
+
+def get_header_coordinates(img: cv2.Mat) -> tuple[int, int, int, int] | None:
+    im_h, im_w, _ = img.shape
+    contours = get_contours(img, (50, 50))
+    for cnt in contours:
+        x, y, w, h = cv2.boundingRect(cnt)
+        if x < im_w / 2 and y <= im_h * 0.25 and w > 200 and h < 100:
+            return x, y, w, h
+    return None
+
+
+def get_header_terminal(im: cv2.Mat, page: Page) -> float | None:
+    im_h, _, _ = im.shape
+    hd = get_header_coordinates(im)
+    if hd:
+        _, y, _, h = hd
+        header_end = (y + h) / im_h
+        terminal = header_end * page.height
+        return terminal
+    return None
 
 
 def get_endpageline(target: Path) -> tuple[int, int] | None:

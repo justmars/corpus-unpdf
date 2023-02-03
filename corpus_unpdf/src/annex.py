@@ -2,8 +2,7 @@ import cv2
 from pdfplumber.page import Page
 
 from .common import get_contours
-
-PERCENT_OF_MAX_PAGE = 0.92
+from .markers import PERCENT_OF_MAX_PAGE
 
 
 def get_footnote_coordinates(img: cv2.Mat) -> tuple[int, int, int, int] | None:

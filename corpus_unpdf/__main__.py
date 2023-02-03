@@ -8,6 +8,8 @@ import pdfplumber
 from pdfplumber.page import CroppedPage, Page
 
 from .src import (
+    SIDE_MARGIN,
+    TOP_MARGIN,
     Bodyline,
     CourtCompositionChoices,
     DecisionCategoryChoices,
@@ -21,9 +23,6 @@ from .src import (
     get_header_terminal,
     get_page_and_img,
 )
-
-TOP_MARGIN = 90
-SIDE_MARGIN = 50
 
 
 @dataclass
@@ -51,14 +50,6 @@ class DecisionPage:
         self.lines = Bodyline.from_cropped(self.body)
         if self.annex:
             self.footnotes = Footnote.from_cropped(self.annex)
-
-    def __str__(self):
-        return f"Page {self.page_num}"
-
-    def __repr__(self):
-        return (
-            f"{self.page_num=} | {len(self.lines)=} |  {len(self.footnotes)=}."
-        )
 
     @classmethod
     def extract(
@@ -201,7 +192,7 @@ class Decision:
         cropped into bodies and annexes until the terminal page.
 
         Args:
-            target (Path): Path to the pdf file.
+            path (Path): Path to the pdf file.
 
         Returns:
             Self: Instance of a Decision with pages populated
