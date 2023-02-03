@@ -9,7 +9,6 @@ from pdfplumber.page import CroppedPage, Page
 
 from .src import (
     SIDE_MARGIN,
-    TOP_MARGIN,
     Bodyline,
     CourtCompositionChoices,
     DecisionCategoryChoices,

@@ -5,7 +5,7 @@ from pdfplumber.page import CroppedPage
 
 line_break = re.compile(r"\s*\n+\s*")
 
-paragraph_break = re.compile(r"\s{12,}(?=[A-Z])")
+paragraph_break = re.compile(r"\s{10,}(?=[A-Z])")
 
 footnote_nums = re.compile(r"\n\s+(?P<fn>\d+)(?=\s+[A-Z])")
 
@@ -16,7 +16,7 @@ class Bodyline(NamedTuple):
 
     @classmethod
     def extract_lines(cls, text: str) -> list[Self]:
-        """Get paragraphs using regex `\\s{12,}(?=[A-Z])`
+        """Get paragraphs using regex `\\s{10,}(?=[A-Z])`
         implying many spaces before a capital letter then
         remove new lines contained in non-paragraph lines.
 

@@ -1,7 +1,8 @@
 from enum import Enum
 from typing import NamedTuple, Self
-import pytesseract
+
 import cv2
+import pytesseract
 
 from .common import get_centered_coordinates
 
