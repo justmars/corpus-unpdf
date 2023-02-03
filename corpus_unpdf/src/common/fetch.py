@@ -4,19 +4,22 @@ from pathlib import Path
 import cv2
 import numpy
 import pdfplumber
-
 from pdfplumber.page import Page
 from PIL import Image
 
 
-import httpx
-from sqlite_utils import Database
-from sqlite_utils.db import NotFoundError
-
-SC_BASE_URL = "https://sc.judiciary.gov.ph"
-
-
 def get_page_and_img(pdfpath: str | Path, index: int) -> tuple[Page, cv2.Mat]:
+    """Combine `OpenCV` with `pdfplumber` by using the page
+    identified by `index` to generate an image that can be
+    manipulated.
+
+    Args:
+        pdfpath (str | Path): Path to the PDF file.
+        index (int): Zero-based index that determines the page number.
+
+    Returns:
+        tuple[Page, cv2.Mat]: _description_
+    """
     pdf = pdfplumber.open(pdfpath)
     page = pdf.pages[index]
     img = page.to_image(resolution=300)
@@ -29,7 +32,10 @@ def get_page_and_img(pdfpath: str | Path, index: int) -> tuple[Page, cv2.Mat]:
 def get_reverse_pages_and_imgs(
     pdfpath: str | Path,
 ) -> Iterator[tuple[Page, cv2.Mat]]:
-    """Start from the end to get to the first page."""
+    """Start from the end page to get to the first page. This will
+    enable tracking values from the last page first to determine
+    the terminal endpoints.
+    """
     pdf = pdfplumber.open(pdfpath)
     max_pages = len(pdf.pages)
     index = max_pages - 1
@@ -44,15 +50,3 @@ def get_reverse_pages_and_imgs(
         if index == 0:
             break
         index -= 1
-
-
-def get_sc_pdf_from_id(dbpath: Path, id: int) -> Path:
-    db = Database(dbpath)
-    try:
-        record = db["db_tbl_sc_web_decisions"].get(28688)  # type: ignore
-    except NotFoundError:
-        raise Exception(f"Bad {id=}")
-    res = httpx.get(f"{SC_BASE_URL}{record['pdf']}")
-    target_file = Path().cwd() / "temp" / "temp.pdf"
-    target_file.write_bytes(res.content)
-    return target_file

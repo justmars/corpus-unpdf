@@ -4,10 +4,7 @@ from pathlib import Path
 import cv2
 import pytesseract
 
-from .common import (
-    get_contours,
-    get_reverse_pages_and_imgs,
-)
+from .common import get_contours, get_reverse_pages_and_imgs
 
 ORDERED = re.compile(r"so\s+ordered.*", re.I)
 BY_AUTHORITY = re.compile(r"by\s+authority\s+of.*", re.I)

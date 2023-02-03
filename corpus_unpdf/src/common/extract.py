@@ -1,8 +1,7 @@
 import re
+from typing import NamedTuple, Self
 
-from typing import NamedTuple
 from pdfplumber.page import CroppedPage
-from typing import Self
 
 line_break = re.compile(r"\s*\n+\s*")
 

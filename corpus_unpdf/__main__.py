@@ -1,25 +1,25 @@
+from collections.abc import Iterator
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Self
-from collections.abc import Iterator
+
 import cv2
 import pdfplumber
 from pdfplumber.page import CroppedPage, Page
 
-
 from .src import (
+    Bodyline,
     CourtCompositionChoices,
     DecisionCategoryChoices,
+    Footnote,
+    PageCut,
     PositionCourtComposition,
     PositionDecisionCategoryWriter,
     PositionNotice,
     get_annex_y_axis,
     get_endpageline,
     get_header_terminal,
-    PageCut,
     get_page_and_img,
-    Bodyline,
-    Footnote,
 )
 
 TOP_MARGIN = 90

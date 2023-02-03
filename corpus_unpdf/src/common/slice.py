@@ -1,12 +1,12 @@
 from difflib import SequenceMatcher
-
 from typing import NamedTuple
 
 import cv2
 import pytesseract
-from pdfplumber.page import CroppedPage, Page
-from .contour import get_contours
 from pdfplumber._typing import T_bbox
+from pdfplumber.page import CroppedPage, Page
+
+from .contour import get_contours
 
 
 def is_centered(im_w, x, w) -> bool:
