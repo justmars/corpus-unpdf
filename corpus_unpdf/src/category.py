@@ -43,9 +43,3 @@ class PositionDecisionCategoryWriter(NamedTuple):
                     writer_pct_height=y1 / im_h,
                 )
         return None
-
-    def get_y_axis_category(self, page: Page):
-        return self.category_pct_height * page.height
-
-    def get_y_axis_writer(self, page: Page):
-        return self.writer_pct_height * page.height

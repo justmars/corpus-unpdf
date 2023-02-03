@@ -28,6 +28,3 @@ class PositionNotice(NamedTuple):
                     position_pct_height=(y + h) / im_h,
                 )
         return None
-
-    def get_y_pos(self, page: Page):
-        return self.position_pct_height * page.height

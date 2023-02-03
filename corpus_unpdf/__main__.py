@@ -28,7 +28,7 @@ SIDE_MARGIN = 50
 
 @dataclass
 class DecisionPage:
-    """_summary_
+    """Each `page_num` should have a `body`, and optionally an `annex`.
 
     `lines`  are segments of the body's text (in the given page
     num); segments are split based on regex.
@@ -56,7 +56,9 @@ class DecisionPage:
         return f"Page {self.page_num}"
 
     def __repr__(self):
-        return f"{self.page_num=}; {len(self.lines)=} lines + {len(self.footnotes)=}."
+        return (
+            f"{self.page_num=} | {len(self.lines)=} |  {len(self.footnotes)=}."
+        )
 
     @classmethod
     def extract(
@@ -133,28 +135,28 @@ class Decision:
             Self | None: A Decision instance with the first page included.
         """
         cut = {"page": page, "x0": SIDE_MARGIN, "x1": page.width - SIDE_MARGIN}
-        head = start.get_y_axis_composition(page)
+        head = start.composition_pct_height * page.height
         e1, e2 = get_annex_y_axis(im, page)
 
-        if notice := PositionNotice.extract(im):
-            y_pos = notice.get_y_pos(page)
-            body = PageCut(**cut, y0=y_pos, y1=e1).result
+        if ntc := PositionNotice.extract(im):
+            notice_pos = ntc.position_pct_height * page.height
+            body = PageCut(**cut, y0=notice_pos, y1=e1).result
             annex = PageCut(**cut, y0=e1, y1=e2).result if e2 else None
             return cls(
                 notice=True,
                 composition=start.element,
-                header=PageCut(**cut, y0=head, y1=y_pos).result,
+                header=PageCut(**cut, y0=head, y1=notice_pos).result,
                 pages=[DecisionPage(page_num=1, body=body, annex=annex)],
             )
-        elif cat := PositionDecisionCategoryWriter.extract(im):
-            cat_pos = cat.get_y_axis_category(page)
-            writer_pos = cat.get_y_axis_writer(page)
+        elif category := PositionDecisionCategoryWriter.extract(im):
+            cat_pos = category.category_pct_height * page.height
+            writer_pos = category.writer_pct_height * page.height
             body = PageCut(**cut, y0=writer_pos, y1=e1).result
             annex = PageCut(**cut, y0=e1, y1=e2).result if e2 else None
             return cls(
                 composition=start.element,
-                category=cat.element,
-                writer=cat.writer,
+                category=category.element,
+                writer=category.writer,
                 header=PageCut(**cut, y0=head, y1=cat_pos).result,
                 pages=[DecisionPage(page_num=1, body=body, annex=annex)],
             )

@@ -38,6 +38,3 @@ class PositionCourtComposition(NamedTuple):
                     composition_pct_height=(y + h) / im_h,
                 )
         return None
-
-    def get_y_axis_composition(self, page: Page):
-        return self.composition_pct_height * page.height
