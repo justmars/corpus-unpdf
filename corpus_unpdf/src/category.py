@@ -3,7 +3,7 @@ from typing import NamedTuple, Self
 
 import cv2
 import pytesseract
-from pdfplumber.page import Page
+
 
 from .common import get_centered_coordinates
 

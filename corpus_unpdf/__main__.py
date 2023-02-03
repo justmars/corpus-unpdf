@@ -1,7 +1,7 @@
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Self
-
+from collections.abc import Iterator
 import cv2
 import pdfplumber
 from pdfplumber.page import CroppedPage, Page
@@ -38,7 +38,7 @@ class DecisionPage:
 
 
     Returns:
-        _type_: _description_
+        DecisionPage: Page with individual components mapped out.
     """
 
     page_num: int
@@ -105,6 +105,16 @@ class Decision:
     category: DecisionCategoryChoices | None = None
     notice: bool = False
     pages: list[DecisionPage] = field(default_factory=list)
+
+    @property
+    def lines(self) -> Iterator[Bodyline]:
+        for page in self.pages:
+            yield from page.lines
+
+    @property
+    def notes(self) -> Iterator[Footnote]:
+        for page in self.pages:
+            yield from page.footnotes
 
     @classmethod
     def make_start_page(

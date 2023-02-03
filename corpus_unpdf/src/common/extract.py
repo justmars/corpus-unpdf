@@ -16,7 +16,17 @@ class Bodyline(NamedTuple):
     line: str
 
     @classmethod
-    def extract(cls, text: str) -> list[Self]:
+    def extract_lines(cls, text: str) -> list[Self]:
+        """Get paragraphs using regex `\\s{12,}(?=[A-Z])`
+        implying many spaces before a capital letter then
+        remove new lines contained in non-paragraph lines.
+
+        Args:
+            text (str): Presumes pdfplumber.extract_text
+
+        Returns:
+            list[Self]: Bodylines of segmented text
+        """
         lines = []
         for num, par in enumerate(paragraph_break.split(text), start=1):
             obj = cls(num=num, line=line_break.sub(" ", par).strip())
@@ -26,8 +36,9 @@ class Bodyline(NamedTuple):
 
     @classmethod
     def from_cropped(cls, crop: CroppedPage) -> list[Self]:
-        text = crop.extract_text(layout=True, keep_blank_chars=True)
-        return cls.extract(text)
+        return cls.extract_lines(
+            crop.extract_text(layout=True, keep_blank_chars=True)
+        )
 
 
 class Footnote(NamedTuple):
@@ -35,13 +46,25 @@ class Footnote(NamedTuple):
     note: str
 
     @classmethod
-    def extract(cls, text: str) -> list[Self]:
+    def extract_notes(cls, text: str) -> list[Self]:
+        """Get footnote digits using regex `\\n\\s+(?P<fn>\\d+)(?=\\s+[A-Z])`
+        then for each matching span, the start span becomes the anchor
+        for the balance of the text for each remaining foornote in the while
+        loop. The while loop extraction must use `.pop()` where the last
+        item is removed first.
+
+        Args:
+            text (str): Presumes pdfplumber.extract_text
+
+        Returns:
+            list[Self]: Footnotes separated by digits.
+        """
         notes = []
         while True:
             matches = list(footnote_nums.finditer(text))
             if not matches:
                 break
-            note = matches.pop()
+            note = matches.pop()  # start from the last
             footnote_num = int(note.group("fn"))
             digit_start, digit_end = note.span()
             footnote_body = text[digit_end:].strip()
@@ -53,5 +76,6 @@ class Footnote(NamedTuple):
 
     @classmethod
     def from_cropped(cls, crop: CroppedPage) -> list[Self]:
-        text = crop.extract_text(layout=True, keep_blank_chars=True)
-        return cls.extract(text)
+        return cls.extract_notes(
+            crop.extract_text(layout=True, keep_blank_chars=True)
+        )
