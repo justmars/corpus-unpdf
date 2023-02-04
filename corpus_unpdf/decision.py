@@ -26,7 +26,7 @@ from .src import (
 
 def _err(page: Page, msg: str) -> Exception:
     page.pdf.close()
-    msg += f"in {page.page_number}"
+    msg += f" in {page.page_number=}"
     logger.error(msg)
     raise Exception(msg)
 
@@ -85,7 +85,7 @@ class DecisionPage:
         # the header line determines the start of the body proper
         header_line = get_header_line(im, page)
         if not header_line:
-            raise _err(page, "No header line.")
+            raise _err(page, "No header line")
 
         # necessary because of blank pages
         extracted_page_num = get_page_num(page, header_line) or 0
@@ -239,13 +239,13 @@ def get_decision(path: Path) -> Decision:
     page, im = get_page_and_img(path, 0)
 
     if not (comp := PositionCourtComposition.extract(im)):
-        raise _err(page, "No court composition detected.")
+        raise _err(page, "No court composition detected")
 
     if not (caso := Decision.make_start_page(page, im, comp)):
-        raise _err(page, "First page unprocessed.")
+        raise _err(page, "First page unprocessed")
 
     if not (page_pos := get_terminal_page_pos(path)):
-        raise _err(page, "No terminal detected.")
+        raise _err(page, "No terminal detected")
 
     decision = caso.make_next_pages(path, page_pos[0], page_pos[1])
     return decision

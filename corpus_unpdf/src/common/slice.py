@@ -62,13 +62,6 @@ def get_contours(im: numpy.ndarray, rectangle_size: tuple[int, int]) -> list:
     return sorted(cnts, key=lambda x: cv2.boundingRect(x)[1])
 
 
-def is_centered(im_w, x, w) -> bool:
-    x0_mid_left = (1 * im_w) / 3 < x < im_w / 2
-    x1_mid_right = (2 * im_w) / 3 > x + w > im_w / 2
-    criteria = [x0_mid_left, x1_mid_right, w > 200]
-    return all(criteria)
-
-
 def get_centered_coordinates(
     im: numpy.ndarray, text_to_match: str
 ) -> tuple[int, int, int, int] | None:
@@ -98,7 +91,12 @@ def get_centered_coordinates(
     _, im_w, _ = im.shape
     for cnt in get_contours(im, (100, 30)):
         x, y, w, h = cv2.boundingRect(cnt)
-        if is_centered(im_w, x, w):
+        x0_mid_left = (1 * im_w) / 4 < x
+        endpoint_on_right = x + w > im_w / 2
+        short_width = w > 200
+        if all([x0_mid_left, endpoint_on_right, short_width]):
+            # cv2.rectangle(im, (x, y), (x + w, y + h), (36, 255, 12), 3)
+            # cv2.imwrite("temp/sample_boxes.png", im)
             if is_match_text(
                 sliced_im=im[y : y + h, x : x + w],
                 text_to_match=text_to_match,
