@@ -22,6 +22,8 @@ nav:
   - Overview: index.md
   - Decision: decision.md
   - Markers: markers.md
+  - Header: header.md
+  - Footer: footer.md
   - Utils: utils.md
 extra:
   homepage: https://mv3.dev

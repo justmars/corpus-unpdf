@@ -18,9 +18,10 @@ from .src import (
     PositionDecisionCategoryWriter,
     PositionNotice,
     get_annex_y_axis,
-    get_endpageline,
     get_header_terminal,
     get_page_and_img,
+    get_page_num,
+    get_terminal_page_pos,
 )
 
 
@@ -54,7 +55,7 @@ class DecisionPage:
         path: Path,
         page_num: int = 2,
         terminal_y: int | None = None,
-    ) -> Self:
+    ) -> Self | None:
         """Each `page_num` should have a `body`, and optionally an `annex`
 
         Args:
@@ -68,21 +69,34 @@ class DecisionPage:
         """
         if page_num <= 1:
             raise Exception("Must not be the first page.")
+
         page, im = get_page_and_img(path, page_num - 1)
-        cut = {"page": page, "x0": SIDE_MARGIN, "x1": page.width - SIDE_MARGIN}
-        head = get_header_terminal(im, page)
-        if not head:
+
+        # preflight check to determine if blank
+        if len(page.extract_text()) < 100:
+            return None
+
+        # the header line determines the start of the body proper
+        header_line = get_header_terminal(im, page)
+        if not header_line:
             raise Exception("Could not find header.")
 
-        e1, e2 = get_annex_y_axis(im, page)
-        annex = PageCut(**cut, y0=e1, y1=e2).slice if e2 else None
+        # necessary because of blank pages
+        extracted_page_num = get_page_num(page, header_line) or 0
+
+        # prepare common slicing borders
+        cut = {"page": page, "x0": SIDE_MARGIN, "x1": page.width - SIDE_MARGIN}
+
+        # get body_end_line and terminal_line for annex and body vertical borders
+        body_end_line, terminal_line = get_annex_y_axis(im, page)
+        annex = None
+        if terminal_line:
+            annex = PageCut(**cut, y0=body_end_line, y1=terminal_line).slice
         if terminal_y:
-            e1 = terminal_y
-        return cls(
-            body=PageCut(**cut, y0=head, y1=e1).slice,
-            annex=annex,
-            page_num=page_num,
-        )
+            body_end_line = terminal_y
+        body = PageCut(**cut, y0=header_line, y1=body_end_line).slice
+
+        return cls(body=body, annex=annex, page_num=extracted_page_num)
 
 
 @dataclass
@@ -183,10 +197,12 @@ class Decision:
         for page in pdfplumber.open(path).pages:
             if (num := page.page_number) != 1:
                 if num == last_num:
-                    self.pages.append(DecisionPage.extract(path, num, last_y))
+                    if page_valid := DecisionPage.extract(path, num, last_y):
+                        self.pages.append(page_valid)
                     break
                 else:
-                    self.pages.append(DecisionPage.extract(path, num))
+                    if page_valid := DecisionPage.extract(path, num):
+                        self.pages.append(page_valid)
         return self
 
 
@@ -220,6 +236,6 @@ def get_decision(path: Path) -> Decision:
         raise Exception(f"No court composition detected {path=}")
     if not (caso := Decision.make_start_page(page, im, comp)):
         raise Exception(f"First page unprocessed {path=}")
-    if not (terminal := get_endpageline(path)):
+    if not (page_pos := get_terminal_page_pos(path)):
         raise Exception(f"No terminal detected {path=}")
-    return caso.make_next_pages(path, terminal[0], terminal[1])
+    return caso.make_next_pages(path, page_pos[0], page_pos[1])

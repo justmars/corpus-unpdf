@@ -1,4 +1,3 @@
-from .annex import get_annex_y_axis, get_footnote_coordinates
 from .common import (
     Bodyline,
     Footnote,
@@ -6,7 +5,10 @@ from .common import (
     get_contours,
     get_page_and_img,
     get_reverse_pages_and_imgs,
+    get_terminal_page_pos,
 )
+from .footer import get_annex_y_axis, get_footer_line_coordinates
+from .header import get_header_terminal, get_page_num
 from .markers import (
     PERCENT_OF_MAX_PAGE,
     SIDE_MARGIN,
@@ -16,9 +18,4 @@ from .markers import (
     PositionCourtComposition,
     PositionDecisionCategoryWriter,
     PositionNotice,
-)
-from .terminal import (
-    get_endpageline,
-    get_header_coordinates,
-    get_header_terminal,
 )

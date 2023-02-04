@@ -14,6 +14,21 @@ Humans can eyeball these outputs and understand the result. Machines however can
 
 In light of this context, this library is an attempt to parse Philippine Supreme Court decisions issued in PDF format and extract its raw "as guessed" output.
 
+## Measurements
+
+!!! Warning
+
+    Note the two kinds of measurements involved.
+
+    A `page`  is based on `pdfplumber`'s points.
+
+    An `image` is based on pixels.
+
+    In order to use the image's pixels as page points, use the
+    the image's max width / height as the divisor to get the ratio
+    and then apply that ratio (percentage) to the page's max width / height.
+    See related [answer](https://stackoverflow.com/a/73404598)
+
 ## Setup
 
 ### Common libraries
