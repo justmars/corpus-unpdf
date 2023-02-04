@@ -523,9 +523,7 @@ The page's end content line</p></td>
 
       <details class="quote">
         <summary>Source code in <code>corpus_unpdf/src/footer.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-43">43</a></span>
-<span class="normal"><a href="#__codelineno-0-44">44</a></span>
-<span class="normal"><a href="#__codelineno-0-45">45</a></span>
+        <div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-45">45</a></span>
 <span class="normal"><a href="#__codelineno-0-46">46</a></span>
 <span class="normal"><a href="#__codelineno-0-47">47</a></span>
 <span class="normal"><a href="#__codelineno-0-48">48</a></span>
@@ -550,34 +548,36 @@ The page's end content line</p></td>
 <span class="normal"><a href="#__codelineno-0-67">67</a></span>
 <span class="normal"><a href="#__codelineno-0-68">68</a></span>
 <span class="normal"><a href="#__codelineno-0-69">69</a></span>
-<span class="normal"><a href="#__codelineno-0-70">70</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-43" name="__codelineno-0-43"></a><span class="k">def</span> <span class="nf">get_annex_y_axis</span><span class="p">(</span>
-<a id="__codelineno-0-44" name="__codelineno-0-44"></a>    <span class="n">im</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">page</span><span class="p">:</span> <span class="n">Page</span>
-<a id="__codelineno-0-45" name="__codelineno-0-45"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
-<a id="__codelineno-0-46" name="__codelineno-0-46"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Given an `im`, detect the footnote line of the annex and return</span>
-<a id="__codelineno-0-47" name="__codelineno-0-47"></a><span class="sd">    relevant points in the y-axis as a tuple.</span>
-<a id="__codelineno-0-48" name="__codelineno-0-48"></a>
-<a id="__codelineno-0-49" name="__codelineno-0-49"></a><span class="sd">    Scenario | Description | y0 | y1</span>
-<a id="__codelineno-0-50" name="__codelineno-0-50"></a><span class="sd">    :--:|:-- |:--:|:--:</span>
-<a id="__codelineno-0-51" name="__codelineno-0-51"></a><span class="sd">    Footnote line exists | Page contains footnotes | int or float | int or float signifying end of page</span>
-<a id="__codelineno-0-52" name="__codelineno-0-52"></a><span class="sd">    Footnote line absent | Page does not contain footnotes | int or float signifying end of page | `None`</span>
-<a id="__codelineno-0-53" name="__codelineno-0-53"></a>
-<a id="__codelineno-0-54" name="__codelineno-0-54"></a><span class="sd">    Args:</span>
-<a id="__codelineno-0-55" name="__codelineno-0-55"></a><span class="sd">        im (numpy.ndarray): the openCV image that may contain a footnote line</span>
-<a id="__codelineno-0-56" name="__codelineno-0-56"></a><span class="sd">        page (Page): the pdfplumber.page.Page based on `im`</span>
-<a id="__codelineno-0-57" name="__codelineno-0-57"></a>
-<a id="__codelineno-0-58" name="__codelineno-0-58"></a><span class="sd">    Returns:</span>
-<a id="__codelineno-0-59" name="__codelineno-0-59"></a><span class="sd">        tuple[float, float | None]: The annex line&#39;s y-axis (if it exists) and</span>
-<a id="__codelineno-0-60" name="__codelineno-0-60"></a><span class="sd">            The page&#39;s end content line</span>
-<a id="__codelineno-0-61" name="__codelineno-0-61"></a><span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa: E501</span>
-<a id="__codelineno-0-62" name="__codelineno-0-62"></a>    <span class="n">im_h</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span>
-<a id="__codelineno-0-63" name="__codelineno-0-63"></a>    <span class="n">fn</span> <span class="o">=</span> <span class="n">get_footer_line_coordinates</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
-<a id="__codelineno-0-64" name="__codelineno-0-64"></a>    <span class="n">y1</span> <span class="o">=</span> <span class="n">PERCENT_OF_MAX_PAGE</span> <span class="o">*</span> <span class="n">page</span><span class="o">.</span><span class="n">height</span>
-<a id="__codelineno-0-65" name="__codelineno-0-65"></a>    <span class="k">if</span> <span class="n">fn</span><span class="p">:</span>
-<a id="__codelineno-0-66" name="__codelineno-0-66"></a>        <span class="n">_</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">fn</span>
-<a id="__codelineno-0-67" name="__codelineno-0-67"></a>        <span class="n">fn_line_end</span> <span class="o">=</span> <span class="n">y</span> <span class="o">/</span> <span class="n">im_h</span>
-<a id="__codelineno-0-68" name="__codelineno-0-68"></a>        <span class="n">y0</span> <span class="o">=</span> <span class="n">fn_line_end</span> <span class="o">*</span> <span class="n">page</span><span class="o">.</span><span class="n">height</span>
-<a id="__codelineno-0-69" name="__codelineno-0-69"></a>        <span class="k">return</span> <span class="n">y0</span><span class="p">,</span> <span class="n">y1</span>
-<a id="__codelineno-0-70" name="__codelineno-0-70"></a>    <span class="k">return</span> <span class="n">y1</span><span class="p">,</span> <span class="kc">None</span>
+<span class="normal"><a href="#__codelineno-0-70">70</a></span>
+<span class="normal"><a href="#__codelineno-0-71">71</a></span>
+<span class="normal"><a href="#__codelineno-0-72">72</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-45" name="__codelineno-0-45"></a><span class="k">def</span> <span class="nf">get_annex_y_axis</span><span class="p">(</span>
+<a id="__codelineno-0-46" name="__codelineno-0-46"></a>    <span class="n">im</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">page</span><span class="p">:</span> <span class="n">Page</span>
+<a id="__codelineno-0-47" name="__codelineno-0-47"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="nb">float</span> <span class="o">|</span> <span class="kc">None</span><span class="p">]:</span>
+<a id="__codelineno-0-48" name="__codelineno-0-48"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Given an `im`, detect the footnote line of the annex and return</span>
+<a id="__codelineno-0-49" name="__codelineno-0-49"></a><span class="sd">    relevant points in the y-axis as a tuple.</span>
+<a id="__codelineno-0-50" name="__codelineno-0-50"></a>
+<a id="__codelineno-0-51" name="__codelineno-0-51"></a><span class="sd">    Scenario | Description | y0 | y1</span>
+<a id="__codelineno-0-52" name="__codelineno-0-52"></a><span class="sd">    :--:|:-- |:--:|:--:</span>
+<a id="__codelineno-0-53" name="__codelineno-0-53"></a><span class="sd">    Footnote line exists | Page contains footnotes | int or float | int or float signifying end of page</span>
+<a id="__codelineno-0-54" name="__codelineno-0-54"></a><span class="sd">    Footnote line absent | Page does not contain footnotes | int or float signifying end of page | `None`</span>
+<a id="__codelineno-0-55" name="__codelineno-0-55"></a>
+<a id="__codelineno-0-56" name="__codelineno-0-56"></a><span class="sd">    Args:</span>
+<a id="__codelineno-0-57" name="__codelineno-0-57"></a><span class="sd">        im (numpy.ndarray): the openCV image that may contain a footnote line</span>
+<a id="__codelineno-0-58" name="__codelineno-0-58"></a><span class="sd">        page (Page): the pdfplumber.page.Page based on `im`</span>
+<a id="__codelineno-0-59" name="__codelineno-0-59"></a>
+<a id="__codelineno-0-60" name="__codelineno-0-60"></a><span class="sd">    Returns:</span>
+<a id="__codelineno-0-61" name="__codelineno-0-61"></a><span class="sd">        tuple[float, float | None]: The annex line&#39;s y-axis (if it exists) and</span>
+<a id="__codelineno-0-62" name="__codelineno-0-62"></a><span class="sd">            The page&#39;s end content line</span>
+<a id="__codelineno-0-63" name="__codelineno-0-63"></a><span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa: E501</span>
+<a id="__codelineno-0-64" name="__codelineno-0-64"></a>    <span class="n">im_h</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span>
+<a id="__codelineno-0-65" name="__codelineno-0-65"></a>    <span class="n">fn</span> <span class="o">=</span> <span class="n">get_footer_line_coordinates</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+<a id="__codelineno-0-66" name="__codelineno-0-66"></a>    <span class="n">y1</span> <span class="o">=</span> <span class="n">PERCENT_OF_MAX_PAGE</span> <span class="o">*</span> <span class="n">page</span><span class="o">.</span><span class="n">height</span>
+<a id="__codelineno-0-67" name="__codelineno-0-67"></a>    <span class="k">if</span> <span class="n">fn</span><span class="p">:</span>
+<a id="__codelineno-0-68" name="__codelineno-0-68"></a>        <span class="n">_</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">fn</span>
+<a id="__codelineno-0-69" name="__codelineno-0-69"></a>        <span class="n">fn_line_end</span> <span class="o">=</span> <span class="n">y</span> <span class="o">/</span> <span class="n">im_h</span>
+<a id="__codelineno-0-70" name="__codelineno-0-70"></a>        <span class="n">y0</span> <span class="o">=</span> <span class="n">fn_line_end</span> <span class="o">*</span> <span class="n">page</span><span class="o">.</span><span class="n">height</span>
+<a id="__codelineno-0-71" name="__codelineno-0-71"></a>        <span class="k">return</span> <span class="n">y0</span><span class="p">,</span> <span class="n">y1</span>
+<a id="__codelineno-0-72" name="__codelineno-0-72"></a>    <span class="k">return</span> <span class="n">y1</span><span class="p">,</span> <span class="kc">None</span>
 </code></pre></div></td></tr></table></div>
       </details>
   </div>
@@ -651,7 +651,8 @@ of 400 pixels and a height of less than 40 pixels, indicating a narrow box
 
       <details class="quote">
         <summary>Source code in <code>corpus_unpdf/src/footer.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-9"> 9</a></span>
+        <div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-8"> 8</a></span>
+<span class="normal"><a href="#__codelineno-0-9"> 9</a></span>
 <span class="normal"><a href="#__codelineno-0-10">10</a></span>
 <span class="normal"><a href="#__codelineno-0-11">11</a></span>
 <span class="normal"><a href="#__codelineno-0-12">12</a></span>
@@ -681,39 +682,38 @@ of 400 pixels and a height of less than 40 pixels, indicating a narrow box
 <span class="normal"><a href="#__codelineno-0-36">36</a></span>
 <span class="normal"><a href="#__codelineno-0-37">37</a></span>
 <span class="normal"><a href="#__codelineno-0-38">38</a></span>
-<span class="normal"><a href="#__codelineno-0-39">39</a></span>
-<span class="normal"><a href="#__codelineno-0-40">40</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-9" name="__codelineno-0-9"></a><span class="k">def</span> <span class="nf">get_footer_line_coordinates</span><span class="p">(</span>
-<a id="__codelineno-0-10" name="__codelineno-0-10"></a>    <span class="n">im</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
-<a id="__codelineno-0-11" name="__codelineno-0-11"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
-<a id="__codelineno-0-12" name="__codelineno-0-12"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;The footer represents content below the main content. This is also</span>
-<a id="__codelineno-0-13" name="__codelineno-0-13"></a><span class="sd">    called the annex of the page.</span>
-<a id="__codelineno-0-14" name="__codelineno-0-14"></a>
-<a id="__codelineno-0-15" name="__codelineno-0-15"></a><span class="sd">    This detects a short line in the lower half of the page that has at least a width</span>
-<a id="__codelineno-0-16" name="__codelineno-0-16"></a><span class="sd">    of 400 pixels and a height of less than 40 pixels, indicating a narrow box</span>
-<a id="__codelineno-0-17" name="__codelineno-0-17"></a><span class="sd">    (as dilated by openCV). Text found below this box represents the annex.</span>
-<a id="__codelineno-0-18" name="__codelineno-0-18"></a>
-<a id="__codelineno-0-19" name="__codelineno-0-19"></a><span class="sd">    Examples:</span>
-<a id="__codelineno-0-20" name="__codelineno-0-20"></a><span class="sd">        &gt;&gt;&gt; from corpus_unpdf.src import get_page_and_img</span>
-<a id="__codelineno-0-21" name="__codelineno-0-21"></a><span class="sd">        &gt;&gt;&gt; from pathlib import Path</span>
-<a id="__codelineno-0-22" name="__codelineno-0-22"></a><span class="sd">        &gt;&gt;&gt; x = Path().cwd() / &quot;tests&quot; / &quot;data&quot; / &quot;decision.pdf&quot;</span>
-<a id="__codelineno-0-23" name="__codelineno-0-23"></a><span class="sd">        &gt;&gt;&gt; page, im = get_page_and_img(x, 1) # 0 marks the second page</span>
-<a id="__codelineno-0-24" name="__codelineno-0-24"></a><span class="sd">        &gt;&gt;&gt; get_footer_line_coordinates(im)</span>
-<a id="__codelineno-0-25" name="__codelineno-0-25"></a><span class="sd">        (426, 3148, 499, 13)</span>
-<a id="__codelineno-0-26" name="__codelineno-0-26"></a><span class="sd">        &gt;&gt;&gt; page.pdf.close()</span>
-<a id="__codelineno-0-27" name="__codelineno-0-27"></a>
-<a id="__codelineno-0-28" name="__codelineno-0-28"></a><span class="sd">    Args:</span>
-<a id="__codelineno-0-29" name="__codelineno-0-29"></a><span class="sd">        im (numpy.ndarray): The full page image</span>
-<a id="__codelineno-0-30" name="__codelineno-0-30"></a>
-<a id="__codelineno-0-31" name="__codelineno-0-31"></a><span class="sd">    Returns:</span>
-<a id="__codelineno-0-32" name="__codelineno-0-32"></a><span class="sd">        tuple[int, int, int, int] | None: The coordinates of the footer line, if found.</span>
-<a id="__codelineno-0-33" name="__codelineno-0-33"></a><span class="sd">    &quot;&quot;&quot;</span>
-<a id="__codelineno-0-34" name="__codelineno-0-34"></a>
-<a id="__codelineno-0-35" name="__codelineno-0-35"></a>    <span class="n">im_h</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span>
-<a id="__codelineno-0-36" name="__codelineno-0-36"></a>    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">get_contours</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">10</span><span class="p">)):</span>
-<a id="__codelineno-0-37" name="__codelineno-0-37"></a>        <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">boundingRect</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
-<a id="__codelineno-0-38" name="__codelineno-0-38"></a>        <span class="k">if</span> <span class="n">w</span> <span class="o">&gt;</span> <span class="mi">400</span> <span class="ow">and</span> <span class="n">y</span> <span class="o">&gt;</span> <span class="n">im_h</span> <span class="o">/</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">h</span> <span class="o">&lt;</span> <span class="mi">40</span><span class="p">:</span>
-<a id="__codelineno-0-39" name="__codelineno-0-39"></a>            <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span>
-<a id="__codelineno-0-40" name="__codelineno-0-40"></a>    <span class="k">return</span> <span class="kc">None</span>
+<span class="normal"><a href="#__codelineno-0-39">39</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-8" name="__codelineno-0-8"></a><span class="k">def</span> <span class="nf">get_footer_line_coordinates</span><span class="p">(</span>
+<a id="__codelineno-0-9" name="__codelineno-0-9"></a>    <span class="n">im</span><span class="p">:</span> <span class="n">numpy</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+<a id="__codelineno-0-10" name="__codelineno-0-10"></a><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
+<a id="__codelineno-0-11" name="__codelineno-0-11"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;The footer represents content below the main content. This is also</span>
+<a id="__codelineno-0-12" name="__codelineno-0-12"></a><span class="sd">    called the annex of the page.</span>
+<a id="__codelineno-0-13" name="__codelineno-0-13"></a>
+<a id="__codelineno-0-14" name="__codelineno-0-14"></a><span class="sd">    This detects a short line in the lower half of the page that has at least a width</span>
+<a id="__codelineno-0-15" name="__codelineno-0-15"></a><span class="sd">    of 400 pixels and a height of less than 40 pixels, indicating a narrow box</span>
+<a id="__codelineno-0-16" name="__codelineno-0-16"></a><span class="sd">    (as dilated by openCV). Text found below this box represents the annex.</span>
+<a id="__codelineno-0-17" name="__codelineno-0-17"></a>
+<a id="__codelineno-0-18" name="__codelineno-0-18"></a><span class="sd">    Examples:</span>
+<a id="__codelineno-0-19" name="__codelineno-0-19"></a><span class="sd">        &gt;&gt;&gt; from corpus_unpdf.src import get_page_and_img</span>
+<a id="__codelineno-0-20" name="__codelineno-0-20"></a><span class="sd">        &gt;&gt;&gt; from pathlib import Path</span>
+<a id="__codelineno-0-21" name="__codelineno-0-21"></a><span class="sd">        &gt;&gt;&gt; x = Path().cwd() / &quot;tests&quot; / &quot;data&quot; / &quot;decision.pdf&quot;</span>
+<a id="__codelineno-0-22" name="__codelineno-0-22"></a><span class="sd">        &gt;&gt;&gt; page, im = get_page_and_img(x, 1) # 0 marks the second page</span>
+<a id="__codelineno-0-23" name="__codelineno-0-23"></a><span class="sd">        &gt;&gt;&gt; get_footer_line_coordinates(im)</span>
+<a id="__codelineno-0-24" name="__codelineno-0-24"></a><span class="sd">        (426, 3148, 499, 13)</span>
+<a id="__codelineno-0-25" name="__codelineno-0-25"></a><span class="sd">        &gt;&gt;&gt; page.pdf.close()</span>
+<a id="__codelineno-0-26" name="__codelineno-0-26"></a>
+<a id="__codelineno-0-27" name="__codelineno-0-27"></a><span class="sd">    Args:</span>
+<a id="__codelineno-0-28" name="__codelineno-0-28"></a><span class="sd">        im (numpy.ndarray): The full page image</span>
+<a id="__codelineno-0-29" name="__codelineno-0-29"></a>
+<a id="__codelineno-0-30" name="__codelineno-0-30"></a><span class="sd">    Returns:</span>
+<a id="__codelineno-0-31" name="__codelineno-0-31"></a><span class="sd">        tuple[int, int, int, int] | None: The coordinates of the footer line, if found.</span>
+<a id="__codelineno-0-32" name="__codelineno-0-32"></a><span class="sd">    &quot;&quot;&quot;</span>
+<a id="__codelineno-0-33" name="__codelineno-0-33"></a>
+<a id="__codelineno-0-34" name="__codelineno-0-34"></a>    <span class="n">im_h</span><span class="p">,</span> <span class="n">_</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span>
+<a id="__codelineno-0-35" name="__codelineno-0-35"></a>    <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">get_contours</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">10</span><span class="p">)):</span>
+<a id="__codelineno-0-36" name="__codelineno-0-36"></a>        <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span> <span class="o">=</span> <span class="n">cv2</span><span class="o">.</span><span class="n">boundingRect</span><span class="p">(</span><span class="n">c</span><span class="p">)</span>
+<a id="__codelineno-0-37" name="__codelineno-0-37"></a>        <span class="k">if</span> <span class="n">w</span> <span class="o">&gt;</span> <span class="mi">400</span> <span class="ow">and</span> <span class="n">y</span> <span class="o">&gt;</span> <span class="n">im_h</span> <span class="o">/</span> <span class="mi">2</span> <span class="ow">and</span> <span class="n">h</span> <span class="o">&lt;</span> <span class="mi">40</span><span class="p">:</span>
+<a id="__codelineno-0-38" name="__codelineno-0-38"></a>            <span class="k">return</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">w</span><span class="p">,</span> <span class="n">h</span>
+<a id="__codelineno-0-39" name="__codelineno-0-39"></a>    <span class="k">return</span> <span class="kc">None</span>
 </code></pre></div></td></tr></table></div>
       </details>
   </div>
