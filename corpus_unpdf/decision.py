@@ -16,9 +16,9 @@ from .src import (
     PositionCourtComposition,
     PositionDecisionCategoryWriter,
     PositionNotice,
-    get_annex_y_axis,
     get_header_line,
     get_page_and_img,
+    get_page_end,
     get_page_num,
     get_terminal_page_pos,
 )
@@ -91,7 +91,7 @@ class DecisionPage:
         extracted_page_num = get_page_num(page, header_line) or 0
 
         # get body_end_line and terminal_line for annex and body vertical borders
-        body_end_line, terminal_line = get_annex_y_axis(im, page)
+        body_end_line, terminal_line = get_page_end(im, page)
         annex = None
         if terminal_line:
             annex = PageCut.set(page=page, y0=body_end_line, y1=terminal_line)
@@ -145,33 +145,72 @@ class Decision:
         Returns:
             Self | None: A Decision instance with the first page included.
         """
-        logger.debug("Initialize title page.")
+        logger.debug("Initialize title page 1")
         head = start.composition_pct_height * page.height
-        e1, e2 = get_annex_y_axis(im, page)
+        body_end_line, terminal_line = get_page_end(im, page)
+        logger.debug(f"Found {body_end_line=}; {terminal_line=}")
 
         if ntc := PositionNotice.extract(im):
-            logger.debug(f"Found {ntc=}")
             notice_pos = ntc.position_pct_height * page.height
-            body = PageCut.set(page=page, y0=notice_pos, y1=e1)
-            annex = PageCut.set(page=page, y0=e1, y1=e2) if e2 else None
+            if notice_pos >= body_end_line:
+                raise _err(page, f"{notice_pos=} must be < {body_end_line=}")
+
+            logger.debug(f"Found {ntc=}; {notice_pos=}")
             return cls(
                 notice=True,
                 composition=start.element,
                 header=PageCut.set(page=page, y0=head, y1=notice_pos),
-                pages=[DecisionPage(page_num=1, body=body, annex=annex)],
+                pages=[
+                    DecisionPage(
+                        page_num=1,
+                        body=PageCut.set(
+                            page=page,
+                            y0=notice_pos,
+                            y1=body_end_line,
+                        ),
+                        annex=(
+                            PageCut.set(
+                                page=page,
+                                y0=body_end_line,
+                                y1=terminal_line,
+                            )
+                            if terminal_line
+                            else None
+                        ),
+                    )
+                ],
             )
         elif category := PositionDecisionCategoryWriter.extract(im):
-            logger.debug(f"Found {category=}")
             cat_pos = category.category_pct_height * page.height
             writer_pos = category.writer_pct_height * page.height
-            body = PageCut.set(page=page, y0=writer_pos, y1=e1)
-            annex = PageCut.set(page=page, y0=e1, y1=e2) if e2 else None
+            if writer_pos >= body_end_line:
+                raise _err(page, f"{writer_pos=} must be < {body_end_line=}")
+
+            logger.debug(f"Found {cat_pos=}; {writer_pos=}")
             return cls(
                 composition=start.element,
                 category=category.element,
                 writer=category.writer,
                 header=PageCut.set(page=page, y0=head, y1=cat_pos),
-                pages=[DecisionPage(page_num=1, body=body, annex=annex)],
+                pages=[
+                    DecisionPage(
+                        page_num=1,
+                        body=PageCut.set(
+                            page=page,
+                            y0=writer_pos,
+                            y1=body_end_line,
+                        ),
+                        annex=(
+                            PageCut.set(
+                                page=page,
+                                y0=body_end_line,
+                                y1=terminal_line,
+                            )
+                            if terminal_line
+                            else None
+                        ),
+                    )
+                ],
             )
 
         logger.error("Could not detect category or notice.")

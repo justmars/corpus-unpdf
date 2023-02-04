@@ -31,10 +31,16 @@ def get_footer_line_coordinates(
         tuple[int, int, int, int] | None: The coordinates of the footer line, if found.
     """
 
-    im_h, _, _ = im.shape
+    im_h, im_w, _ = im.shape
     for c in get_contours(im, (50, 10)):
         x, y, w, h = cv2.boundingRect(c)
-        if w > 400 and y > im_h / 2 and h < 40:
+        x0_on_left_side = x < (im_w / 2)
+        x1_on_left_side = (x + w) < (im_w / 2)
+        short_line = (im_w / 2) > w > 400
+        short_height = h < 50
+        if all([short_line, x0_on_left_side, x1_on_left_side, short_height]):
+            # cv2.rectangle(im, (x, y), (x + w, y + h), (36, 255, 12), 3)
+            # cv2.imwrite("temp/sample_boxes.png", im)
             return x, y, w, h
     return None
 
@@ -42,9 +48,7 @@ def get_footer_line_coordinates(
 PERCENT_OF_MAX_PAGE = 0.94
 
 
-def get_annex_y_axis(
-    im: numpy.ndarray, page: Page
-) -> tuple[float, float | None]:
+def get_page_end(im: numpy.ndarray, page: Page) -> tuple[float, float | None]:
     """Given an `im`, detect the footnote line of the annex and return
     relevant points in the y-axis as a tuple.
 

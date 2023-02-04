@@ -2,7 +2,7 @@
 
 ## Annex Existence as Page Y-Axis End/s
 
-::: corpus_unpdf.src.footer.get_annex_y_axis
+::: corpus_unpdf.src.footer.get_page_end
 
 ## Footer Line Coordinates
 
