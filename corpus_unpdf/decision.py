@@ -236,7 +236,7 @@ def get_decision(path: Path) -> Decision:
         >>> decision.composition
         <CourtCompositionChoices.DIV2: 'Second Division'>
         >>> decision.writer
-        'CARPIO, J.:'
+        'CARPIO. J.:'
         >>> isinstance(decision.pages[0].lines[0], Bodyline)
         True
         >>> decision.pages[0].footnotes == [] # none found, # TODO: can't seem to detect

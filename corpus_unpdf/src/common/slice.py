@@ -37,7 +37,7 @@ def get_contours(im: numpy.ndarray, rectangle_size: tuple[int, int]) -> list:
     2. [Stack Overflow answer](https://stackoverflow.com/a/57262099)
 
     The structuring element used will be a rectangle of dimensions
-    specified in `rectangle_size`. After dilating the image,
+    specified in `rectangle_size` (w, h). After dilating the image,
     the contours can be enumerated for further processing and
     matching, e.g. after the image is transformed, can find
     which lines appear in the center or in the top right quadrant, etc.
@@ -77,7 +77,7 @@ def get_centered_coordinates(
         >>> page, im = get_page_and_img(x, 0)
         >>> get_centered_coordinates(im, 'Decision') # None found
         >>> get_centered_coordinates(im, 'Resolution')
-        (1043, 2118, 614, 72)
+        (1068, 2108, 564, 92)
         >>> page.pdf.close()
 
     Args:
@@ -89,7 +89,7 @@ def get_centered_coordinates(
             `cv2.boundingRect`, if found.
     """
     _, im_w, _ = im.shape
-    for cnt in get_contours(im, (100, 30)):
+    for cnt in get_contours(im, (50, 50)):
         x, y, w, h = cv2.boundingRect(cnt)
         x0_mid_left = (1 * im_w) / 4 < x
         endpoint_on_right = x + w > im_w / 2
