@@ -18,7 +18,7 @@ from .src import (
     PositionDecisionCategoryWriter,
     PositionNotice,
     get_annex_y_axis,
-    get_header_terminal,
+    get_header_line,
     get_page_and_img,
     get_page_num,
     get_terminal_page_pos,
@@ -77,7 +77,7 @@ class DecisionPage:
             return None
 
         # the header line determines the start of the body proper
-        header_line = get_header_terminal(im, page)
+        header_line = get_header_line(im, page)
         if not header_line:
             raise Exception("Could not find header.")
 

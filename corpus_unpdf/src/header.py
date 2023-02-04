@@ -9,16 +9,25 @@ def get_header_docket_coordinates(
     im: numpy.ndarray,
 ) -> tuple[int, int, int, int] | None:
     """The header represents non-title page content above the main content.
-    It usually consists of the (1) type of decision, (2) the page number, and
-    (3) the docket of the decision involved.
 
-    This detects item (3) which implies that it is the in upper right quarter
+    It usually consists of three items:
+
+    Item | Label | Example
+    --:|:--|:--
+    1 | Type of decision | `Resolution` or `Decision`
+    2 | Page number | 1, 2, 3, etc.
+    3 | Docket of the decision involved | GR. 12414, Dec. 1, 2023
+
+    This detects Item (3) which implies that it is the in upper right quarter
     of the document:
 
-    ```
+    ```py
     x > im_w / 2 # ensures that it is on the right side of the page
     y <= im_h * 0.2 # ensures that it is on the top quarter of the page
     ```
+
+    Item (3) is the only one above that is likely to have a second vertical line,
+    hence choosing this as the the typographic bottom for the header makes sense.
 
     Examples:
         >>> from corpus_unpdf.src import get_page_and_img
@@ -43,26 +52,19 @@ def get_header_docket_coordinates(
     return None
 
 
-def get_header_terminal(im: numpy.ndarray, page: Page) -> int | float | None:
+def get_header_line(im: numpy.ndarray, page: Page) -> int | float | None:
     """The header represents non-title page content above the main content.
 
-    It usually consists of the (1) type of decision, (2) the page number, and
-    (3) the docket of the decision involved.
-
     The terminating header line is a non-visible line that separates the
-    decision header from its main content. We'll use item 3's typographic bottom
-    to signify this line. It is the only one above that is likely to have a second
-    vertical line.
-
-    After detecting the contour / shape of item (3), we can get the bottom portion
-    and use this in comparison with the page.
+    decision's header from its main content. We'll use a typographic bottom
+    of the [header][docket-coordinates] to signify this line.
 
     Examples:
         >>> from corpus_unpdf.src import get_page_and_img
         >>> from pathlib import Path
         >>> x = Path().cwd() / "tests" / "data" / "decision.pdf"
         >>> page, im = get_page_and_img(x, 1) # 1 marks the second page
-        >>> get_header_terminal(im, page)
+        >>> get_header_line(im, page)
         75.12
         >>> page.pdf.close()
 
@@ -91,14 +93,14 @@ def get_page_num(page: Page, header_line: int | float) -> int | None:
         >>> from pathlib import Path
         >>> x = Path().cwd() / "tests" / "data" / "decision.pdf"
         >>> page, im = get_page_and_img(x, 1) # 1 marks the second page
-        >>> header_line = get_header_terminal(im, page)
+        >>> header_line = get_header_line(im, page)
         >>> get_page_num(page, header_line)
         2
         >>> page.pdf.close()
 
     Args:
         page (Page): The pdfplumber page
-        header_line (int | float): The value retrieved from `get_header_terminal()`
+        header_line (int | float): The value retrieved from `get_header_line()`
 
     Returns:
         int | None: The page number, if found

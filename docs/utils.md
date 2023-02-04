@@ -25,6 +25,10 @@ criteria.
 
 :::corpus_unpdf.src.common.slice.get_contours
 
+### Test image matches text
+
+:::corpus_unpdf.src.common.slice.is_match_text
+
 ### Centered text matching contours
 
 :::corpus_unpdf.src.common.slice.get_centered_coordinates

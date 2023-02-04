@@ -96,8 +96,7 @@ def get_centered_coordinates(
             `cv2.boundingRect`, if found.
     """
     _, im_w, _ = im.shape
-    cnts = get_contours(im, (100, 30))
-    for cnt in cnts:
+    for cnt in get_contours(im, (100, 30)):
         x, y, w, h = cv2.boundingRect(cnt)
         if is_centered(im_w, x, w):
             if is_match_text(
