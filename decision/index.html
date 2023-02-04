@@ -636,8 +636,7 @@ cropped into bodies and annexes until the terminal page.</p>
 
       <details class="quote">
         <summary>Source code in <code>corpus_unpdf/decision.py</code></summary>
-        <div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-209">209</a></span>
-<span class="normal"><a href="#__codelineno-0-210">210</a></span>
+        <div class="highlight"><table class="highlighttable"><tr><th colspan="2" class="filename"><span class="filename">Python</span></th></tr><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"><a href="#__codelineno-0-210">210</a></span>
 <span class="normal"><a href="#__codelineno-0-211">211</a></span>
 <span class="normal"><a href="#__codelineno-0-212">212</a></span>
 <span class="normal"><a href="#__codelineno-0-213">213</a></span>
@@ -668,39 +667,48 @@ cropped into bodies and annexes until the terminal page.</p>
 <span class="normal"><a href="#__codelineno-0-238">238</a></span>
 <span class="normal"><a href="#__codelineno-0-239">239</a></span>
 <span class="normal"><a href="#__codelineno-0-240">240</a></span>
-<span class="normal"><a href="#__codelineno-0-241">241</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-209" name="__codelineno-0-209"></a><span class="k">def</span> <span class="nf">get_decision</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Decision</span><span class="p">:</span>
-<a id="__codelineno-0-210" name="__codelineno-0-210"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;From a pdf file, get metadata filled Decision with pages</span>
-<a id="__codelineno-0-211" name="__codelineno-0-211"></a><span class="sd">    cropped into bodies and annexes until the terminal page.</span>
-<a id="__codelineno-0-212" name="__codelineno-0-212"></a>
-<a id="__codelineno-0-213" name="__codelineno-0-213"></a><span class="sd">    Examples:</span>
-<a id="__codelineno-0-214" name="__codelineno-0-214"></a><span class="sd">        &gt;&gt;&gt; from pathlib import Path</span>
-<a id="__codelineno-0-215" name="__codelineno-0-215"></a><span class="sd">        &gt;&gt;&gt; x = Path().cwd() / &quot;tests&quot; / &quot;data&quot; / &quot;decision.pdf&quot;</span>
-<a id="__codelineno-0-216" name="__codelineno-0-216"></a><span class="sd">        &gt;&gt;&gt; decision = get_decision(x)</span>
-<a id="__codelineno-0-217" name="__codelineno-0-217"></a><span class="sd">        &gt;&gt;&gt; decision.category</span>
-<a id="__codelineno-0-218" name="__codelineno-0-218"></a><span class="sd">        &lt;DecisionCategoryChoices.RESO: &#39;Resolution&#39;&gt;</span>
-<a id="__codelineno-0-219" name="__codelineno-0-219"></a><span class="sd">        &gt;&gt;&gt; decision.composition</span>
-<a id="__codelineno-0-220" name="__codelineno-0-220"></a><span class="sd">        &lt;CourtCompositionChoices.DIV2: &#39;Second Division&#39;&gt;</span>
-<a id="__codelineno-0-221" name="__codelineno-0-221"></a><span class="sd">        &gt;&gt;&gt; decision.writer</span>
-<a id="__codelineno-0-222" name="__codelineno-0-222"></a><span class="sd">        &#39;CARPIO, J.:&#39;</span>
-<a id="__codelineno-0-223" name="__codelineno-0-223"></a><span class="sd">        &gt;&gt;&gt; isinstance(next(decision.lines), Bodyline)</span>
-<a id="__codelineno-0-224" name="__codelineno-0-224"></a><span class="sd">        True</span>
-<a id="__codelineno-0-225" name="__codelineno-0-225"></a><span class="sd">        &gt;&gt;&gt; isinstance(next(decision.notes), Footnote)</span>
-<a id="__codelineno-0-226" name="__codelineno-0-226"></a><span class="sd">        True</span>
-<a id="__codelineno-0-227" name="__codelineno-0-227"></a>
-<a id="__codelineno-0-228" name="__codelineno-0-228"></a><span class="sd">    Args:</span>
-<a id="__codelineno-0-229" name="__codelineno-0-229"></a><span class="sd">        path (Path): Path to the pdf file.</span>
-<a id="__codelineno-0-230" name="__codelineno-0-230"></a>
-<a id="__codelineno-0-231" name="__codelineno-0-231"></a><span class="sd">    Returns:</span>
-<a id="__codelineno-0-232" name="__codelineno-0-232"></a><span class="sd">        Self: Instance of a Decision with pages populated</span>
-<a id="__codelineno-0-233" name="__codelineno-0-233"></a><span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa: E501</span>
-<a id="__codelineno-0-234" name="__codelineno-0-234"></a>    <span class="n">page</span><span class="p">,</span> <span class="n">im</span> <span class="o">=</span> <span class="n">get_page_and_img</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
-<a id="__codelineno-0-235" name="__codelineno-0-235"></a>    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">comp</span> <span class="o">:=</span> <span class="n">PositionCourtComposition</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">im</span><span class="p">)):</span>
-<a id="__codelineno-0-236" name="__codelineno-0-236"></a>        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No court composition detected </span><span class="si">{</span><span class="n">path</span><span class="si">=}</span><span class="s2">&quot;</span><span class="p">)</span>
-<a id="__codelineno-0-237" name="__codelineno-0-237"></a>    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">caso</span> <span class="o">:=</span> <span class="n">Decision</span><span class="o">.</span><span class="n">make_start_page</span><span class="p">(</span><span class="n">page</span><span class="p">,</span> <span class="n">im</span><span class="p">,</span> <span class="n">comp</span><span class="p">)):</span>
-<a id="__codelineno-0-238" name="__codelineno-0-238"></a>        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;First page unprocessed </span><span class="si">{</span><span class="n">path</span><span class="si">=}</span><span class="s2">&quot;</span><span class="p">)</span>
-<a id="__codelineno-0-239" name="__codelineno-0-239"></a>    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">page_pos</span> <span class="o">:=</span> <span class="n">get_terminal_page_pos</span><span class="p">(</span><span class="n">path</span><span class="p">)):</span>
-<a id="__codelineno-0-240" name="__codelineno-0-240"></a>        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No terminal detected </span><span class="si">{</span><span class="n">path</span><span class="si">=}</span><span class="s2">&quot;</span><span class="p">)</span>
-<a id="__codelineno-0-241" name="__codelineno-0-241"></a>    <span class="k">return</span> <span class="n">caso</span><span class="o">.</span><span class="n">make_next_pages</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">page_pos</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">page_pos</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<span class="normal"><a href="#__codelineno-0-241">241</a></span>
+<span class="normal"><a href="#__codelineno-0-242">242</a></span>
+<span class="normal"><a href="#__codelineno-0-243">243</a></span>
+<span class="normal"><a href="#__codelineno-0-244">244</a></span>
+<span class="normal"><a href="#__codelineno-0-245">245</a></span>
+<span class="normal"><a href="#__codelineno-0-246">246</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-210" name="__codelineno-0-210"></a><span class="k">def</span> <span class="nf">get_decision</span><span class="p">(</span><span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Decision</span><span class="p">:</span>
+<a id="__codelineno-0-211" name="__codelineno-0-211"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;From a pdf file, get metadata filled Decision with pages</span>
+<a id="__codelineno-0-212" name="__codelineno-0-212"></a><span class="sd">    cropped into bodies and annexes until the terminal page.</span>
+<a id="__codelineno-0-213" name="__codelineno-0-213"></a>
+<a id="__codelineno-0-214" name="__codelineno-0-214"></a><span class="sd">    Examples:</span>
+<a id="__codelineno-0-215" name="__codelineno-0-215"></a><span class="sd">        &gt;&gt;&gt; from pathlib import Path</span>
+<a id="__codelineno-0-216" name="__codelineno-0-216"></a><span class="sd">        &gt;&gt;&gt; x = Path().cwd() / &quot;tests&quot; / &quot;data&quot; / &quot;decision.pdf&quot;</span>
+<a id="__codelineno-0-217" name="__codelineno-0-217"></a><span class="sd">        &gt;&gt;&gt; decision = get_decision(x)</span>
+<a id="__codelineno-0-218" name="__codelineno-0-218"></a><span class="sd">        &gt;&gt;&gt; decision.category</span>
+<a id="__codelineno-0-219" name="__codelineno-0-219"></a><span class="sd">        &lt;DecisionCategoryChoices.RESO: &#39;Resolution&#39;&gt;</span>
+<a id="__codelineno-0-220" name="__codelineno-0-220"></a><span class="sd">        &gt;&gt;&gt; decision.composition</span>
+<a id="__codelineno-0-221" name="__codelineno-0-221"></a><span class="sd">        &lt;CourtCompositionChoices.DIV2: &#39;Second Division&#39;&gt;</span>
+<a id="__codelineno-0-222" name="__codelineno-0-222"></a><span class="sd">        &gt;&gt;&gt; decision.writer</span>
+<a id="__codelineno-0-223" name="__codelineno-0-223"></a><span class="sd">        &#39;CARPIO, J.:&#39;</span>
+<a id="__codelineno-0-224" name="__codelineno-0-224"></a><span class="sd">        &gt;&gt;&gt; isinstance(next(decision.lines), Bodyline)</span>
+<a id="__codelineno-0-225" name="__codelineno-0-225"></a><span class="sd">        True</span>
+<a id="__codelineno-0-226" name="__codelineno-0-226"></a><span class="sd">        &gt;&gt;&gt; isinstance(next(decision.notes), Footnote)</span>
+<a id="__codelineno-0-227" name="__codelineno-0-227"></a><span class="sd">        True</span>
+<a id="__codelineno-0-228" name="__codelineno-0-228"></a>
+<a id="__codelineno-0-229" name="__codelineno-0-229"></a><span class="sd">    Args:</span>
+<a id="__codelineno-0-230" name="__codelineno-0-230"></a><span class="sd">        path (Path): Path to the pdf file.</span>
+<a id="__codelineno-0-231" name="__codelineno-0-231"></a>
+<a id="__codelineno-0-232" name="__codelineno-0-232"></a><span class="sd">    Returns:</span>
+<a id="__codelineno-0-233" name="__codelineno-0-233"></a><span class="sd">        Self: Instance of a Decision with pages populated</span>
+<a id="__codelineno-0-234" name="__codelineno-0-234"></a><span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa: E501</span>
+<a id="__codelineno-0-235" name="__codelineno-0-235"></a>    <span class="n">page</span><span class="p">,</span> <span class="n">im</span> <span class="o">=</span> <span class="n">get_page_and_img</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+<a id="__codelineno-0-236" name="__codelineno-0-236"></a>    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">comp</span> <span class="o">:=</span> <span class="n">PositionCourtComposition</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">im</span><span class="p">)):</span>
+<a id="__codelineno-0-237" name="__codelineno-0-237"></a>        <span class="n">page</span><span class="o">.</span><span class="n">pdf</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<a id="__codelineno-0-238" name="__codelineno-0-238"></a>        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No court composition detected </span><span class="si">{</span><span class="n">path</span><span class="si">=}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-239" name="__codelineno-0-239"></a>    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">caso</span> <span class="o">:=</span> <span class="n">Decision</span><span class="o">.</span><span class="n">make_start_page</span><span class="p">(</span><span class="n">page</span><span class="p">,</span> <span class="n">im</span><span class="p">,</span> <span class="n">comp</span><span class="p">)):</span>
+<a id="__codelineno-0-240" name="__codelineno-0-240"></a>        <span class="n">page</span><span class="o">.</span><span class="n">pdf</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<a id="__codelineno-0-241" name="__codelineno-0-241"></a>        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;First page unprocessed </span><span class="si">{</span><span class="n">path</span><span class="si">=}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-242" name="__codelineno-0-242"></a>    <span class="k">if</span> <span class="ow">not</span> <span class="p">(</span><span class="n">page_pos</span> <span class="o">:=</span> <span class="n">get_terminal_page_pos</span><span class="p">(</span><span class="n">path</span><span class="p">)):</span>
+<a id="__codelineno-0-243" name="__codelineno-0-243"></a>        <span class="n">page</span><span class="o">.</span><span class="n">pdf</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<a id="__codelineno-0-244" name="__codelineno-0-244"></a>        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;No terminal detected </span><span class="si">{</span><span class="n">path</span><span class="si">=}</span><span class="s2">&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-245" name="__codelineno-0-245"></a>    <span class="n">decision</span> <span class="o">=</span> <span class="n">caso</span><span class="o">.</span><span class="n">make_next_pages</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">page_pos</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">page_pos</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+<a id="__codelineno-0-246" name="__codelineno-0-246"></a>    <span class="k">return</span> <span class="n">decision</span>
 </code></pre></div></td></tr></table></div>
       </details>
   </div>
@@ -858,7 +866,8 @@ cropped into bodies and annexes until the terminal page.</p>
 <span class="normal"><a href="#__codelineno-0-203">203</a></span>
 <span class="normal"><a href="#__codelineno-0-204">204</a></span>
 <span class="normal"><a href="#__codelineno-0-205">205</a></span>
-<span class="normal"><a href="#__codelineno-0-206">206</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-102" name="__codelineno-0-102"></a><span class="nd">@dataclass</span>
+<span class="normal"><a href="#__codelineno-0-206">206</a></span>
+<span class="normal"><a href="#__codelineno-0-207">207</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-102" name="__codelineno-0-102"></a><span class="nd">@dataclass</span>
 <a id="__codelineno-0-103" name="__codelineno-0-103"></a><span class="k">class</span> <span class="nc">Decision</span><span class="p">:</span>
 <a id="__codelineno-0-104" name="__codelineno-0-104"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Metadata of a pdf file parsed via `get_decision()`</span>
 <a id="__codelineno-0-105" name="__codelineno-0-105"></a>
@@ -958,11 +967,12 @@ cropped into bodies and annexes until the terminal page.</p>
 <a id="__codelineno-0-199" name="__codelineno-0-199"></a>                <span class="k">if</span> <span class="n">num</span> <span class="o">==</span> <span class="n">last_num</span><span class="p">:</span>
 <a id="__codelineno-0-200" name="__codelineno-0-200"></a>                    <span class="k">if</span> <span class="n">page_valid</span> <span class="o">:=</span> <span class="n">DecisionPage</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">num</span><span class="p">,</span> <span class="n">last_y</span><span class="p">):</span>
 <a id="__codelineno-0-201" name="__codelineno-0-201"></a>                        <span class="bp">self</span><span class="o">.</span><span class="n">pages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">page_valid</span><span class="p">)</span>
-<a id="__codelineno-0-202" name="__codelineno-0-202"></a>                    <span class="k">break</span>
-<a id="__codelineno-0-203" name="__codelineno-0-203"></a>                <span class="k">else</span><span class="p">:</span>
-<a id="__codelineno-0-204" name="__codelineno-0-204"></a>                    <span class="k">if</span> <span class="n">page_valid</span> <span class="o">:=</span> <span class="n">DecisionPage</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">num</span><span class="p">):</span>
-<a id="__codelineno-0-205" name="__codelineno-0-205"></a>                        <span class="bp">self</span><span class="o">.</span><span class="n">pages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">page_valid</span><span class="p">)</span>
-<a id="__codelineno-0-206" name="__codelineno-0-206"></a>        <span class="k">return</span> <span class="bp">self</span>
+<a id="__codelineno-0-202" name="__codelineno-0-202"></a>                        <span class="n">page</span><span class="o">.</span><span class="n">pdf</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<a id="__codelineno-0-203" name="__codelineno-0-203"></a>                    <span class="k">break</span>
+<a id="__codelineno-0-204" name="__codelineno-0-204"></a>                <span class="k">else</span><span class="p">:</span>
+<a id="__codelineno-0-205" name="__codelineno-0-205"></a>                    <span class="k">if</span> <span class="n">page_valid</span> <span class="o">:=</span> <span class="n">DecisionPage</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">num</span><span class="p">):</span>
+<a id="__codelineno-0-206" name="__codelineno-0-206"></a>                        <span class="bp">self</span><span class="o">.</span><span class="n">pages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">page_valid</span><span class="p">)</span>
+<a id="__codelineno-0-207" name="__codelineno-0-207"></a>        <span class="k">return</span> <span class="bp">self</span>
 </code></pre></div></td></tr></table></div>
         </details>
 
@@ -1082,7 +1092,8 @@ the for loop.</p></td>
 <span class="normal"><a href="#__codelineno-0-203">203</a></span>
 <span class="normal"><a href="#__codelineno-0-204">204</a></span>
 <span class="normal"><a href="#__codelineno-0-205">205</a></span>
-<span class="normal"><a href="#__codelineno-0-206">206</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-183" name="__codelineno-0-183"></a><span class="k">def</span> <span class="nf">make_next_pages</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">last_num</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">last_y</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
+<span class="normal"><a href="#__codelineno-0-206">206</a></span>
+<span class="normal"><a href="#__codelineno-0-207">207</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-183" name="__codelineno-0-183"></a><span class="k">def</span> <span class="nf">make_next_pages</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">last_num</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">last_y</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Self</span><span class="p">:</span>
 <a id="__codelineno-0-184" name="__codelineno-0-184"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;After the first page is created, add subsequent pages taking into</span>
 <a id="__codelineno-0-185" name="__codelineno-0-185"></a><span class="sd">    account the terminal page and line. When the terminal page `last_num`</span>
 <a id="__codelineno-0-186" name="__codelineno-0-186"></a><span class="sd">    is reached, stop the for-loop.</span>
@@ -1101,11 +1112,12 @@ the for loop.</p></td>
 <a id="__codelineno-0-199" name="__codelineno-0-199"></a>            <span class="k">if</span> <span class="n">num</span> <span class="o">==</span> <span class="n">last_num</span><span class="p">:</span>
 <a id="__codelineno-0-200" name="__codelineno-0-200"></a>                <span class="k">if</span> <span class="n">page_valid</span> <span class="o">:=</span> <span class="n">DecisionPage</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">num</span><span class="p">,</span> <span class="n">last_y</span><span class="p">):</span>
 <a id="__codelineno-0-201" name="__codelineno-0-201"></a>                    <span class="bp">self</span><span class="o">.</span><span class="n">pages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">page_valid</span><span class="p">)</span>
-<a id="__codelineno-0-202" name="__codelineno-0-202"></a>                <span class="k">break</span>
-<a id="__codelineno-0-203" name="__codelineno-0-203"></a>            <span class="k">else</span><span class="p">:</span>
-<a id="__codelineno-0-204" name="__codelineno-0-204"></a>                <span class="k">if</span> <span class="n">page_valid</span> <span class="o">:=</span> <span class="n">DecisionPage</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">num</span><span class="p">):</span>
-<a id="__codelineno-0-205" name="__codelineno-0-205"></a>                    <span class="bp">self</span><span class="o">.</span><span class="n">pages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">page_valid</span><span class="p">)</span>
-<a id="__codelineno-0-206" name="__codelineno-0-206"></a>    <span class="k">return</span> <span class="bp">self</span>
+<a id="__codelineno-0-202" name="__codelineno-0-202"></a>                    <span class="n">page</span><span class="o">.</span><span class="n">pdf</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+<a id="__codelineno-0-203" name="__codelineno-0-203"></a>                <span class="k">break</span>
+<a id="__codelineno-0-204" name="__codelineno-0-204"></a>            <span class="k">else</span><span class="p">:</span>
+<a id="__codelineno-0-205" name="__codelineno-0-205"></a>                <span class="k">if</span> <span class="n">page_valid</span> <span class="o">:=</span> <span class="n">DecisionPage</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">num</span><span class="p">):</span>
+<a id="__codelineno-0-206" name="__codelineno-0-206"></a>                    <span class="bp">self</span><span class="o">.</span><span class="n">pages</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">page_valid</span><span class="p">)</span>
+<a id="__codelineno-0-207" name="__codelineno-0-207"></a>    <span class="k">return</span> <span class="bp">self</span>
 </code></pre></div></td></tr></table></div>
       </details>
   </div>
