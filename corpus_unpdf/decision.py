@@ -90,11 +90,11 @@ class DecisionPage:
         # necessary because of blank pages
         extracted_page_num = get_page_num(page, header_line) or 0
 
-        # get body_end_line and terminal_line for annex and body vertical borders
-        body_end_line, terminal_line = get_page_end(im, page)
+        # get body_end_line and terminal for annex and body vertical borders
+        body_end_line, terminal = get_page_end(im, page)
         annex = None
-        if terminal_line:
-            annex = PageCut.set(page=page, y0=body_end_line, y1=terminal_line)
+        if terminal:
+            annex = PageCut.set(page=page, y0=body_end_line, y1=terminal)
         if terminal_y:
             body_end_line = terminal_y
         body = PageCut.set(page=page, y0=header_line, y1=body_end_line)
@@ -145,10 +145,11 @@ class Decision:
         Returns:
             Self | None: A Decision instance with the first page included.
         """
+        annex = None
         logger.debug("Initialize title page 1")
         head = start.composition_pct_height * page.height
-        body_end_line, terminal_line = get_page_end(im, page)
-        logger.debug(f"Found {body_end_line=}; {terminal_line=}")
+        body_end_line, terminal = get_page_end(im, page)
+        logger.debug(f"Found {body_end_line=}; {terminal=}")
 
         if ntc := PositionNotice.extract(im):
             notice_pos = ntc.position_pct_height * page.height
@@ -156,29 +157,15 @@ class Decision:
                 raise _err(page, f"{notice_pos=} must be < {body_end_line=}")
 
             logger.debug(f"Found {ntc=}; {notice_pos=}")
+            header = PageCut.set(page=page, y0=head, y1=notice_pos)
+            body = PageCut.set(page=page, y0=notice_pos, y1=body_end_line)
+            if terminal:
+                annex = PageCut.set(page=page, y0=body_end_line, y1=terminal)
             return cls(
                 notice=True,
                 composition=start.element,
-                header=PageCut.set(page=page, y0=head, y1=notice_pos),
-                pages=[
-                    DecisionPage(
-                        page_num=1,
-                        body=PageCut.set(
-                            page=page,
-                            y0=notice_pos,
-                            y1=body_end_line,
-                        ),
-                        annex=(
-                            PageCut.set(
-                                page=page,
-                                y0=body_end_line,
-                                y1=terminal_line,
-                            )
-                            if terminal_line
-                            else None
-                        ),
-                    )
-                ],
+                header=header,
+                pages=[DecisionPage(page_num=1, body=body, annex=annex)],
             )
         elif category := PositionDecisionCategoryWriter.extract(im):
             cat_pos = category.category_pct_height * page.height
@@ -187,30 +174,16 @@ class Decision:
                 raise _err(page, f"{writer_pos=} must be < {body_end_line=}")
 
             logger.debug(f"Found {cat_pos=}; {writer_pos=}")
+            header = PageCut.set(page=page, y0=head, y1=cat_pos)
+            body = PageCut.set(page=page, y0=writer_pos, y1=body_end_line)
+            if terminal:
+                annex = PageCut.set(page=page, y0=body_end_line, y1=terminal)
             return cls(
                 composition=start.element,
                 category=category.element,
                 writer=category.writer,
-                header=PageCut.set(page=page, y0=head, y1=cat_pos),
-                pages=[
-                    DecisionPage(
-                        page_num=1,
-                        body=PageCut.set(
-                            page=page,
-                            y0=writer_pos,
-                            y1=body_end_line,
-                        ),
-                        annex=(
-                            PageCut.set(
-                                page=page,
-                                y0=body_end_line,
-                                y1=terminal_line,
-                            )
-                            if terminal_line
-                            else None
-                        ),
-                    )
-                ],
+                header=header,
+                pages=[DecisionPage(page_num=1, body=body, annex=annex)],
             )
 
         logger.error("Could not detect category or notice.")
