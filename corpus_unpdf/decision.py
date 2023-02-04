@@ -20,7 +20,9 @@ from .src import (
     get_page_and_img,
     get_page_end,
     get_page_num,
+    get_start_page_pos,
     get_terminal_page_pos,
+    get_img_from_page,
 )
 
 
@@ -54,6 +56,27 @@ class DecisionPage:
         self.lines = Bodyline.from_cropped(self.body)
         if self.annex:
             self.footnotes = Footnote.from_cropped(self.annex)
+
+    @classmethod
+    def extract_proper(
+        cls,
+        page: Page,
+        head_y: float | int | None = None,
+        terminal_y: float | int | None = None,
+    ) -> Self | None:
+        im = get_img_from_page(page)
+        header_line = get_header_line(im, page)
+        if not header_line:
+            raise _err(page, "No header line")
+        extracted_page_num = get_page_num(page, header_line) or 0
+        body_end_line, terminal = get_page_end(im, page)
+        annex = None
+        if terminal:
+            annex = PageCut.set(page=page, y0=body_end_line, y1=terminal)
+        body = PageCut.set(
+            page=page, y0=head_y or header_line, y1=terminal_y or body_end_line
+        )
+        return cls(body=body, annex=annex, page_num=extracted_page_num)
 
     @classmethod
     def extract(
@@ -116,9 +139,9 @@ class Decision:
     pages | A list of [Decision Pages with bodies/annexes][decision-page]
     """
 
-    header: CroppedPage
     composition: CourtCompositionChoices
     category: DecisionCategoryChoices | None = None
+    header: CroppedPage | None = None
     writer: str | None = None
     notice: bool = False
     pages: list[DecisionPage] = field(default_factory=list)
@@ -189,7 +212,9 @@ class Decision:
         logger.error("Could not detect category or notice.")
         return None
 
-    def make_next_pages(self, path: Path, last_num: int, last_y: int) -> Self:
+    def make_next_pages(
+        self, path: Path, last_num: int, last_y: int, start_page: int = 2
+    ) -> Self:
         """After the first page is created, add subsequent pages taking into
         account the terminal page and line. When the terminal page `last_num`
         is reached, stop the for-loop.
@@ -204,7 +229,8 @@ class Decision:
                 the for loop.
         """
         for page in pdfplumber.open(path).pages:
-            if (num := page.page_number) == 1:
+            num = page.page_number
+            if num < start_page:
                 continue
             if num == last_num:
                 logger.debug(f"Finalize {page.page_number=}.")
@@ -223,7 +249,7 @@ class Decision:
         return self
 
 
-def get_decision(path: Path) -> Decision:
+def get_decision(path: Path) -> Decision | None:
     """From a pdf file, get metadata filled Decision with pages
     cropped into bodies and annexes until the terminal page.
 
@@ -249,15 +275,37 @@ def get_decision(path: Path) -> Decision:
         Self: Instance of a Decision with pages populated
     """  # noqa: E501
     page, im = get_page_and_img(path, 0)
-
     if not (comp := PositionCourtComposition.extract(im)):
         raise _err(page, "No court composition detected")
-
-    if not (caso := Decision.make_start_page(page, im, comp)):
-        raise _err(page, "First page unprocessed")
-
+    if not (starter := get_start_page_pos(path)):
+        raise Exception("Could not detect start of content.")
     if not (page_pos := get_terminal_page_pos(path)):
-        raise _err(page, "No terminal detected")
+        raise Exception("Could not detect end of content.")
 
-    decision = caso.make_next_pages(path, page_pos[0], page_pos[1])
-    return decision
+    x, obj = starter
+    start_page, im = get_page_and_img(path, x.page_number)
+    if isinstance(obj, PositionNotice):
+        if caso_page := DecisionPage.extract_proper(
+            page=start_page,
+            head_y=obj.position_pct_height * start_page.height,
+        ):
+            return Decision(
+                composition=comp.element,
+                notice=True,
+                pages=[caso_page],
+            )
+
+    if isinstance(obj, PositionDecisionCategoryWriter):
+        if caso_page := DecisionPage.extract_proper(
+            page=start_page,
+            head_y=obj.writer_pct_height * start_page.height,
+        ):
+            return Decision(
+                composition=comp.element,
+                category=obj.element,
+                writer=obj.writer,
+                pages=[caso_page],
+            )
+    else:
+        raise Exception("Notice page not yet done.")
+    return None
