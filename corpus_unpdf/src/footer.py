@@ -14,9 +14,7 @@ def get_footer_line_coordinates(
 
     This detects a short line in the lower half of the page that has at least a width
     of 400 pixels and a height of less than 40 pixels, indicating a narrow box
-    (as dilated by openCV).
-
-    Text found below this box represents the annex or the footer of the page.
+    (as dilated by openCV). Text found below this box represents the annex.
 
     Examples:
         >>> from corpus_unpdf.src import get_page_and_img
@@ -25,6 +23,7 @@ def get_footer_line_coordinates(
         >>> page, im = get_page_and_img(x, 1) # 0 marks the second page
         >>> get_footer_line_coordinates(im)
         (426, 3148, 499, 13)
+        >>> page.pdf.close()
 
     Args:
         im (numpy.ndarray): The full page image

@@ -8,7 +8,29 @@ from pdfplumber._typing import T_bbox
 from pdfplumber.page import CroppedPage, Page
 
 
-def get_contours(img: numpy.ndarray, rectangle_size: tuple[int, int]) -> list:
+def is_match_text(
+    sliced_im: numpy.ndarray,
+    text_to_match: str,
+    likelihood: float = 0.7,
+) -> bool:
+    """Test whether textual image in `sliced_im` resembles `text_to_match` by
+    a `likelihood` percentage.
+
+    Args:
+        sliced_im (numpy.ndarray): Slice of a larger image containing text
+        text_to_match (str): How to match the text slice in `im`
+        likelihood (float): Allowed percentage expressed in decimals
+
+    Returns:
+        bool: Whether or not the `text_to_match` resembles `sliced_im`'s text.
+    """
+    upper_candidate = pytesseract.image_to_string(sliced_im).strip().upper()
+    upper_matcher = text_to_match.upper()
+    match = SequenceMatcher(None, a=upper_candidate, b=upper_matcher)
+    return match.ratio() > likelihood
+
+
+def get_contours(im: numpy.ndarray, rectangle_size: tuple[int, int]) -> list:
     """Generally follows the strategy outlined here:
 
     1. [Youtube video](https://www.youtube.com/watch?v=ZeCRe9sNFwk&list=PL2VXyKi-KpYuTAZz__9KVl1jQz74bDG7i&index=11)
@@ -21,13 +43,13 @@ def get_contours(img: numpy.ndarray, rectangle_size: tuple[int, int]) -> list:
     which lines appear in the center or in the top right quadrant, etc.
 
     Args:
-        img (numpy.ndarray): The opencv formatted image
+        im (numpy.ndarray): The opencv formatted image
         rectangle_size (tuple[int, int]): The width and height to morph the characters
 
     Returns:
         list: The contours found based on the specified structuring element
     """  # noqa: E501
-    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    gray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
     blur = cv2.GaussianBlur(gray, (7, 7), 0)
     thresh = cv2.threshold(
         blur, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU
@@ -63,6 +85,7 @@ def get_centered_coordinates(
         >>> get_centered_coordinates(im, 'Decision') # None found
         >>> get_centered_coordinates(im, 'Resolution')
         (1043, 2118, 614, 72)
+        >>> page.pdf.close()
 
     Args:
         im (numpy.ndarray): The base image to look for text
@@ -77,12 +100,12 @@ def get_centered_coordinates(
     for cnt in cnts:
         x, y, w, h = cv2.boundingRect(cnt)
         if is_centered(im_w, x, w):
-            sliced_im = im[y : y + h, x : x + w]
-            if sliced_txt := pytesseract.image_to_string(sliced_im):
-                txt_a = text_to_match.upper()
-                txt_b = sliced_txt.upper()
-                if SequenceMatcher(None, a=txt_a, b=txt_b).ratio() > 0.7:
-                    return x, y, w, h
+            if is_match_text(
+                sliced_im=im[y : y + h, x : x + w],
+                text_to_match=text_to_match,
+                likelihood=0.7,
+            ):
+                return x, y, w, h
     return None
 
 
@@ -110,6 +133,7 @@ class PageCut(NamedTuple):
         >>> cutpage = PageCut(page=page, x0=100, x1=200, y0=100, y1=200).slice
         >>> cutpage.height
         100
+        >>> page.pdf.close()
     """
 
     page: Page

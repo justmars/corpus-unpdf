@@ -1,6 +1,5 @@
 import cv2
 import numpy
-
 from pdfplumber.page import Page
 
 from .common import get_contours
@@ -28,6 +27,7 @@ def get_header_docket_coordinates(
         >>> page, im = get_page_and_img(x, 1) # 0 marks the second page
         >>> get_header_docket_coordinates(im)
         (1813, 229, 460, 84)
+        >>> page.pdf.close()
 
     Args:
         im (numpy.ndarray): The full page image
@@ -64,6 +64,7 @@ def get_header_terminal(im: numpy.ndarray, page: Page) -> int | float | None:
         >>> page, im = get_page_and_img(x, 1) # 1 marks the second page
         >>> get_header_terminal(im, page)
         75.12
+        >>> page.pdf.close()
 
     Args:
         im (numpy.ndarray): The full page image
@@ -93,6 +94,7 @@ def get_page_num(page: Page, header_line: int | float) -> int | None:
         >>> header_line = get_header_terminal(im, page)
         >>> get_page_num(page, header_line)
         2
+        >>> page.pdf.close()
 
     Args:
         page (Page): The pdfplumber page

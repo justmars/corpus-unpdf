@@ -8,10 +8,7 @@ import pdfplumber
 import pytesseract
 from pdfplumber.page import Page
 
-from .slice import get_contours
-
-ORDERED = re.compile(r"so\s+ordered.*", re.I)
-BY_AUTHORITY = re.compile(r"by\s+authority\s+of.*", re.I)
+from .slice import get_contours, is_match_text
 
 
 def get_img_from_page(page: Page) -> numpy.ndarray:
@@ -37,6 +34,7 @@ def get_page_and_img(
         True
         >>> isinstance(im, numpy.ndarray)
         True
+        >>> page.pdf.close()
 
     Args:
         pdfpath (str | Path): Path to the PDF file.
@@ -106,6 +104,14 @@ def get_terminal_page_pos(path: Path) -> tuple[int, int] | None:
         >>> get_terminal_page_pos(x) # page 5, y-axis 80.88
         (5, 80.88)
 
+    Also see snippets for debugging:
+
+    ```py
+    debug with print(f"{x=}, {y=}, {w=}, {h=}, {y_pos=} {candidate=}")
+    cv2.rectangle(im, (x,y), (x+w, y+h), (36, 255, 12), 3) # for each mark
+    cv2.imwrite("temp/sample_boxes.png", im); see cv2.rectangle # end of forloop
+    ```
+
     Args:
         path (Path): Path to the PDF file.
 
@@ -113,25 +119,29 @@ def get_terminal_page_pos(path: Path) -> tuple[int, int] | None:
         tuple[int, int] | None: The page number from pdfplumber.pages, the Y position
             of that page
     """
+    ORDERED, AUTHORITY = "so ordered", "by authority of the court"
     for page, im in get_reverse_pages_and_imgs(path):
         im_h, im_w, _ = im.shape
         MIDPOINT = im_w / 2
         for cnt in get_contours(im, (30, 30)):
             x, y, w, h = cv2.boundingRect(cnt)
+            sliced_im = im[y : y + h, x : x + w]
+            output = page.page_number, (y / im_h) * page.height
             if h < 100:
-                sliced = im[y : y + h, x : x + w]
-                y_pos = (y / im_h) * page.height
                 if x < MIDPOINT:
-                    candidate = pytesseract.image_to_string(sliced).strip()
-                    if ORDERED.search(candidate):
-                        # print(f"{x=}, {y=}, {w=}, {h=}, {candidate=}")
-                        # cv2.rectangle(im, (x,y), (x+w, y+h), (36, 255, 12), 3)
-                        return page.page_number, y_pos
-                if x > MIDPOINT - 100:
-                    candidate = pytesseract.image_to_string(sliced).strip()
-                    if BY_AUTHORITY.search(candidate):
-                        # print(f"{x=}, {y=}, {w=}, {h=}, {candidate=}")
-                        # cv2.rectangle(im, (x,y), (x+w, y+h), (36, 255, 12), 3)
-                        return page.page_number, y_pos
-    # cv2.imwrite("temp/sample_boxes.png", im); see cv2.rectangle
+                    if is_match_text(
+                        sliced_im=sliced_im,
+                        text_to_match=ORDERED,
+                        likelihood=0.4,
+                    ):
+                        page.pdf.close()
+                        return output
+                elif x > MIDPOINT:
+                    if is_match_text(
+                        sliced_im=sliced_im,
+                        text_to_match=AUTHORITY,
+                        likelihood=0.4,
+                    ):
+                        page.pdf.close()
+                        return output
     return None

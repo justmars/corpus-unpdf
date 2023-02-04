@@ -199,6 +199,7 @@ class Decision:
                 if num == last_num:
                     if page_valid := DecisionPage.extract(path, num, last_y):
                         self.pages.append(page_valid)
+                        page.pdf.close()
                     break
                 else:
                     if page_valid := DecisionPage.extract(path, num):
@@ -233,9 +234,13 @@ def get_decision(path: Path) -> Decision:
     """  # noqa: E501
     page, im = get_page_and_img(path, 0)
     if not (comp := PositionCourtComposition.extract(im)):
+        page.pdf.close()
         raise Exception(f"No court composition detected {path=}")
     if not (caso := Decision.make_start_page(page, im, comp)):
+        page.pdf.close()
         raise Exception(f"First page unprocessed {path=}")
     if not (page_pos := get_terminal_page_pos(path)):
+        page.pdf.close()
         raise Exception(f"No terminal detected {path=}")
-    return caso.make_next_pages(path, page_pos[0], page_pos[1])
+    decision = caso.make_next_pages(path, page_pos[0], page_pos[1])
+    return decision
