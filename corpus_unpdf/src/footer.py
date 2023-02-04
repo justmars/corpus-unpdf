@@ -3,7 +3,6 @@ import numpy
 from pdfplumber.page import Page
 
 from .common import get_contours
-from .markers import PERCENT_OF_MAX_PAGE
 
 
 def get_footer_line_coordinates(
@@ -38,6 +37,9 @@ def get_footer_line_coordinates(
         if w > 400 and y > im_h / 2 and h < 40:
             return x, y, w, h
     return None
+
+
+PERCENT_OF_MAX_PAGE = 0.94
 
 
 def get_annex_y_axis(

@@ -1,11 +1,9 @@
-import re
 from collections.abc import Iterator
 from pathlib import Path
 
 import cv2
 import numpy
 import pdfplumber
-import pytesseract
 from pdfplumber.page import Page
 
 from .slice import get_contours, is_match_text

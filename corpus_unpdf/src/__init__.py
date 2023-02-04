@@ -10,9 +10,6 @@ from .common import (
 from .footer import get_annex_y_axis, get_footer_line_coordinates
 from .header import get_header_line, get_page_num
 from .markers import (
-    PERCENT_OF_MAX_PAGE,
-    SIDE_MARGIN,
-    TOP_MARGIN,
     CourtCompositionChoices,
     DecisionCategoryChoices,
     PositionCourtComposition,

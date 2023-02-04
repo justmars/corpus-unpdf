@@ -121,18 +121,6 @@ class PageCut(NamedTuple):
 
     When the above fields are populated, the `@slice` property describes
     the area of the page that will be used to extract text from.
-
-    Examples:
-        >>> from pathlib import Path
-        >>> from corpus_unpdf.src.common.fetch import get_page_and_img
-        >>> x = Path().cwd() / "tests" / "data" / "decision.pdf"
-        >>> page, im = get_page_and_img(x, 0)
-        >>> page.height
-        948.72
-        >>> cutpage = PageCut(page=page, x0=100, x1=200, y0=100, y1=200).slice
-        >>> cutpage.height
-        100
-        >>> page.pdf.close()
     """
 
     page: Page
@@ -147,8 +135,48 @@ class PageCut(NamedTuple):
         implies a page derived from `pdfplumber`. The former is based on pixels;
         the latter on points.
 
+        Examples:
+            >>> from pathlib import Path
+            >>> from corpus_unpdf.src.common.fetch import get_page_and_img
+            >>> x = Path().cwd() / "tests" / "data" / "decision.pdf"
+            >>> page, im = get_page_and_img(x, 0) # page 1
+            >>> page.height
+            948.72
+            >>> cutpage = PageCut(page=page, x0=100, x1=200, y0=100, y1=200).slice
+            >>> cutpage.height
+            100
+            >>> page.pdf.close()
+
         Returns:
             CroppedPage: The page crop where to extract text from.
         """
         box: T_bbox = (self.x0, self.y0, self.x1, self.y1)
         return self.page.crop(box, relative=False, strict=True)
+
+    @classmethod
+    def set(cls, page: Page, y0: float | int, y1: float | int) -> CroppedPage:
+        """Using a uniform margin on the x-axis, supply the page
+        to generate page width and thus force preset margins. The `y0`
+        and `y1` fields determine how to slice the page.
+
+        Examples:
+            >>> from corpus_unpdf.src.common.fetch import get_page_and_img
+            >>> from pathlib import Path
+            >>> x = Path().cwd() / "tests" / "data" / "decision.pdf"
+            >>> page, im = get_page_and_img(x, 1) # page 2
+            >>> crop = PageCut.set(page, y0=0, y1=page.height * 0.1)
+            >>> crop.extract_text()
+            'Resolution 2 A.M. No. P-14-3182'
+            >>> page.pdf.close()
+
+        Args:
+            page (Page): pdfplumber Page object
+            y0 (float | int): Top y-axis
+            y1 (float | int): Bottom y-axis
+
+        Returns:
+            CroppedPage: The page crop where to extract text from.
+        """
+        SIDE_MARGIN = 50
+        x0, x1 = SIDE_MARGIN, page.width - SIDE_MARGIN
+        return cls(page=page, x0=x0, x1=x1, y0=y0, y1=y1).slice

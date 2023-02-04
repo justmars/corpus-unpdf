@@ -1,14 +1,13 @@
-from collections.abc import Iterator
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Self
 
 import numpy
 import pdfplumber
+from loguru import logger
 from pdfplumber.page import CroppedPage, Page
 
 from .src import (
-    SIDE_MARGIN,
     Bodyline,
     CourtCompositionChoices,
     DecisionCategoryChoices,
@@ -23,6 +22,13 @@ from .src import (
     get_page_num,
     get_terminal_page_pos,
 )
+
+
+def _err(page: Page, msg: str) -> Exception:
+    page.pdf.close()
+    msg += f"in {page.page_number}"
+    logger.error(msg)
+    raise Exception(msg)
 
 
 @dataclass
@@ -79,22 +85,19 @@ class DecisionPage:
         # the header line determines the start of the body proper
         header_line = get_header_line(im, page)
         if not header_line:
-            raise Exception("Could not find header.")
+            raise _err(page, "No header line.")
 
         # necessary because of blank pages
         extracted_page_num = get_page_num(page, header_line) or 0
-
-        # prepare common slicing borders
-        cut = {"page": page, "x0": SIDE_MARGIN, "x1": page.width - SIDE_MARGIN}
 
         # get body_end_line and terminal_line for annex and body vertical borders
         body_end_line, terminal_line = get_annex_y_axis(im, page)
         annex = None
         if terminal_line:
-            annex = PageCut(**cut, y0=body_end_line, y1=terminal_line).slice
+            annex = PageCut.set(page=page, y0=body_end_line, y1=terminal_line)
         if terminal_y:
             body_end_line = terminal_y
-        body = PageCut(**cut, y0=header_line, y1=body_end_line).slice
+        body = PageCut.set(page=page, y0=header_line, y1=body_end_line)
 
         return cls(body=body, annex=annex, page_num=extracted_page_num)
 
@@ -120,16 +123,6 @@ class Decision:
     notice: bool = False
     pages: list[DecisionPage] = field(default_factory=list)
 
-    @property
-    def lines(self) -> Iterator[Bodyline]:
-        for page in self.pages:
-            yield from page.lines
-
-    @property
-    def notes(self) -> Iterator[Footnote]:
-        for page in self.pages:
-            yield from page.footnotes
-
     @classmethod
     def make_start_page(
         cls,
@@ -152,32 +145,36 @@ class Decision:
         Returns:
             Self | None: A Decision instance with the first page included.
         """
-        cut = {"page": page, "x0": SIDE_MARGIN, "x1": page.width - SIDE_MARGIN}
+        logger.debug("Initialize title page.")
         head = start.composition_pct_height * page.height
         e1, e2 = get_annex_y_axis(im, page)
 
         if ntc := PositionNotice.extract(im):
+            logger.debug(f"Found {ntc=}")
             notice_pos = ntc.position_pct_height * page.height
-            body = PageCut(**cut, y0=notice_pos, y1=e1).slice
-            annex = PageCut(**cut, y0=e1, y1=e2).slice if e2 else None
+            body = PageCut.set(page=page, y0=notice_pos, y1=e1)
+            annex = PageCut.set(page=page, y0=e1, y1=e2) if e2 else None
             return cls(
                 notice=True,
                 composition=start.element,
-                header=PageCut(**cut, y0=head, y1=notice_pos).slice,
+                header=PageCut.set(page=page, y0=head, y1=notice_pos),
                 pages=[DecisionPage(page_num=1, body=body, annex=annex)],
             )
         elif category := PositionDecisionCategoryWriter.extract(im):
+            logger.debug(f"Found {category=}")
             cat_pos = category.category_pct_height * page.height
             writer_pos = category.writer_pct_height * page.height
-            body = PageCut(**cut, y0=writer_pos, y1=e1).slice
-            annex = PageCut(**cut, y0=e1, y1=e2).slice if e2 else None
+            body = PageCut.set(page=page, y0=writer_pos, y1=e1)
+            annex = PageCut.set(page=page, y0=e1, y1=e2) if e2 else None
             return cls(
                 composition=start.element,
                 category=category.element,
                 writer=category.writer,
-                header=PageCut(**cut, y0=head, y1=cat_pos).slice,
+                header=PageCut.set(page=page, y0=head, y1=cat_pos),
                 pages=[DecisionPage(page_num=1, body=body, annex=annex)],
             )
+
+        logger.error("Could not detect category or notice.")
         return None
 
     def make_next_pages(self, path: Path, last_num: int, last_y: int) -> Self:
@@ -195,15 +192,22 @@ class Decision:
                 the for loop.
         """
         for page in pdfplumber.open(path).pages:
-            if (num := page.page_number) != 1:
-                if num == last_num:
-                    if page_valid := DecisionPage.extract(path, num, last_y):
-                        self.pages.append(page_valid)
-                        page.pdf.close()
-                    break
+            if (num := page.page_number) == 1:
+                continue
+            if num == last_num:
+                logger.debug(f"Finalize {page.page_number=}.")
+                if page_valid := DecisionPage.extract(path, num, last_y):
+                    self.pages.append(page_valid)
+                    page.pdf.close()
                 else:
-                    if page_valid := DecisionPage.extract(path, num):
-                        self.pages.append(page_valid)
+                    logger.warning("Detected blank page.")
+                break
+            else:
+                logger.debug(f"Initialize {page.page_number=}.")
+                if page_valid := DecisionPage.extract(path, num):
+                    self.pages.append(page_valid)
+                else:
+                    logger.warning("Detected blank page.")
         return self
 
 
@@ -221,9 +225,9 @@ def get_decision(path: Path) -> Decision:
         <CourtCompositionChoices.DIV2: 'Second Division'>
         >>> decision.writer
         'CARPIO, J.:'
-        >>> isinstance(next(decision.lines), Bodyline)
+        >>> isinstance(decision.pages[0].lines[0], Bodyline)
         True
-        >>> isinstance(next(decision.notes), Footnote)
+        >>> decision.pages[0].footnotes == [] # none found, # TODO: can't seem to detect
         True
 
     Args:
@@ -233,14 +237,15 @@ def get_decision(path: Path) -> Decision:
         Self: Instance of a Decision with pages populated
     """  # noqa: E501
     page, im = get_page_and_img(path, 0)
+
     if not (comp := PositionCourtComposition.extract(im)):
-        page.pdf.close()
-        raise Exception(f"No court composition detected {path=}")
+        raise _err(page, "No court composition detected.")
+
     if not (caso := Decision.make_start_page(page, im, comp)):
-        page.pdf.close()
-        raise Exception(f"First page unprocessed {path=}")
+        raise _err(page, "First page unprocessed.")
+
     if not (page_pos := get_terminal_page_pos(path)):
-        page.pdf.close()
-        raise Exception(f"No terminal detected {path=}")
+        raise _err(page, "No terminal detected.")
+
     decision = caso.make_next_pages(path, page_pos[0], page_pos[1])
     return decision

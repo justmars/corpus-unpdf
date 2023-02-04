@@ -16,18 +16,38 @@ In light of this context, this library is an attempt to parse Philippine Supreme
 
 ## Measurements
 
+Since we'll be using two distinct libraries with different formats, pay attention to the kind of measurements involved.
+
+### Unit
+
+Library | Unit | Description | Maximum
+--:|:--|:--|:--:
+_pdfplumber_ | point | PDF unit | `im.shape` gets a tuple of the image dimensions
+_opencv_ | pixel | Graphical unit | `page.height * page.width` is the size of the page
+
 !!! Warning
 
-    Note the two kinds of measurements involved.
+    Note the two kinds of measurements involved. In order to use the image's pixels as page points, use the the image's max width / height as the divisor to get the ratio and then apply that ratio (percentage) to the page's max width / height.
 
-    A `page`  is based on `pdfplumber`'s points.
+    ```py
+    >>> from corpus_unpdf.src.common import get_contours # shortcut custom function
+    >>> im_h, im_w, im_d = im.shape # im_h is maximum image height
+    >>> test = next(cv2.boundingRect(c) for c in get_contours(im, (50, 10)))
+    >>> x, y, w, h = test # see Slicing below
+    >>> ratio = y / im_h # `y` coordinate over `im_h` gives a pixel-based ratio
+    >>> page_point = ratio * page.height # equivalent point in PDF page
+    ```
 
-    An `image` is based on pixels.
+    See related [discussion](https://stackoverflow.com/a/73404598).
 
-    In order to use the image's pixels as page points, use the
-    the image's max width / height as the divisor to get the ratio
-    and then apply that ratio (percentage) to the page's max width / height.
-    See related [answer](https://stackoverflow.com/a/73404598)
+### Boxes
+
+!!! Slicing
+
+    Function | Expectation | Format | Unit | Description
+    :--:|:--:|:--:|:--:|:--:
+    _cv2.boundingRect()_ | Results in a tuple of four points | (`x`,`y`,`w`,`h`) | pixels | `x` is point in `x`-axis, `y` is point in y-axis, `w` is width, and `h` is height
+    _pdfplumber._typing.T_bbox_ | A tuple of four points | (`x0`, `y0`, `x1`, `y1`) | points | `x0` is the left-most point in _x-axis_, `x1` is the right-most point in _x-axis_, `y0` is the top-most point in _y-axis_, `y1` is the bottom-most point in _y-axis_.
 
 ## Setup
 

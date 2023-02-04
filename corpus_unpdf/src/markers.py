@@ -6,10 +6,6 @@ import pytesseract
 
 from .common import get_centered_coordinates
 
-PERCENT_OF_MAX_PAGE = 0.92
-TOP_MARGIN = 90
-SIDE_MARGIN = 50
-
 
 class NoticeChoices(Enum):
     NOTICE = "Notice"
