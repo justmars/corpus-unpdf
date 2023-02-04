@@ -274,6 +274,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#measurements" class="md-nav__link">
+    Measurements
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#setup" class="md-nav__link">
     Setup
   </a>
@@ -346,6 +353,36 @@
   
   
     <li class="md-nav__item">
+      <a href="header/" class="md-nav__link">
+        Header
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="footer/" class="md-nav__link">
+        Footer
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
       <a href="utils/" class="md-nav__link">
         Utils
       </a>
@@ -378,6 +415,13 @@
       Table of contents
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#measurements" class="md-nav__link">
+    Measurements
+  </a>
+  
+</li>
       
         <li class="md-nav__item">
   <a href="#setup" class="md-nav__link">
@@ -435,6 +479,17 @@
 <p>PDF = humans good, machines bad</p>
 </div>
 <p>In light of this context, this library is an attempt to parse Philippine Supreme Court decisions issued in PDF format and extract its raw "as guessed" output.</p>
+<h2 id="measurements">Measurements</h2>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Note the two kinds of measurements involved.</p>
+<p>A <code>page</code>  is based on <code>pdfplumber</code>'s points.</p>
+<p>An <code>image</code> is based on pixels.</p>
+<p>In order to use the image's pixels as page points, use the
+the image's max width / height as the divisor to get the ratio
+and then apply that ratio (percentage) to the page's max width / height.
+See related <a href="https://stackoverflow.com/a/73404598">answer</a></p>
+</div>
 <h2 id="setup">Setup</h2>
 <h3 id="common-libraries">Common libraries</h3>
 <p>Install common libraries in MacOS with <code>homebrew</code>:</p>
