@@ -1,12 +1,13 @@
 import re
 from dataclasses import dataclass, field
-from typing import Self, NamedTuple
-from pdfplumber.page import CroppedPage, Page
-from .page_footer import get_page_end
-from .page_header import get_page_num, get_header_line
-from .common import PageCut, get_img_from_page
-from .content_markers import DecisionCategoryChoices, CourtCompositionChoices
+from typing import NamedTuple, Self
 
+from pdfplumber.page import CroppedPage, Page
+
+from .common import PageCut, get_img_from_page
+from .content_markers import CourtCompositionChoices, DecisionCategoryChoices
+from .page_footer import get_page_end
+from .page_header import get_header_line, get_page_num
 
 line_break = re.compile(r"\s*\n+\s*")
 
