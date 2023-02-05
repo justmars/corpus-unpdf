@@ -130,23 +130,26 @@ class DecisionPage:
             self.footnotes = Footnote.from_cropped(self.annex)
 
     @classmethod
-    def extract_proper(
+    def set(
         cls,
         page: Page,
         start_y: float | int | None = None,
         end_y: float | int | None = None,
     ) -> Self:
         """
-        The presence of a `header_line` and a `page_endline` determine
-        what to extract from a given `page`.
+        A `header_line` (related to `start_y`) and `page_line` (related to `end_y`)
+        are utilized as local variables in this function.
 
         The `header_line` is the imaginary line at the top of the page.
         If the `start_y` is supplied, it means that the `header_line`
         no longer needs to be calculated.
 
-        The `page_line` is the imaginary line at the bottom of the page
+        The `page_line` is the imaginary line at the bottom of the page.
         If the `end_y` is supplied, it means that the calculated `page_line`
         ought to be replaced.
+
+        The presence of a `header_line` and a `page_endline` determine
+        what to extract from a given `page`.
 
         Args:
             page (Page): The pdfplumber page to evaluate

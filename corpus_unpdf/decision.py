@@ -19,16 +19,16 @@ from .src import (
 
 
 class DecisionMeta(NamedTuple):
-    """Metadata required to create a decision[decision-document].
+    """Metadata required to create a [decision][decision-document].
 
     Field | Type | Description
     --:|:--:|:--
     `start_index` | int | The zero-based integer `x`, i.e. get specific `pdfplumber.pages[x]`
     `start_page_num` | int | The 1-based integer to describe human-readable page number
-    `start_indicator` | [PositionDecisionCategoryWriter][decision-category-writer] or [PositionNotice][notice] | Marking the content start of document
-    `writer` | str | When PositionDecisionCategoryWriter is selected, the writer found underneath the category
-    `notice` | bool | Will be marked `True`, if PositionNotice is selected; default is `False`.
-    `pages` | list[DecisionPage][decision-pages] | A list of pages having the material content
+    `start_indicator` | [PositionDecisionCategoryWriter][decision-category-writer] or [PositionNotice][notice] | Marking the [start of content proper][start-of-content]
+    `writer` | str | When [PositionDecisionCategoryWriter][decision-category-writer]  is selected, the writer found underneath the category
+    `notice` | bool | Will be marked `True`, if [PositionNotice][notice] is selected; default is `False`.
+    `pages` | list[[DecisionPage][decision-pages]] | A list of pages having material content
     """  # noqa: E501
 
     start_index: int
@@ -67,13 +67,14 @@ class DecisionMeta(NamedTuple):
             Decision: A Decision instance, if all elements match.
         """
         logger.debug(f"Initialize {self=}")
+        composition = PositionCourtComposition.from_pdf(pdf).element
         start_page = pdf.pages[self.start_index]
         if isinstance(self.start_indicator, PositionNotice):
             return Decision(
-                composition=PositionCourtComposition.from_pdf(pdf).element,
+                composition=composition,
                 notice=True,
                 pages=[
-                    DecisionPage.extract_proper(
+                    DecisionPage.set(
                         page=start_page,
                         start_y=self.start_indicator.position_pct_height
                         * start_page.height,
@@ -82,11 +83,11 @@ class DecisionMeta(NamedTuple):
             )
         elif isinstance(self.start_indicator, PositionDecisionCategoryWriter):
             return Decision(
-                composition=PositionCourtComposition.from_pdf(pdf).element,
+                composition=composition,
                 category=self.start_indicator.element,
                 writer=self.start_indicator.writer,
                 pages=[
-                    DecisionPage.extract_proper(
+                    DecisionPage.set(
                         page=start_page,
                         start_y=self.start_indicator.writer_pct_height
                         * start_page.height,
@@ -101,9 +102,8 @@ class DecisionMeta(NamedTuple):
                 continue
             if nxt.page_number == self.end_page_num:
                 logger.debug(f"Finalize {nxt.page_number=}.")
-                if page_valid := DecisionPage.extract_proper(
-                    page=nxt,
-                    end_y=self.end_page_pos,
+                if page_valid := DecisionPage.set(
+                    page=nxt, end_y=self.end_page_pos
                 ):
                     yield page_valid
                 else:
@@ -111,7 +111,7 @@ class DecisionMeta(NamedTuple):
                 break
             else:
                 logger.debug(f"Initialize {nxt.page_number=}.")
-                if page_valid := DecisionPage.extract_proper(page=nxt):
+                if page_valid := DecisionPage.set(page=nxt):
                     yield page_valid
                 else:
                     logger.warning("Detected blank page.")
