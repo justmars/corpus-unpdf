@@ -293,6 +293,26 @@
     Boxes
   </a>
   
+    <nav class="md-nav" aria-label="Boxes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#slicing-opencv" class="md-nav__link">
+    Slicing opencv
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#slicing-pdfplumber" class="md-nav__link">
+    Slicing pdfplumber
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
         
       </ul>
@@ -373,23 +393,8 @@
   
   
     <li class="md-nav__item">
-      <a href="header/" class="md-nav__link">
-        Header
-      </a>
-    </li>
-  
-
-    
-      
-      
-      
-
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="footer/" class="md-nav__link">
-        Footer
+      <a href="document/" class="md-nav__link">
+        Document
       </a>
     </li>
   
@@ -455,6 +460,26 @@
   <a href="#boxes" class="md-nav__link">
     Boxes
   </a>
+  
+    <nav class="md-nav" aria-label="Boxes">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#slicing-opencv" class="md-nav__link">
+    Slicing opencv
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#slicing-pdfplumber" class="md-nav__link">
+    Slicing pdfplumber
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -548,7 +573,8 @@
 </table>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>Note the two kinds of measurements involved. In order to use the image's pixels as page points, use the the image's max width / height as the divisor to get the ratio and then apply that ratio (percentage) to the page's max width / height.</p>
+<p>Convert image's pixels as page points, by first getting image ratio; then apply ratio (percentage)
+to the page's max width / height.</p>
 <div class="highlight"><span class="filename">Python</span><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="o">&gt;&gt;&gt;</span> <span class="kn">from</span> <span class="nn">corpus_unpdf.src.common</span> <span class="kn">import</span> <span class="n">get_contours</span> <span class="c1"># shortcut custom function</span>
 <a id="__codelineno-0-2" name="__codelineno-0-2" href="#__codelineno-0-2"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">im_h</span><span class="p">,</span> <span class="n">im_w</span><span class="p">,</span> <span class="n">im_d</span> <span class="o">=</span> <span class="n">im</span><span class="o">.</span><span class="n">shape</span> <span class="c1"># im_h is maximum image height</span>
 <a id="__codelineno-0-3" name="__codelineno-0-3" href="#__codelineno-0-3"></a><span class="o">&gt;&gt;&gt;</span> <span class="n">test</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">cv2</span><span class="o">.</span><span class="n">boundingRect</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">get_contours</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="p">(</span><span class="mi">50</span><span class="p">,</span> <span class="mi">10</span><span class="p">)))</span>
@@ -559,16 +585,16 @@
 <p>See related <a href="https://stackoverflow.com/a/73404598">discussion</a>.</p>
 </div>
 <h3 id="boxes">Boxes</h3>
-<div class="admonition slicing">
-<p class="admonition-title">Slicing</p>
+<h4 id="slicing-opencv">Slicing opencv</h4>
+<div class="admonition note">
+<p class="admonition-title">Rectangles for opencv</p>
 <table>
 <thead>
 <tr>
-<th align="center">Function</th>
+<th align="center">Reference</th>
 <th align="center">Expectation</th>
 <th align="center">Format</th>
 <th align="center">Unit</th>
-<th align="center">Description</th>
 </tr>
 </thead>
 <tbody>
@@ -577,18 +603,84 @@
 <td align="center">Results in a tuple of four points</td>
 <td align="center">(<code>x</code>,<code>y</code>,<code>w</code>,<code>h</code>)</td>
 <td align="center">pixels</td>
-<td align="center"><code>x</code> is point in <code>x</code>-axis, <code>y</code> is point in y-axis, <code>w</code> is width, and <code>h</code> is height</td>
 </tr>
+</tbody>
+</table>
+</div>
+<table>
+<thead>
+<tr>
+<th align="right">Fields</th>
+<th align="left">Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="right"><code>x</code></td>
+<td align="left">point in x-axis</td>
+</tr>
+<tr>
+<td align="right"><code>y</code></td>
+<td align="left">point in y-axis</td>
+</tr>
+<tr>
+<td align="right"><code>w</code></td>
+<td align="left">width</td>
+</tr>
+<tr>
+<td align="right"><code>h</code></td>
+<td align="left">height</td>
+</tr>
+</tbody>
+</table>
+<h4 id="slicing-pdfplumber">Slicing pdfplumber</h4>
+<div class="admonition note">
+<p class="admonition-title">Rectangles for pdfplumber</p>
+<table>
+<thead>
+<tr>
+<th align="center">Reference</th>
+<th align="center">Expectation</th>
+<th align="center">Format</th>
+<th align="center">Unit</th>
+</tr>
+</thead>
+<tbody>
 <tr>
 <td align="center"><em>pdfplumber._typing.T_bbox</em></td>
 <td align="center">A tuple of four points</td>
 <td align="center">(<code>x0</code>, <code>y0</code>, <code>x1</code>, <code>y1</code>)</td>
 <td align="center">points</td>
-<td align="center"><code>x0</code> is the left-most point in <em>x-axis</em>, <code>x1</code> is the right-most point in <em>x-axis</em>, <code>y0</code> is the top-most point in <em>y-axis</em>, <code>y1</code> is the bottom-most point in <em>y-axis</em>.</td>
 </tr>
 </tbody>
 </table>
 </div>
+<table>
+<thead>
+<tr>
+<th align="right">Fields</th>
+<th align="left">Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="right"><code>x0</code></td>
+<td align="left">left-most point in <em>x-axis</em></td>
+</tr>
+<tr>
+<td align="right"><code>x1</code></td>
+<td align="left">right-most point in <em>x-axis</em></td>
+</tr>
+<tr>
+<td align="right"><code>y0</code></td>
+<td align="left">top-most point in <em>y-axis</em></td>
+</tr>
+<tr>
+<td align="right"><code>y1</code></td>
+<td align="left">bottom-most point in <em>y-axis</em></td>
+</tr>
+</tbody>
+</table>
 <h2 id="setup">Setup</h2>
 <h3 id="common-libraries">Common libraries</h3>
 <p>Install common libraries in MacOS with <code>homebrew</code>:</p>

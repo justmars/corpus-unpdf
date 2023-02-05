@@ -2,32 +2,27 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://lawsql.com/</loc>
-         <lastmod>2023-02-04</lastmod>
+         <lastmod>2023-02-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://lawsql.com/decision/</loc>
-         <lastmod>2023-02-04</lastmod>
+         <lastmod>2023-02-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://lawsql.com/footer/</loc>
-         <lastmod>2023-02-04</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://lawsql.com/header/</loc>
-         <lastmod>2023-02-04</lastmod>
+         <loc>https://lawsql.com/document/</loc>
+         <lastmod>2023-02-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://lawsql.com/markers/</loc>
-         <lastmod>2023-02-04</lastmod>
+         <lastmod>2023-02-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://lawsql.com/utils/</loc>
-         <lastmod>2023-02-04</lastmod>
+         <lastmod>2023-02-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
 </urlset>
