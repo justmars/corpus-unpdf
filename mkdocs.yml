@@ -21,9 +21,13 @@ theme:
 nav:
   - Overview: index.md
   - Decision: decision.md
-  - Markers: markers.md
   - Document: document.md
-  - Utils: utils.md
+  - Parts:
+    - Markers: document-parts/markers.md
+    - Content: document-parts/content.md
+    - Header: document-parts/header.md
+    - Footer: document-parts/footer.md
+    - Utils: document-parts/utils.md
 extra:
   homepage: https://mv3.dev
   social:

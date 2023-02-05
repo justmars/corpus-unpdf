@@ -1,4 +1,3 @@
-from .extract import Bodyline, Footnote
 from .fetch import (
     get_img_from_page,
     get_page_and_img,

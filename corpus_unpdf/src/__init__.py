@@ -1,6 +1,4 @@
 from .common import (
-    Bodyline,
-    Footnote,
     PageCut,
     get_centered_coordinates,
     get_contours,
@@ -17,5 +15,6 @@ from .content_markers import (
     PositionNotice,
 )
 from .content_starter import get_start_page_pos
+from .decision_objects import Bodyline, Decision, DecisionPage, Footnote
 from .page_footer import get_footer_line_coordinates, get_page_end
 from .page_header import get_header_line, get_page_num

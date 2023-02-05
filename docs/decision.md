@@ -7,11 +7,3 @@
 ## DecisionMeta
 
 :::corpus_unpdf.DecisionMeta
-
-## Decision
-
-:::corpus_unpdf.Decision
-
-## Decision Page
-
-:::corpus_unpdf.DecisionPage

@@ -12,25 +12,15 @@ class NoticeChoices(Enum):
     NOTICE = "Notice"
 
 
-class CourtCompositionChoices(Enum):
-    """How the Supreme Court sits. At present, this includes four
-    options. Might need to add cases for _special_ divisions."""
-
-    ENBANC = "En Banc"
-    DIV1 = "First Division"
-    DIV2 = "Second Division"
-    DIV3 = "Third Division"
-
-
-class DecisionCategoryChoices(Enum):
-    """The classification of a decision issued by the Supreme Court."""
-
-    CASO = "Decision"
-    RESO = "Resolution"
-
-
 class PositionNotice(NamedTuple):
-    """When present, signifies that this was issued by authority of the Court."""
+    """When present, signifies that this was issued by authority of the Court.
+
+    Field | Type | Description
+    --:|:--:|:--
+    `element` | NoticeChoices | Only a single choice (for now)
+    `coordinates` | tuple[int, int, int, int] | The opencv rectangle found in the page where the notice is found
+    `position_pct_height` | float | The `y` + height `h` of the `coordinates` over the `im_h` image height; used so the pdfplumber can utilize its cropping mechanism.
+    """  # noqa: E501
 
     element: NoticeChoices
     coordinates: tuple[int, int, int, int]
@@ -50,7 +40,28 @@ class PositionNotice(NamedTuple):
         return None
 
 
+class CourtCompositionChoices(Enum):
+    """How the Supreme Court sits. At present, this includes four
+    options: en banc + 3 divisions. Might need to add cases for _special_ divisions.
+    """
+
+    ENBANC = "En Banc"
+    DIV1 = "First Division"
+    DIV2 = "Second Division"
+    DIV3 = "Third Division"
+
+
 class PositionCourtComposition(NamedTuple):
+    """Should be present as the top centered element in the first page
+    of the pdf of the Decision.
+
+    Field | Type | Description
+    --:|:--:|:--
+    `element` | [CourtCompositionChoices][composition-choices] | Presently four choices
+    `coordinates` | tuple[int, int, int, int] | The opencv rectangle found in the page where the composition is found
+    `composition_pct_height` | float | The `y` + height `h` of the `coordinates` over the `im_h` image height; used so the pdfplumber can utilize its cropping mechanism.
+    """  # noqa: E501
+
     element: CourtCompositionChoices
     coordinates: tuple[int, int, int, int]
     composition_pct_height: float
@@ -77,7 +88,27 @@ class PositionCourtComposition(NamedTuple):
         return court_composition
 
 
+class DecisionCategoryChoices(Enum):
+    """The classification of a decision issued by the Supreme Court, i.e.
+    a decision or a resolution."""
+
+    CASO = "Decision"
+    RESO = "Resolution"
+
+
 class PositionDecisionCategoryWriter(NamedTuple):
+    """Should be present as the top centered element in the first page
+    of the pdf of the Decision.
+
+    Field | Type | Description
+    --:|:--:|:--
+    `element` | [DecisionCategoryChoices][category-choices] | Presently four choices
+    `coordinates` | tuple[int, int, int, int] | The opencv rectangle found in the page where the composition is found
+    `writer` | str | The string found indicating the name of the writer
+    `category_pct_height` | float | The `y` + height `h` of the `coordinates` over the `im_h` image height; used so the pdfplumber can utilize its cropping mechanism.
+    `writer_pct_height` | float | The writer's coordinates are found below the category coordinates. This can then be used to signify the anchoring [start of the document][start-of-content].
+    """  # noqa: E501
+
     element: DecisionCategoryChoices
     coordinates: tuple[int, int, int, int]
     writer: str
