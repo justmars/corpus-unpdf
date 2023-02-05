@@ -158,14 +158,17 @@ class PageCut(NamedTuple):
         and `y1` fields determine how to slice the page.
 
         Examples:
-            >>> from corpus_unpdf.src.common.fetch import get_page_and_img
+            >>> import pdfplumber
             >>> from pathlib import Path
+            >>> from corpus_unpdf.src.common.fetch import get_img_from_page
             >>> x = Path().cwd() / "tests" / "data" / "decision.pdf"
-            >>> page, im = get_page_and_img(x, 1) # page 2
+            >>> pdf = pdfplumber.open(x)
+            >>> page = pdf.pages[1] # page 2
+            >>> im = get_img_from_page(page)
             >>> crop = PageCut.set(page, y0=0, y1=page.height * 0.1)
             >>> crop.extract_text()
             'Resolution 2 A.M. No. P-14-3182'
-            >>> page.pdf.close()
+            >>> pdf.close()
 
         Args:
             page (Page): pdfplumber Page object

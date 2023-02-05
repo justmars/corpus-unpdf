@@ -89,14 +89,17 @@ def get_page_num(page: Page, header_line: int | float) -> int | None:
     deal with decisions having blank pages.
 
     Examples:
-        >>> from corpus_unpdf.src import get_page_and_img
+        >>> import pdfplumber
         >>> from pathlib import Path
+        >>> from corpus_unpdf.src.common.fetch import get_img_from_page
         >>> x = Path().cwd() / "tests" / "data" / "decision.pdf"
-        >>> page, im = get_page_and_img(x, 1) # 1 marks the second page
+        >>> pdf = pdfplumber.open(x)
+        >>> page = pdf.pages[1] # page 2
+        >>> im = get_img_from_page(page)
         >>> header_line = get_header_line(im, page)
         >>> get_page_num(page, header_line)
         2
-        >>> page.pdf.close()
+        >>> pdf.close()
 
     Args:
         page (Page): The pdfplumber page

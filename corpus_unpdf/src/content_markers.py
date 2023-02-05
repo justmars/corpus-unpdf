@@ -3,8 +3,9 @@ from typing import NamedTuple, Self
 
 import numpy
 import pytesseract
+from pdfplumber.pdf import PDF
 
-from .common import get_centered_coordinates
+from .common import get_centered_coordinates, get_img_from_page
 
 
 class NoticeChoices(Enum):
@@ -66,6 +67,14 @@ class PositionCourtComposition(NamedTuple):
                     composition_pct_height=(y + h) / im_h,
                 )
         return None
+
+    @classmethod
+    def from_pdf(cls, pdf: PDF) -> Self:
+        page_one_im = get_img_from_page(pdf.pages[0])
+        court_composition = cls.extract(page_one_im)
+        if not court_composition:
+            raise Exception("Could not detect court compositon in page 1.")
+        return court_composition
 
 
 class PositionDecisionCategoryWriter(NamedTuple):

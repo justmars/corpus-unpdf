@@ -8,14 +8,6 @@ Work with pdf files.
 
 :::corpus_unpdf.src.common.fetch.get_page_and_img
 
-### Reverse list pages, images
-
-:::corpus_unpdf.src.common.fetch.get_reverse_pages_and_imgs
-
-### Get terminal page, position
-
-:::corpus_unpdf.src.common.fetch.get_terminal_page_pos
-
 ## Slice images & pages
 
 Using pre-processed PDF files above, slice images and/or pages based on certain

@@ -40,10 +40,10 @@ def get_page_and_img(
         tuple[Page, numpy.ndarray]: Page identified by `index`  with image of the
             page  (in numpy format) that can be manipulated.
     """
-    pdf = pdfplumber.open(pdfpath)
-    page = pdf.pages[index]
-    img = get_img_from_page(page)
-    return page, img
+    with pdfplumber.open(pdfpath) as pdf:
+        page = pdf.pages[index]
+        img = get_img_from_page(page)
+        return page, img
 
 
 def get_pages_and_imgs(

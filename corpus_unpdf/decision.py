@@ -1,11 +1,13 @@
+from collections.abc import Iterator
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Self
+from typing import NamedTuple, Self
 
 import numpy
 import pdfplumber
 from loguru import logger
 from pdfplumber.page import CroppedPage, Page
+from pdfplumber.pdf import PDF
 
 from .src import (
     Bodyline,
@@ -16,13 +18,12 @@ from .src import (
     PositionCourtComposition,
     PositionDecisionCategoryWriter,
     PositionNotice,
+    get_end_page_pos,
     get_header_line,
-    get_page_and_img,
+    get_img_from_page,
     get_page_end,
     get_page_num,
     get_start_page_pos,
-    get_terminal_page_pos,
-    get_img_from_page,
 )
 
 
@@ -61,68 +62,44 @@ class DecisionPage:
     def extract_proper(
         cls,
         page: Page,
-        head_y: float | int | None = None,
-        terminal_y: float | int | None = None,
-    ) -> Self | None:
-        im = get_img_from_page(page)
-        header_line = get_header_line(im, page)
-        if not header_line:
-            raise _err(page, "No header line")
-        extracted_page_num = get_page_num(page, header_line) or 0
-        body_end_line, terminal = get_page_end(im, page)
-        annex = None
-        if terminal:
-            annex = PageCut.set(page=page, y0=body_end_line, y1=terminal)
-        body = PageCut.set(
-            page=page, y0=head_y or header_line, y1=terminal_y or body_end_line
-        )
-        return cls(body=body, annex=annex, page_num=extracted_page_num)
+        start_y: float | int | None = None,
+        end_y: float | int | None = None,
+    ) -> Self:
+        """
+        The presence of a `header_line` and a `page_endline` determine
+        what to extract from a given `page`.
 
-    @classmethod
-    def extract(
-        cls,
-        path: Path,
-        page_num: int = 2,
-        terminal_y: int | None = None,
-    ) -> Self | None:
-        """Each `page_num` should have a `body`, and optionally an `annex`
+        The `header_line` is the imaginary line at the top of the page.
+        If the `start_y` is supplied, it means that the `header_line`
+        no longer needs to be calculated.
+
+        The `page_line` is the imaginary line at the bottom of the page
+        If the `end_y` is supplied, it means that the calculated `page_line`
+        ought to be replaced.
 
         Args:
-            path (Path): Path to the pdf file.
-            page_num (int, optional): Will deduct 1 for slicing. Defaults to 2.
-            terminal_y (int | None, optional): If present, refers to
-                The y-axis point of the terminal page. Defaults to None.
+            page (Page): The pdfplumber page to evaluate
+            start_y (float | int | None, optional): If present, refers to
+                The y-axis point of the starter page. Defaults to None.
+            end_y (float | int | None, optional): If present, refers to
+                The y-axis point of the ender page. Defaults to None.
 
         Returns:
             Self: Page with individual components mapped out.
         """
-        if page_num <= 1:
-            raise Exception("Must not be the first page.")
+        im = get_img_from_page(page)
 
-        page, im = get_page_and_img(path, page_num - 1)
-
-        # preflight check to determine if blank
-        if len(page.extract_text()) < 100:
-            return None
-
-        # the header line determines the start of the body proper
-        header_line = get_header_line(im, page)
+        header_line = start_y or get_header_line(im, page)
         if not header_line:
             raise _err(page, "No header line")
 
-        # necessary because of blank pages
-        extracted_page_num = get_page_num(page, header_line) or 0
+        end_of_content, e = get_page_end(im, page)
+        page_line = end_y or end_of_content
 
-        # get body_end_line and terminal for annex and body vertical borders
-        body_end_line, terminal = get_page_end(im, page)
-        annex = None
-        if terminal:
-            annex = PageCut.set(page=page, y0=body_end_line, y1=terminal)
-        if terminal_y:
-            body_end_line = terminal_y
-        body = PageCut.set(page=page, y0=header_line, y1=body_end_line)
-
-        return cls(body=body, annex=annex, page_num=extracted_page_num)
+        page_num = get_page_num(page, header_line) or 0
+        body = PageCut.set(page=page, y0=header_line, y1=page_line)
+        annex = PageCut.set(page=page, y0=end_of_content, y1=e) if e else None
+        return cls(page_num=page_num, body=body, annex=(annex))
 
 
 @dataclass
@@ -146,110 +123,95 @@ class Decision:
     notice: bool = False
     pages: list[DecisionPage] = field(default_factory=list)
 
+
+class DecisionMeta(NamedTuple):
+    start_index: int
+    start_page_num: int
+    start_indicator: PositionDecisionCategoryWriter | PositionNotice
+    end_page_num: int
+    end_page_pos: float | int
+
     @classmethod
-    def make_start_page(
-        cls,
-        page: Page,
-        im: numpy.ndarray,
-        start: PositionCourtComposition,
-    ) -> Self | None:
-        """The first page can either be a:
+    def prep(cls, path: Path):
+        if not (starter := get_start_page_pos(path)):
+            raise Exception("Could not detect start of content.")
 
-        1. regular `Decision` page which contains a `writer`, `category`, and `header`;
-        2. a `Notice` page which will be marked by a `notice`.
+        index, start_indicator = starter
+        if not start_indicator:
+            raise Exception("Could not detect start indicator.")
 
-        Args:
-            page (Page): The pdfplumber variant of the first page
-            im (numpy.ndarray): Image of the `page` that will help us get a page's
-                end points `e1` and `e2`
-            start (PositionCourtComposition): The previously found y-axis
-                based component for slicing the `page`'s `im`
+        ender = get_end_page_pos(path)
+        if not ender:
+            raise Exception("Could not detect end of content.")
+        end_page_num, end_page_pos = ender
+
+        return cls(
+            start_index=index,
+            start_page_num=index + 1,
+            start_indicator=start_indicator,
+            end_page_num=end_page_num,
+            end_page_pos=end_page_pos,
+        )
+
+    def init(self, pdf: PDF) -> Decision:
+        """Add the metadata of a Decision and extract the first page of the content
+        proper which will not necessarily be page 1.
 
         Returns:
-            Self | None: A Decision instance with the first page included.
+            Decision: A Decision instance, if all elements match.
         """
-        annex = None
-        logger.debug("Initialize title page 1")
-        head = start.composition_pct_height * page.height
-        body_end_line, terminal = get_page_end(im, page)
-        logger.debug(f"Found {body_end_line=}; {terminal=}")
-
-        if ntc := PositionNotice.extract(im):
-            notice_pos = ntc.position_pct_height * page.height
-            if notice_pos >= body_end_line:
-                raise _err(page, f"{notice_pos=} must be < {body_end_line=}")
-
-            logger.debug(f"Found {ntc=}; {notice_pos=}")
-            header = PageCut.set(page=page, y0=head, y1=notice_pos)
-            body = PageCut.set(page=page, y0=notice_pos, y1=body_end_line)
-            if terminal:
-                annex = PageCut.set(page=page, y0=body_end_line, y1=terminal)
-            return cls(
+        logger.debug(f"Initialize {self=}")
+        start_page = pdf.pages[self.start_index]
+        if isinstance(self.start_indicator, PositionNotice):
+            return Decision(
+                composition=PositionCourtComposition.from_pdf(pdf).element,
                 notice=True,
-                composition=start.element,
-                header=header,
-                pages=[DecisionPage(page_num=1, body=body, annex=annex)],
+                pages=[
+                    DecisionPage.extract_proper(
+                        page=start_page,
+                        start_y=self.start_indicator.position_pct_height
+                        * start_page.height,
+                    )
+                ],
             )
-        elif category := PositionDecisionCategoryWriter.extract(im):
-            cat_pos = category.category_pct_height * page.height
-            writer_pos = category.writer_pct_height * page.height
-            if writer_pos >= body_end_line:
-                raise _err(page, f"{writer_pos=} must be < {body_end_line=}")
-
-            logger.debug(f"Found {cat_pos=}; {writer_pos=}")
-            header = PageCut.set(page=page, y0=head, y1=cat_pos)
-            body = PageCut.set(page=page, y0=writer_pos, y1=body_end_line)
-            if terminal:
-                annex = PageCut.set(page=page, y0=body_end_line, y1=terminal)
-            return cls(
-                composition=start.element,
-                category=category.element,
-                writer=category.writer,
-                header=header,
-                pages=[DecisionPage(page_num=1, body=body, annex=annex)],
+        elif isinstance(self.start_indicator, PositionDecisionCategoryWriter):
+            return Decision(
+                composition=PositionCourtComposition.from_pdf(pdf).element,
+                category=self.start_indicator.element,
+                writer=self.start_indicator.writer,
+                pages=[
+                    DecisionPage.extract_proper(
+                        page=start_page,
+                        start_y=self.start_indicator.writer_pct_height
+                        * start_page.height,
+                    )
+                ],
             )
+        raise Exception("Unexpected initialization of decision.")
 
-        logger.error("Could not detect category or notice.")
-        return None
-
-    def make_next_pages(
-        self, path: Path, last_num: int, last_y: int, start_page: int = 2
-    ) -> Self:
-        """After the first page is created, add subsequent pages taking into
-        account the terminal page and line. When the terminal page `last_num`
-        is reached, stop the for-loop.
-
-        Args:
-            path (Path): Path to the pdf file.
-            last_num (int): The terminal page
-            last_y (int): The y-axis point of the terminal page
-
-        Returns:
-            Self: The Decision instance containing any added pages from
-                the for loop.
-        """
-        for page in pdfplumber.open(path).pages:
-            num = page.page_number
-            if num < start_page:
+    def add(self, pages: list[Page]) -> Iterator[DecisionPage]:
+        for nxt in pages:
+            if nxt.page_number <= self.start_page_num:
                 continue
-            if num == last_num:
-                logger.debug(f"Finalize {page.page_number=}.")
-                if page_valid := DecisionPage.extract(path, num, last_y):
-                    self.pages.append(page_valid)
-                    page.pdf.close()
+            if nxt.page_number == self.end_page_num:
+                logger.debug(f"Finalize {nxt.page_number=}.")
+                if page_valid := DecisionPage.extract_proper(
+                    page=nxt,
+                    end_y=self.end_page_pos,
+                ):
+                    yield page_valid
                 else:
                     logger.warning("Detected blank page.")
                 break
             else:
-                logger.debug(f"Initialize {page.page_number=}.")
-                if page_valid := DecisionPage.extract(path, num):
-                    self.pages.append(page_valid)
+                logger.debug(f"Initialize {nxt.page_number=}.")
+                if page_valid := DecisionPage.extract_proper(page=nxt):
+                    yield page_valid
                 else:
                     logger.warning("Detected blank page.")
-        return self
 
 
-def get_decision(path: Path) -> Decision | None:
+def get_decision(path: Path) -> Decision:
     """From a pdf file, get metadata filled Decision with pages
     cropped into bodies and annexes until the terminal page.
 
@@ -274,38 +236,9 @@ def get_decision(path: Path) -> Decision | None:
     Returns:
         Self: Instance of a Decision with pages populated
     """  # noqa: E501
-    page, im = get_page_and_img(path, 0)
-    if not (comp := PositionCourtComposition.extract(im)):
-        raise _err(page, "No court composition detected")
-    if not (starter := get_start_page_pos(path)):
-        raise Exception("Could not detect start of content.")
-    if not (page_pos := get_terminal_page_pos(path)):
-        raise Exception("Could not detect end of content.")
-
-    x, obj = starter
-    start_page, im = get_page_and_img(path, x.page_number)
-    if isinstance(obj, PositionNotice):
-        if caso_page := DecisionPage.extract_proper(
-            page=start_page,
-            head_y=obj.position_pct_height * start_page.height,
-        ):
-            return Decision(
-                composition=comp.element,
-                notice=True,
-                pages=[caso_page],
-            )
-
-    if isinstance(obj, PositionDecisionCategoryWriter):
-        if caso_page := DecisionPage.extract_proper(
-            page=start_page,
-            head_y=obj.writer_pct_height * start_page.height,
-        ):
-            return Decision(
-                composition=comp.element,
-                category=obj.element,
-                writer=obj.writer,
-                pages=[caso_page],
-            )
-    else:
-        raise Exception("Notice page not yet done.")
-    return None
+    meta = DecisionMeta.prep(path)
+    with pdfplumber.open(path) as pdf:
+        caso = meta.init(pdf=pdf)
+        content_pages = meta.add(pages=pdf.pages)
+        caso.pages.extend(content_pages)
+        return caso

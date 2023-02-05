@@ -4,7 +4,11 @@
 
 :::corpus_unpdf.get_decision
 
-## Decision Meta
+## DecisionMeta
+
+:::corpus_unpdf.DecisionMeta
+
+## Decision
 
 :::corpus_unpdf.Decision
 

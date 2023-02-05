@@ -1,9 +1,11 @@
-import cv2
 from pathlib import Path
-from .common import get_contours, is_match_text, get_reverse_pages_and_imgs
+
+import cv2
+
+from .common import get_contours, get_reverse_pages_and_imgs, is_match_text
 
 
-def get_terminal_page_pos(path: Path) -> tuple[int, int] | None:
+def get_end_page_pos(path: Path) -> tuple[int, int] | None:
     """Although the collection of pages has a logical end page, this
     oftentimes does not correspond to the actual end of the content.
 
@@ -19,7 +21,7 @@ def get_terminal_page_pos(path: Path) -> tuple[int, int] | None:
         >>> from pathlib import Path
         >>> import pdfplumber
         >>> x = Path().cwd() / "tests" / "data" / "notice.pdf"
-        >>> get_terminal_page_pos(x) # page 5, y-axis 80.88
+        >>> get_end_page_pos(x) # page 5, y-axis 80.88
         (5, 80.88)
 
     Also see snippets for debugging:

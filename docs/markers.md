@@ -7,22 +7,22 @@ the metadata associated with the page.
 
 ### Composition Choices
 
-::: corpus_unpdf.src.markers.CourtCompositionChoices
+::: corpus_unpdf.src.content_markers.CourtCompositionChoices
 
 ### Extract Composition
 
-::: corpus_unpdf.src.markers.PositionCourtComposition
+::: corpus_unpdf.src.content_markers.PositionCourtComposition
 
 ## Decision Category & Writer
 
 ### Category Choices
 
-::: corpus_unpdf.src.markers.DecisionCategoryChoices
+::: corpus_unpdf.src.content_markers.DecisionCategoryChoices
 
 ### Extract Category
 
-::: corpus_unpdf.src.markers.PositionDecisionCategoryWriter
+::: corpus_unpdf.src.content_markers.PositionDecisionCategoryWriter
 
 ## Notice
 
-::: corpus_unpdf.src.markers.PositionNotice
+::: corpus_unpdf.src.content_markers.PositionNotice

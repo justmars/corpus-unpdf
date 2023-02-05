@@ -27,7 +27,8 @@ _opencv_ | pixel | Graphical unit | `page.height * page.width` is the size of th
 
 !!! Warning
 
-    Note the two kinds of measurements involved. In order to use the image's pixels as page points, use the the image's max width / height as the divisor to get the ratio and then apply that ratio (percentage) to the page's max width / height.
+    Convert image's pixels as page points, by first getting image ratio; then apply ratio (percentage)
+    to the page's max width / height.
 
     ```py
     >>> from corpus_unpdf.src.common import get_contours # shortcut custom function
@@ -42,12 +43,33 @@ _opencv_ | pixel | Graphical unit | `page.height * page.width` is the size of th
 
 ### Boxes
 
-!!! Slicing
+#### Slicing opencv
 
-    Function | Expectation | Format | Unit | Description
-    :--:|:--:|:--:|:--:|:--:
-    _cv2.boundingRect()_ | Results in a tuple of four points | (`x`,`y`,`w`,`h`) | pixels | `x` is point in `x`-axis, `y` is point in y-axis, `w` is width, and `h` is height
-    _pdfplumber._typing.T_bbox_ | A tuple of four points | (`x0`, `y0`, `x1`, `y1`) | points | `x0` is the left-most point in _x-axis_, `x1` is the right-most point in _x-axis_, `y0` is the top-most point in _y-axis_, `y1` is the bottom-most point in _y-axis_.
+!!! Note "Rectangles for opencv"
+    Reference | Expectation | Format | Unit
+    :--:|:--:|:--:|:--:
+    _cv2.boundingRect()_ | Results in a tuple of four points | (`x`,`y`,`w`,`h`) | pixels
+
+Fields | Meaning
+--:|:--
+`x` | point in x-axis
+`y` | point in y-axis
+`w` | width
+`h` | height
+
+#### Slicing pdfplumber
+
+!!! Note "Rectangles for pdfplumber"
+    Reference | Expectation | Format | Unit
+    :--:|:--:|:--:|:--:
+    _pdfplumber._typing.T_bbox_ | A tuple of four points | (`x0`, `y0`, `x1`, `y1`) | points
+
+Fields | Meaning
+--:|:--
+`x0` | left-most point in _x-axis_
+`x1` | right-most point in _x-axis_
+`y0` | top-most point in _y-axis_
+`y1` | bottom-most point in _y-axis_
 
 ## Setup
 
