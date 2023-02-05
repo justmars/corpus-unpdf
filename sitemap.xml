@@ -16,12 +16,27 @@
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://lawsql.com/markers/</loc>
+         <loc>https://lawsql.com/document-parts/content/</loc>
          <lastmod>2023-02-05</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://lawsql.com/utils/</loc>
+         <loc>https://lawsql.com/document-parts/footer/</loc>
+         <lastmod>2023-02-05</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://lawsql.com/document-parts/header/</loc>
+         <lastmod>2023-02-05</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://lawsql.com/document-parts/markers/</loc>
+         <lastmod>2023-02-05</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://lawsql.com/document-parts/utils/</loc>
          <lastmod>2023-02-05</lastmod>
          <changefreq>daily</changefreq>
     </url>

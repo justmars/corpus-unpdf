@@ -274,6 +274,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#flow" class="md-nav__link">
+    Flow
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#measurements" class="md-nav__link">
     Measurements
   </a>
@@ -378,21 +385,6 @@
   
   
     <li class="md-nav__item">
-      <a href="markers/" class="md-nav__link">
-        Markers
-      </a>
-    </li>
-  
-
-    
-      
-      
-      
-
-  
-  
-  
-    <li class="md-nav__item">
       <a href="document/" class="md-nav__link">
         Document
       </a>
@@ -407,10 +399,100 @@
   
   
   
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+      
+      
+      
+      <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" >
+      
+      
+      
+        <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+          Parts
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_4_label" aria-expanded="false">
+        <label class="md-nav__title" for="__nav_4">
+          <span class="md-nav__icon md-icon"></span>
+          Parts
+        </label>
+        <ul class="md-nav__list" data-md-scrollfix>
+          
+            
+              
+  
+  
+  
     <li class="md-nav__item">
-      <a href="utils/" class="md-nav__link">
+      <a href="document-parts/markers/" class="md-nav__link">
+        Markers
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="document-parts/content/" class="md-nav__link">
+        Content
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="document-parts/header/" class="md-nav__link">
+        Header
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="document-parts/footer/" class="md-nav__link">
+        Footer
+      </a>
+    </li>
+  
+
+            
+          
+            
+              
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="document-parts/utils/" class="md-nav__link">
         Utils
       </a>
+    </li>
+  
+
+            
+          
+        </ul>
+      </nav>
     </li>
   
 
@@ -440,6 +522,13 @@
       Table of contents
     </label>
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#flow" class="md-nav__link">
+    Flow
+  </a>
+  
+</li>
       
         <li class="md-nav__item">
   <a href="#measurements" class="md-nav__link">
@@ -544,6 +633,23 @@
 <p>PDF = humans good, machines bad</p>
 </div>
 <p>In light of this context, this library is an attempt to parse Philippine Supreme Court decisions issued in PDF format and extract its raw "as guessed" output.</p>
+<h2 id="flow">Flow</h2>
+<ol>
+<li>As a document:<ol>
+<li>Determine <em>start</em> page and <em>start</em> "y-axis" position coordinate as <a class="autorefs autorefs-internal" href="document-parts/content/#start-of-content">start elements</a>, note that is greatly affected by <a class="autorefs autorefs-internal" href="document-parts/markers/#markers">markers</a></li>
+<li>Determine <em>end</em> page and <em>start</em> "y-axis" position coordinate as <a class="autorefs autorefs-internal" href="document-parts/content/#end-of-content">end elements</a></li>
+</ol>
+</li>
+<li>For <em>each page</em>:<ol>
+<li>Determine "y-axis" to slice <a class="autorefs autorefs-internal" href="document-parts/header/#header-of-page">header</a></li>
+<li>Determine "y-axis" to slice <a class="autorefs autorefs-internal" href="document-parts/footer/#footer-of-page">footer</a></li>
+</ol>
+</li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For slicing to work, each pdf's page, opened and cropped via <code>pdfplumber</code>, must be converted an to an <code>opencv</code> image format (i.e. <code>numpy.ndarray</code>). This enables discovery of <a class="autorefs autorefs-internal" href="document-parts/utils/#get-contours-from-image">contours</a> that can act as borders for slicing content from the page.</p>
+</div>
 <h2 id="measurements">Measurements</h2>
 <p>Since we'll be using two distinct libraries with different formats, pay attention to the kind of measurements involved.</p>
 <h3 id="unit">Unit</h3>
