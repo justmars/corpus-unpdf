@@ -781,7 +781,7 @@ Each of which will contain a body and, likely, an annex for footnotes.</p>
         Bases: <code><span title="typing.NamedTuple">NamedTuple</span></code></p>
 
   
-      <p>Metadata required to create a decision[decision-document].</p>
+      <p>Metadata required to create a <a class="autorefs autorefs-internal" href="../document/#decision-document">decision</a>.</p>
 <table>
 <thead>
 <tr>
@@ -804,22 +804,22 @@ Each of which will contain a body and, likely, an annex for footnotes.</p>
 <tr>
 <td align="right"><code>start_indicator</code></td>
 <td align="center"><a class="autorefs autorefs-internal" href="../document-parts/markers/#decision-category-writer">PositionDecisionCategoryWriter</a> or <a class="autorefs autorefs-internal" href="../document-parts/markers/#notice">PositionNotice</a></td>
-<td align="left">Marking the content start of document</td>
+<td align="left">Marking the <a class="autorefs autorefs-internal" href="../document-parts/starter/#start-of-content">start of content proper</a></td>
 </tr>
 <tr>
 <td align="right"><code>writer</code></td>
 <td align="center">str</td>
-<td align="left">When PositionDecisionCategoryWriter is selected, the writer found underneath the category</td>
+<td align="left">When <a class="autorefs autorefs-internal" href="../document-parts/markers/#decision-category-writer">PositionDecisionCategoryWriter</a>  is selected, the writer found underneath the category</td>
 </tr>
 <tr>
 <td align="right"><code>notice</code></td>
 <td align="center">bool</td>
-<td align="left">Will be marked <code>True</code>, if PositionNotice is selected; default is <code>False</code>.</td>
+<td align="left">Will be marked <code>True</code>, if <a class="autorefs autorefs-internal" href="../document-parts/markers/#notice">PositionNotice</a> is selected; default is <code>False</code>.</td>
 </tr>
 <tr>
 <td align="right"><code>pages</code></td>
-<td align="center">list<a class="autorefs autorefs-internal" href="../document/#decision-pages">DecisionPage</a></td>
-<td align="left">A list of pages having the material content</td>
+<td align="center">list[<a class="autorefs autorefs-internal" href="../document/#decision-pages">DecisionPage</a>]</td>
+<td align="left">A list of pages having material content</td>
 </tr>
 </tbody>
 </table>
@@ -924,16 +924,16 @@ Each of which will contain a body and, likely, an annex for footnotes.</p>
 <span class="normal"><a href="#__codelineno-0-115">115</a></span>
 <span class="normal"><a href="#__codelineno-0-116">116</a></span>
 <span class="normal"><a href="#__codelineno-0-117">117</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-21" name="__codelineno-0-21"></a><span class="k">class</span> <span class="nc">DecisionMeta</span><span class="p">(</span><span class="n">NamedTuple</span><span class="p">):</span>
-<a id="__codelineno-0-22" name="__codelineno-0-22"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Metadata required to create a decision[decision-document].</span>
+<a id="__codelineno-0-22" name="__codelineno-0-22"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Metadata required to create a [decision][decision-document].</span>
 <a id="__codelineno-0-23" name="__codelineno-0-23"></a>
 <a id="__codelineno-0-24" name="__codelineno-0-24"></a><span class="sd">    Field | Type | Description</span>
 <a id="__codelineno-0-25" name="__codelineno-0-25"></a><span class="sd">    --:|:--:|:--</span>
 <a id="__codelineno-0-26" name="__codelineno-0-26"></a><span class="sd">    `start_index` | int | The zero-based integer `x`, i.e. get specific `pdfplumber.pages[x]`</span>
 <a id="__codelineno-0-27" name="__codelineno-0-27"></a><span class="sd">    `start_page_num` | int | The 1-based integer to describe human-readable page number</span>
-<a id="__codelineno-0-28" name="__codelineno-0-28"></a><span class="sd">    `start_indicator` | [PositionDecisionCategoryWriter][decision-category-writer] or [PositionNotice][notice] | Marking the content start of document</span>
-<a id="__codelineno-0-29" name="__codelineno-0-29"></a><span class="sd">    `writer` | str | When PositionDecisionCategoryWriter is selected, the writer found underneath the category</span>
-<a id="__codelineno-0-30" name="__codelineno-0-30"></a><span class="sd">    `notice` | bool | Will be marked `True`, if PositionNotice is selected; default is `False`.</span>
-<a id="__codelineno-0-31" name="__codelineno-0-31"></a><span class="sd">    `pages` | list[DecisionPage][decision-pages] | A list of pages having the material content</span>
+<a id="__codelineno-0-28" name="__codelineno-0-28"></a><span class="sd">    `start_indicator` | [PositionDecisionCategoryWriter][decision-category-writer] or [PositionNotice][notice] | Marking the [start of content proper][start-of-content]</span>
+<a id="__codelineno-0-29" name="__codelineno-0-29"></a><span class="sd">    `writer` | str | When [PositionDecisionCategoryWriter][decision-category-writer]  is selected, the writer found underneath the category</span>
+<a id="__codelineno-0-30" name="__codelineno-0-30"></a><span class="sd">    `notice` | bool | Will be marked `True`, if [PositionNotice][notice] is selected; default is `False`.</span>
+<a id="__codelineno-0-31" name="__codelineno-0-31"></a><span class="sd">    `pages` | list[[DecisionPage][decision-pages]] | A list of pages having material content</span>
 <a id="__codelineno-0-32" name="__codelineno-0-32"></a><span class="sd">    &quot;&quot;&quot;</span>  <span class="c1"># noqa: E501</span>
 <a id="__codelineno-0-33" name="__codelineno-0-33"></a>
 <a id="__codelineno-0-34" name="__codelineno-0-34"></a>    <span class="n">start_index</span><span class="p">:</span> <span class="nb">int</span>
@@ -972,43 +972,43 @@ Each of which will contain a body and, likely, an annex for footnotes.</p>
 <a id="__codelineno-0-67" name="__codelineno-0-67"></a><span class="sd">            Decision: A Decision instance, if all elements match.</span>
 <a id="__codelineno-0-68" name="__codelineno-0-68"></a><span class="sd">        &quot;&quot;&quot;</span>
 <a id="__codelineno-0-69" name="__codelineno-0-69"></a>        <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Initialize </span><span class="si">{</span><span class="bp">self</span><span class="si">=}</span><span class="s2">&quot;</span><span class="p">)</span>
-<a id="__codelineno-0-70" name="__codelineno-0-70"></a>        <span class="n">start_page</span> <span class="o">=</span> <span class="n">pdf</span><span class="o">.</span><span class="n">pages</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">start_index</span><span class="p">]</span>
-<a id="__codelineno-0-71" name="__codelineno-0-71"></a>        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_indicator</span><span class="p">,</span> <span class="n">PositionNotice</span><span class="p">):</span>
-<a id="__codelineno-0-72" name="__codelineno-0-72"></a>            <span class="k">return</span> <span class="n">Decision</span><span class="p">(</span>
-<a id="__codelineno-0-73" name="__codelineno-0-73"></a>                <span class="n">composition</span><span class="o">=</span><span class="n">PositionCourtComposition</span><span class="o">.</span><span class="n">from_pdf</span><span class="p">(</span><span class="n">pdf</span><span class="p">)</span><span class="o">.</span><span class="n">element</span><span class="p">,</span>
-<a id="__codelineno-0-74" name="__codelineno-0-74"></a>                <span class="n">notice</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-<a id="__codelineno-0-75" name="__codelineno-0-75"></a>                <span class="n">pages</span><span class="o">=</span><span class="p">[</span>
-<a id="__codelineno-0-76" name="__codelineno-0-76"></a>                    <span class="n">DecisionPage</span><span class="o">.</span><span class="n">extract_proper</span><span class="p">(</span>
-<a id="__codelineno-0-77" name="__codelineno-0-77"></a>                        <span class="n">page</span><span class="o">=</span><span class="n">start_page</span><span class="p">,</span>
-<a id="__codelineno-0-78" name="__codelineno-0-78"></a>                        <span class="n">start_y</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">start_indicator</span><span class="o">.</span><span class="n">position_pct_height</span>
-<a id="__codelineno-0-79" name="__codelineno-0-79"></a>                        <span class="o">*</span> <span class="n">start_page</span><span class="o">.</span><span class="n">height</span><span class="p">,</span>
-<a id="__codelineno-0-80" name="__codelineno-0-80"></a>                    <span class="p">)</span>
-<a id="__codelineno-0-81" name="__codelineno-0-81"></a>                <span class="p">],</span>
-<a id="__codelineno-0-82" name="__codelineno-0-82"></a>            <span class="p">)</span>
-<a id="__codelineno-0-83" name="__codelineno-0-83"></a>        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_indicator</span><span class="p">,</span> <span class="n">PositionDecisionCategoryWriter</span><span class="p">):</span>
-<a id="__codelineno-0-84" name="__codelineno-0-84"></a>            <span class="k">return</span> <span class="n">Decision</span><span class="p">(</span>
-<a id="__codelineno-0-85" name="__codelineno-0-85"></a>                <span class="n">composition</span><span class="o">=</span><span class="n">PositionCourtComposition</span><span class="o">.</span><span class="n">from_pdf</span><span class="p">(</span><span class="n">pdf</span><span class="p">)</span><span class="o">.</span><span class="n">element</span><span class="p">,</span>
-<a id="__codelineno-0-86" name="__codelineno-0-86"></a>                <span class="n">category</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">start_indicator</span><span class="o">.</span><span class="n">element</span><span class="p">,</span>
-<a id="__codelineno-0-87" name="__codelineno-0-87"></a>                <span class="n">writer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">start_indicator</span><span class="o">.</span><span class="n">writer</span><span class="p">,</span>
-<a id="__codelineno-0-88" name="__codelineno-0-88"></a>                <span class="n">pages</span><span class="o">=</span><span class="p">[</span>
-<a id="__codelineno-0-89" name="__codelineno-0-89"></a>                    <span class="n">DecisionPage</span><span class="o">.</span><span class="n">extract_proper</span><span class="p">(</span>
-<a id="__codelineno-0-90" name="__codelineno-0-90"></a>                        <span class="n">page</span><span class="o">=</span><span class="n">start_page</span><span class="p">,</span>
-<a id="__codelineno-0-91" name="__codelineno-0-91"></a>                        <span class="n">start_y</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">start_indicator</span><span class="o">.</span><span class="n">writer_pct_height</span>
-<a id="__codelineno-0-92" name="__codelineno-0-92"></a>                        <span class="o">*</span> <span class="n">start_page</span><span class="o">.</span><span class="n">height</span><span class="p">,</span>
-<a id="__codelineno-0-93" name="__codelineno-0-93"></a>                    <span class="p">)</span>
-<a id="__codelineno-0-94" name="__codelineno-0-94"></a>                <span class="p">],</span>
-<a id="__codelineno-0-95" name="__codelineno-0-95"></a>            <span class="p">)</span>
-<a id="__codelineno-0-96" name="__codelineno-0-96"></a>        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Unexpected initialization of decision.&quot;</span><span class="p">)</span>
-<a id="__codelineno-0-97" name="__codelineno-0-97"></a>
-<a id="__codelineno-0-98" name="__codelineno-0-98"></a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pages</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Page</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">DecisionPage</span><span class="p">]:</span>
-<a id="__codelineno-0-99" name="__codelineno-0-99"></a>        <span class="k">for</span> <span class="n">nxt</span> <span class="ow">in</span> <span class="n">pages</span><span class="p">:</span>
-<a id="__codelineno-0-100" name="__codelineno-0-100"></a>            <span class="k">if</span> <span class="n">nxt</span><span class="o">.</span><span class="n">page_number</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_page_num</span><span class="p">:</span>
-<a id="__codelineno-0-101" name="__codelineno-0-101"></a>                <span class="k">continue</span>
-<a id="__codelineno-0-102" name="__codelineno-0-102"></a>            <span class="k">if</span> <span class="n">nxt</span><span class="o">.</span><span class="n">page_number</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_page_num</span><span class="p">:</span>
-<a id="__codelineno-0-103" name="__codelineno-0-103"></a>                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Finalize </span><span class="si">{</span><span class="n">nxt</span><span class="o">.</span><span class="n">page_number</span><span class="si">=}</span><span class="s2">.&quot;</span><span class="p">)</span>
-<a id="__codelineno-0-104" name="__codelineno-0-104"></a>                <span class="k">if</span> <span class="n">page_valid</span> <span class="o">:=</span> <span class="n">DecisionPage</span><span class="o">.</span><span class="n">extract_proper</span><span class="p">(</span>
-<a id="__codelineno-0-105" name="__codelineno-0-105"></a>                    <span class="n">page</span><span class="o">=</span><span class="n">nxt</span><span class="p">,</span>
-<a id="__codelineno-0-106" name="__codelineno-0-106"></a>                    <span class="n">end_y</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">end_page_pos</span><span class="p">,</span>
+<a id="__codelineno-0-70" name="__codelineno-0-70"></a>        <span class="n">composition</span> <span class="o">=</span> <span class="n">PositionCourtComposition</span><span class="o">.</span><span class="n">from_pdf</span><span class="p">(</span><span class="n">pdf</span><span class="p">)</span><span class="o">.</span><span class="n">element</span>
+<a id="__codelineno-0-71" name="__codelineno-0-71"></a>        <span class="n">start_page</span> <span class="o">=</span> <span class="n">pdf</span><span class="o">.</span><span class="n">pages</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">start_index</span><span class="p">]</span>
+<a id="__codelineno-0-72" name="__codelineno-0-72"></a>        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_indicator</span><span class="p">,</span> <span class="n">PositionNotice</span><span class="p">):</span>
+<a id="__codelineno-0-73" name="__codelineno-0-73"></a>            <span class="k">return</span> <span class="n">Decision</span><span class="p">(</span>
+<a id="__codelineno-0-74" name="__codelineno-0-74"></a>                <span class="n">composition</span><span class="o">=</span><span class="n">composition</span><span class="p">,</span>
+<a id="__codelineno-0-75" name="__codelineno-0-75"></a>                <span class="n">notice</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<a id="__codelineno-0-76" name="__codelineno-0-76"></a>                <span class="n">pages</span><span class="o">=</span><span class="p">[</span>
+<a id="__codelineno-0-77" name="__codelineno-0-77"></a>                    <span class="n">DecisionPage</span><span class="o">.</span><span class="n">set</span><span class="p">(</span>
+<a id="__codelineno-0-78" name="__codelineno-0-78"></a>                        <span class="n">page</span><span class="o">=</span><span class="n">start_page</span><span class="p">,</span>
+<a id="__codelineno-0-79" name="__codelineno-0-79"></a>                        <span class="n">start_y</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">start_indicator</span><span class="o">.</span><span class="n">position_pct_height</span>
+<a id="__codelineno-0-80" name="__codelineno-0-80"></a>                        <span class="o">*</span> <span class="n">start_page</span><span class="o">.</span><span class="n">height</span><span class="p">,</span>
+<a id="__codelineno-0-81" name="__codelineno-0-81"></a>                    <span class="p">)</span>
+<a id="__codelineno-0-82" name="__codelineno-0-82"></a>                <span class="p">],</span>
+<a id="__codelineno-0-83" name="__codelineno-0-83"></a>            <span class="p">)</span>
+<a id="__codelineno-0-84" name="__codelineno-0-84"></a>        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_indicator</span><span class="p">,</span> <span class="n">PositionDecisionCategoryWriter</span><span class="p">):</span>
+<a id="__codelineno-0-85" name="__codelineno-0-85"></a>            <span class="k">return</span> <span class="n">Decision</span><span class="p">(</span>
+<a id="__codelineno-0-86" name="__codelineno-0-86"></a>                <span class="n">composition</span><span class="o">=</span><span class="n">composition</span><span class="p">,</span>
+<a id="__codelineno-0-87" name="__codelineno-0-87"></a>                <span class="n">category</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">start_indicator</span><span class="o">.</span><span class="n">element</span><span class="p">,</span>
+<a id="__codelineno-0-88" name="__codelineno-0-88"></a>                <span class="n">writer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">start_indicator</span><span class="o">.</span><span class="n">writer</span><span class="p">,</span>
+<a id="__codelineno-0-89" name="__codelineno-0-89"></a>                <span class="n">pages</span><span class="o">=</span><span class="p">[</span>
+<a id="__codelineno-0-90" name="__codelineno-0-90"></a>                    <span class="n">DecisionPage</span><span class="o">.</span><span class="n">set</span><span class="p">(</span>
+<a id="__codelineno-0-91" name="__codelineno-0-91"></a>                        <span class="n">page</span><span class="o">=</span><span class="n">start_page</span><span class="p">,</span>
+<a id="__codelineno-0-92" name="__codelineno-0-92"></a>                        <span class="n">start_y</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">start_indicator</span><span class="o">.</span><span class="n">writer_pct_height</span>
+<a id="__codelineno-0-93" name="__codelineno-0-93"></a>                        <span class="o">*</span> <span class="n">start_page</span><span class="o">.</span><span class="n">height</span><span class="p">,</span>
+<a id="__codelineno-0-94" name="__codelineno-0-94"></a>                    <span class="p">)</span>
+<a id="__codelineno-0-95" name="__codelineno-0-95"></a>                <span class="p">],</span>
+<a id="__codelineno-0-96" name="__codelineno-0-96"></a>            <span class="p">)</span>
+<a id="__codelineno-0-97" name="__codelineno-0-97"></a>        <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Unexpected initialization of decision.&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-98" name="__codelineno-0-98"></a>
+<a id="__codelineno-0-99" name="__codelineno-0-99"></a>    <span class="k">def</span> <span class="nf">add</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pages</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="n">Page</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="n">Iterator</span><span class="p">[</span><span class="n">DecisionPage</span><span class="p">]:</span>
+<a id="__codelineno-0-100" name="__codelineno-0-100"></a>        <span class="k">for</span> <span class="n">nxt</span> <span class="ow">in</span> <span class="n">pages</span><span class="p">:</span>
+<a id="__codelineno-0-101" name="__codelineno-0-101"></a>            <span class="k">if</span> <span class="n">nxt</span><span class="o">.</span><span class="n">page_number</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_page_num</span><span class="p">:</span>
+<a id="__codelineno-0-102" name="__codelineno-0-102"></a>                <span class="k">continue</span>
+<a id="__codelineno-0-103" name="__codelineno-0-103"></a>            <span class="k">if</span> <span class="n">nxt</span><span class="o">.</span><span class="n">page_number</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">end_page_num</span><span class="p">:</span>
+<a id="__codelineno-0-104" name="__codelineno-0-104"></a>                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Finalize </span><span class="si">{</span><span class="n">nxt</span><span class="o">.</span><span class="n">page_number</span><span class="si">=}</span><span class="s2">.&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-105" name="__codelineno-0-105"></a>                <span class="k">if</span> <span class="n">page_valid</span> <span class="o">:=</span> <span class="n">DecisionPage</span><span class="o">.</span><span class="n">set</span><span class="p">(</span>
+<a id="__codelineno-0-106" name="__codelineno-0-106"></a>                    <span class="n">page</span><span class="o">=</span><span class="n">nxt</span><span class="p">,</span> <span class="n">end_y</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">end_page_pos</span>
 <a id="__codelineno-0-107" name="__codelineno-0-107"></a>                <span class="p">):</span>
 <a id="__codelineno-0-108" name="__codelineno-0-108"></a>                    <span class="k">yield</span> <span class="n">page_valid</span>
 <a id="__codelineno-0-109" name="__codelineno-0-109"></a>                <span class="k">else</span><span class="p">:</span>
@@ -1016,7 +1016,7 @@ Each of which will contain a body and, likely, an annex for footnotes.</p>
 <a id="__codelineno-0-111" name="__codelineno-0-111"></a>                <span class="k">break</span>
 <a id="__codelineno-0-112" name="__codelineno-0-112"></a>            <span class="k">else</span><span class="p">:</span>
 <a id="__codelineno-0-113" name="__codelineno-0-113"></a>                <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Initialize </span><span class="si">{</span><span class="n">nxt</span><span class="o">.</span><span class="n">page_number</span><span class="si">=}</span><span class="s2">.&quot;</span><span class="p">)</span>
-<a id="__codelineno-0-114" name="__codelineno-0-114"></a>                <span class="k">if</span> <span class="n">page_valid</span> <span class="o">:=</span> <span class="n">DecisionPage</span><span class="o">.</span><span class="n">extract_proper</span><span class="p">(</span><span class="n">page</span><span class="o">=</span><span class="n">nxt</span><span class="p">):</span>
+<a id="__codelineno-0-114" name="__codelineno-0-114"></a>                <span class="k">if</span> <span class="n">page_valid</span> <span class="o">:=</span> <span class="n">DecisionPage</span><span class="o">.</span><span class="n">set</span><span class="p">(</span><span class="n">page</span><span class="o">=</span><span class="n">nxt</span><span class="p">):</span>
 <a id="__codelineno-0-115" name="__codelineno-0-115"></a>                    <span class="k">yield</span> <span class="n">page_valid</span>
 <a id="__codelineno-0-116" name="__codelineno-0-116"></a>                <span class="k">else</span><span class="p">:</span>
 <a id="__codelineno-0-117" name="__codelineno-0-117"></a>                    <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">&quot;Detected blank page.&quot;</span><span class="p">)</span>
@@ -1104,7 +1104,8 @@ page of the content proper which may not necessarily be page 1.</p>
 <span class="normal"><a href="#__codelineno-0-93">93</a></span>
 <span class="normal"><a href="#__codelineno-0-94">94</a></span>
 <span class="normal"><a href="#__codelineno-0-95">95</a></span>
-<span class="normal"><a href="#__codelineno-0-96">96</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-62" name="__codelineno-0-62"></a><span class="k">def</span> <span class="nf">init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pdf</span><span class="p">:</span> <span class="n">PDF</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Decision</span><span class="p">:</span>
+<span class="normal"><a href="#__codelineno-0-96">96</a></span>
+<span class="normal"><a href="#__codelineno-0-97">97</a></span></pre></div></td><td class="code"><div><pre><span></span><code><a id="__codelineno-0-62" name="__codelineno-0-62"></a><span class="k">def</span> <span class="nf">init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">pdf</span><span class="p">:</span> <span class="n">PDF</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Decision</span><span class="p">:</span>
 <a id="__codelineno-0-63" name="__codelineno-0-63"></a><span class="w">    </span><span class="sd">&quot;&quot;&quot;Add the metadata of a [Decision][decision-document] and extract the first</span>
 <a id="__codelineno-0-64" name="__codelineno-0-64"></a><span class="sd">    page of the content proper which may not necessarily be page 1.</span>
 <a id="__codelineno-0-65" name="__codelineno-0-65"></a>
@@ -1112,33 +1113,34 @@ page of the content proper which may not necessarily be page 1.</p>
 <a id="__codelineno-0-67" name="__codelineno-0-67"></a><span class="sd">        Decision: A Decision instance, if all elements match.</span>
 <a id="__codelineno-0-68" name="__codelineno-0-68"></a><span class="sd">    &quot;&quot;&quot;</span>
 <a id="__codelineno-0-69" name="__codelineno-0-69"></a>    <span class="n">logger</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Initialize </span><span class="si">{</span><span class="bp">self</span><span class="si">=}</span><span class="s2">&quot;</span><span class="p">)</span>
-<a id="__codelineno-0-70" name="__codelineno-0-70"></a>    <span class="n">start_page</span> <span class="o">=</span> <span class="n">pdf</span><span class="o">.</span><span class="n">pages</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">start_index</span><span class="p">]</span>
-<a id="__codelineno-0-71" name="__codelineno-0-71"></a>    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_indicator</span><span class="p">,</span> <span class="n">PositionNotice</span><span class="p">):</span>
-<a id="__codelineno-0-72" name="__codelineno-0-72"></a>        <span class="k">return</span> <span class="n">Decision</span><span class="p">(</span>
-<a id="__codelineno-0-73" name="__codelineno-0-73"></a>            <span class="n">composition</span><span class="o">=</span><span class="n">PositionCourtComposition</span><span class="o">.</span><span class="n">from_pdf</span><span class="p">(</span><span class="n">pdf</span><span class="p">)</span><span class="o">.</span><span class="n">element</span><span class="p">,</span>
-<a id="__codelineno-0-74" name="__codelineno-0-74"></a>            <span class="n">notice</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-<a id="__codelineno-0-75" name="__codelineno-0-75"></a>            <span class="n">pages</span><span class="o">=</span><span class="p">[</span>
-<a id="__codelineno-0-76" name="__codelineno-0-76"></a>                <span class="n">DecisionPage</span><span class="o">.</span><span class="n">extract_proper</span><span class="p">(</span>
-<a id="__codelineno-0-77" name="__codelineno-0-77"></a>                    <span class="n">page</span><span class="o">=</span><span class="n">start_page</span><span class="p">,</span>
-<a id="__codelineno-0-78" name="__codelineno-0-78"></a>                    <span class="n">start_y</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">start_indicator</span><span class="o">.</span><span class="n">position_pct_height</span>
-<a id="__codelineno-0-79" name="__codelineno-0-79"></a>                    <span class="o">*</span> <span class="n">start_page</span><span class="o">.</span><span class="n">height</span><span class="p">,</span>
-<a id="__codelineno-0-80" name="__codelineno-0-80"></a>                <span class="p">)</span>
-<a id="__codelineno-0-81" name="__codelineno-0-81"></a>            <span class="p">],</span>
-<a id="__codelineno-0-82" name="__codelineno-0-82"></a>        <span class="p">)</span>
-<a id="__codelineno-0-83" name="__codelineno-0-83"></a>    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_indicator</span><span class="p">,</span> <span class="n">PositionDecisionCategoryWriter</span><span class="p">):</span>
-<a id="__codelineno-0-84" name="__codelineno-0-84"></a>        <span class="k">return</span> <span class="n">Decision</span><span class="p">(</span>
-<a id="__codelineno-0-85" name="__codelineno-0-85"></a>            <span class="n">composition</span><span class="o">=</span><span class="n">PositionCourtComposition</span><span class="o">.</span><span class="n">from_pdf</span><span class="p">(</span><span class="n">pdf</span><span class="p">)</span><span class="o">.</span><span class="n">element</span><span class="p">,</span>
-<a id="__codelineno-0-86" name="__codelineno-0-86"></a>            <span class="n">category</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">start_indicator</span><span class="o">.</span><span class="n">element</span><span class="p">,</span>
-<a id="__codelineno-0-87" name="__codelineno-0-87"></a>            <span class="n">writer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">start_indicator</span><span class="o">.</span><span class="n">writer</span><span class="p">,</span>
-<a id="__codelineno-0-88" name="__codelineno-0-88"></a>            <span class="n">pages</span><span class="o">=</span><span class="p">[</span>
-<a id="__codelineno-0-89" name="__codelineno-0-89"></a>                <span class="n">DecisionPage</span><span class="o">.</span><span class="n">extract_proper</span><span class="p">(</span>
-<a id="__codelineno-0-90" name="__codelineno-0-90"></a>                    <span class="n">page</span><span class="o">=</span><span class="n">start_page</span><span class="p">,</span>
-<a id="__codelineno-0-91" name="__codelineno-0-91"></a>                    <span class="n">start_y</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">start_indicator</span><span class="o">.</span><span class="n">writer_pct_height</span>
-<a id="__codelineno-0-92" name="__codelineno-0-92"></a>                    <span class="o">*</span> <span class="n">start_page</span><span class="o">.</span><span class="n">height</span><span class="p">,</span>
-<a id="__codelineno-0-93" name="__codelineno-0-93"></a>                <span class="p">)</span>
-<a id="__codelineno-0-94" name="__codelineno-0-94"></a>            <span class="p">],</span>
-<a id="__codelineno-0-95" name="__codelineno-0-95"></a>        <span class="p">)</span>
-<a id="__codelineno-0-96" name="__codelineno-0-96"></a>    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Unexpected initialization of decision.&quot;</span><span class="p">)</span>
+<a id="__codelineno-0-70" name="__codelineno-0-70"></a>    <span class="n">composition</span> <span class="o">=</span> <span class="n">PositionCourtComposition</span><span class="o">.</span><span class="n">from_pdf</span><span class="p">(</span><span class="n">pdf</span><span class="p">)</span><span class="o">.</span><span class="n">element</span>
+<a id="__codelineno-0-71" name="__codelineno-0-71"></a>    <span class="n">start_page</span> <span class="o">=</span> <span class="n">pdf</span><span class="o">.</span><span class="n">pages</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">start_index</span><span class="p">]</span>
+<a id="__codelineno-0-72" name="__codelineno-0-72"></a>    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_indicator</span><span class="p">,</span> <span class="n">PositionNotice</span><span class="p">):</span>
+<a id="__codelineno-0-73" name="__codelineno-0-73"></a>        <span class="k">return</span> <span class="n">Decision</span><span class="p">(</span>
+<a id="__codelineno-0-74" name="__codelineno-0-74"></a>            <span class="n">composition</span><span class="o">=</span><span class="n">composition</span><span class="p">,</span>
+<a id="__codelineno-0-75" name="__codelineno-0-75"></a>            <span class="n">notice</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<a id="__codelineno-0-76" name="__codelineno-0-76"></a>            <span class="n">pages</span><span class="o">=</span><span class="p">[</span>
+<a id="__codelineno-0-77" name="__codelineno-0-77"></a>                <span class="n">DecisionPage</span><span class="o">.</span><span class="n">set</span><span class="p">(</span>
+<a id="__codelineno-0-78" name="__codelineno-0-78"></a>                    <span class="n">page</span><span class="o">=</span><span class="n">start_page</span><span class="p">,</span>
+<a id="__codelineno-0-79" name="__codelineno-0-79"></a>                    <span class="n">start_y</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">start_indicator</span><span class="o">.</span><span class="n">position_pct_height</span>
+<a id="__codelineno-0-80" name="__codelineno-0-80"></a>                    <span class="o">*</span> <span class="n">start_page</span><span class="o">.</span><span class="n">height</span><span class="p">,</span>
+<a id="__codelineno-0-81" name="__codelineno-0-81"></a>                <span class="p">)</span>
+<a id="__codelineno-0-82" name="__codelineno-0-82"></a>            <span class="p">],</span>
+<a id="__codelineno-0-83" name="__codelineno-0-83"></a>        <span class="p">)</span>
+<a id="__codelineno-0-84" name="__codelineno-0-84"></a>    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">start_indicator</span><span class="p">,</span> <span class="n">PositionDecisionCategoryWriter</span><span class="p">):</span>
+<a id="__codelineno-0-85" name="__codelineno-0-85"></a>        <span class="k">return</span> <span class="n">Decision</span><span class="p">(</span>
+<a id="__codelineno-0-86" name="__codelineno-0-86"></a>            <span class="n">composition</span><span class="o">=</span><span class="n">composition</span><span class="p">,</span>
+<a id="__codelineno-0-87" name="__codelineno-0-87"></a>            <span class="n">category</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">start_indicator</span><span class="o">.</span><span class="n">element</span><span class="p">,</span>
+<a id="__codelineno-0-88" name="__codelineno-0-88"></a>            <span class="n">writer</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">start_indicator</span><span class="o">.</span><span class="n">writer</span><span class="p">,</span>
+<a id="__codelineno-0-89" name="__codelineno-0-89"></a>            <span class="n">pages</span><span class="o">=</span><span class="p">[</span>
+<a id="__codelineno-0-90" name="__codelineno-0-90"></a>                <span class="n">DecisionPage</span><span class="o">.</span><span class="n">set</span><span class="p">(</span>
+<a id="__codelineno-0-91" name="__codelineno-0-91"></a>                    <span class="n">page</span><span class="o">=</span><span class="n">start_page</span><span class="p">,</span>
+<a id="__codelineno-0-92" name="__codelineno-0-92"></a>                    <span class="n">start_y</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">start_indicator</span><span class="o">.</span><span class="n">writer_pct_height</span>
+<a id="__codelineno-0-93" name="__codelineno-0-93"></a>                    <span class="o">*</span> <span class="n">start_page</span><span class="o">.</span><span class="n">height</span><span class="p">,</span>
+<a id="__codelineno-0-94" name="__codelineno-0-94"></a>                <span class="p">)</span>
+<a id="__codelineno-0-95" name="__codelineno-0-95"></a>            <span class="p">],</span>
+<a id="__codelineno-0-96" name="__codelineno-0-96"></a>        <span class="p">)</span>
+<a id="__codelineno-0-97" name="__codelineno-0-97"></a>    <span class="k">raise</span> <span class="ne">Exception</span><span class="p">(</span><span class="s2">&quot;Unexpected initialization of decision.&quot;</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
       </details>
   </div>
