@@ -2,6 +2,9 @@ import re
 from dataclasses import dataclass, field
 from typing import NamedTuple, Self
 
+import cv2
+import numpy
+import pytesseract
 from pdfplumber.page import CroppedPage, Page
 
 from .common import PageCut, get_img_from_page
@@ -30,29 +33,23 @@ class Bodyline(NamedTuple):
     line: str
 
     @classmethod
-    def extract_lines(cls, text: str) -> list[Self]:
+    def split(cls, prelim_lines: list[str]) -> list[Self]:
         """Get paragraphs using regex `\\s{10,}(?=[A-Z])`
         implying many spaces before a capital letter then
         remove new lines contained in non-paragraph lines.
 
         Args:
-            text (str): Presumes pdfplumber.extract_text
+            prelim_lines (list[str]): Previously split text
 
         Returns:
             list[Self]: Bodylines of segmented text
         """
         lines = []
-        for num, par in enumerate(paragraph_break.split(text), start=1):
+        for num, par in enumerate(prelim_lines, start=1):
             obj = cls(num=num, line=line_break.sub(" ", par).strip())
             lines.append(obj)
         lines.sort(key=lambda obj: obj.num)
         return lines
-
-    @classmethod
-    def from_cropped(cls, crop: CroppedPage) -> list[Self]:
-        return cls.extract_lines(
-            crop.extract_text(layout=True, keep_blank_chars=True)
-        )
 
 
 class Footnote(NamedTuple):
@@ -78,7 +75,7 @@ class Footnote(NamedTuple):
         item is removed first.
 
         Args:
-            text (str): Presumes pdfplumber.extract_text
+            text (str): Text that should be convertible to footnotes based on regex
 
         Returns:
             list[Self]: Footnotes separated by digits.
@@ -98,12 +95,6 @@ class Footnote(NamedTuple):
         notes.sort(key=lambda obj: obj.fn_id)
         return notes
 
-    @classmethod
-    def from_cropped(cls, crop: CroppedPage) -> list[Self]:
-        return cls.extract_notes(
-            crop.extract_text(layout=True, keep_blank_chars=True)
-        )
-
 
 @dataclass
 class DecisionPage:
@@ -120,14 +111,19 @@ class DecisionPage:
 
     page_num: int
     body: CroppedPage
+    body_text: str
     annex: CroppedPage | None = None
+    annex_text: str | None = None
     lines: list[Bodyline] = field(default_factory=list)
     footnotes: list[Footnote] = field(default_factory=list)
 
     def __post_init__(self):
-        self.lines = Bodyline.from_cropped(self.body)
-        if self.annex:
-            self.footnotes = Footnote.from_cropped(self.annex)
+        alpha = paragraph_break.split(self.body_text)
+        beta = self.body_text.split("\n\n")
+        candidates = alpha or beta
+        self.lines = Bodyline.split(candidates)
+        if self.annex and self.annex_text:
+            self.footnotes = Footnote.extract_notes(self.annex_text)
 
     @classmethod
     def set(
@@ -171,9 +167,54 @@ class DecisionPage:
         page_line = end_y or end_of_content
 
         page_num = get_page_num(page, header_line) or 0
+
         body = PageCut.set(page=page, y0=header_line, y1=page_line)
-        annex = PageCut.set(page=page, y0=end_of_content, y1=e) if e else None
-        return cls(page_num=page_num, body=body, annex=(annex))
+        body_text = cls.get_content(body)
+
+        annex = None
+        annex_text = None
+        if e:
+            annex = PageCut.set(page=page, y0=end_of_content, y1=e)
+            annex_text = cls.get_content(annex)
+
+        return cls(
+            page_num=page_num,
+            body=body,
+            body_text=body_text,
+            annex=annex,
+            annex_text=annex_text,
+        )
+
+    @classmethod
+    def get_content(cls, crop: CroppedPage):
+        return cls.text_from_plumber(crop) or cls.text_from_image(crop)
+
+    @classmethod
+    def text_from_plumber(cls, crop: CroppedPage) -> str:
+        """pdfplumber features an experimental setting of capturing the
+        image's blank spaces and layout. This would be useful in determining
+        line breaks.
+
+        Args:
+            crop (CroppedPage): pdfplumber CroppedPage.
+
+        Returns:
+            str: text found from the cropped page.
+        """
+        return crop.extract_text(layout=True, keep_blank_chars=True).strip()
+
+    @classmethod
+    def text_from_image(cls, crop: CroppedPage) -> str:
+        """In the event that pdfplumber's `extract_text()` fails, i.e. no
+        text is produced, use the pytesseract method. First convert the
+        image to its `PIL` format then from convert it to openCV
+        so that it can be used by pytesseract."""
+        return pytesseract.image_to_string(
+            cv2.cvtColor(
+                numpy.array(crop.to_image(resolution=300).original),
+                cv2.COLOR_RGB2BGR,
+            )
+        ).strip()
 
 
 @dataclass

@@ -27,4 +27,4 @@ criteria.
 
 ### Get slice of page
 
-:::corpus_unpdf.src.common.slice.PageCut
+::: corpus_unpdf.src.common.slice.PageCut
