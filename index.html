@@ -880,7 +880,7 @@ to the page's max width / height.</p>
 <div class="highlight"><span class="filename">Text Only</span><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>==&gt; imagemagick: stable 7.1.0-59 (bottled), HEAD
 <a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>Tools and libraries to manipulate images in many formats
 <a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>https://imagemagick.org/index.php
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>/opt/homebrew/Cellar/imagemagick/7.1.0-60 (807 files, 31MB) * &lt;---- first part is the local folder
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>/opt/homebrew/Cellar/imagemagick/7.1.0-61 (807 files, 31MB) * &lt;---- first part is the local folder
 <a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>x x x
 </code></pre></div>
 <p>Note that both <code>tesseract</code> and <code>imagemagick</code> libraries are also made preconditions in <code>.github/workflows/main.yaml</code>:</p>
@@ -906,7 +906,7 @@ declaring its location. The folder can change when a new version is installed
 via <code>brew upgrade imagemagick</code></p>
 </div>
 <p>Create an .env file and use the folder as the environment variable <code>MAGICK_HOME</code>:</p>
-<div class="highlight"><span class="filename">Text Only</span><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>MAGICK_HOME=/opt/homebrew/Cellar/imagemagick/7.1.0-60
+<div class="highlight"><span class="filename">Text Only</span><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a>MAGICK_HOME=/opt/homebrew/Cellar/imagemagick/7.1.0-61
 </code></pre></div>
 <p>This configuration will allow <code>pdfplumber</code> to detect <code>imagemagick</code>.</p>
 <p>Effect of not setting <code>MAGICK_HOME</code>:</p>
