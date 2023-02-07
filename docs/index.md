@@ -98,11 +98,11 @@ brew info imagemagick # check version
 
 The last command gets you the local folder installed which will be needed in creating the virtual environment:
 
-```text
-==> imagemagick: stable 7.1.0-59 (bottled), HEAD
+```sh
+==> imagemagick: stable 7.1.0-61 (bottled), HEAD # note the version number
 Tools and libraries to manipulate images in many formats
 https://imagemagick.org/index.php
-/opt/homebrew/Cellar/imagemagick/7.1.0-61 (807 files, 31MB) * <---- first part is the local folder
+/opt/homebrew/Cellar/imagemagick/7.1.0-61 (807 files, 31MB) * # first part is the local folder
 x x x
 ```
 
