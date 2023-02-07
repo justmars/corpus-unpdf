@@ -84,9 +84,10 @@ def get_header_line(im: numpy.ndarray, page: Page) -> int | float | None:
     return None
 
 
-def get_page_num(page: Page, header_line: int | float) -> int | None:
-    """Get the first matching digit in the header's text. This helps
-    deal with decisions having blank pages.
+def get_page_num(page: Page, header_line: int | float) -> int:
+    """Aside from the first page, which should always be `1`,
+    this function gets the first matching digit in the header's text.
+    If no such digit is round, return 0.
 
     Examples:
         >>> import pdfplumber
@@ -108,10 +109,14 @@ def get_page_num(page: Page, header_line: int | float) -> int | None:
     Returns:
         int | None: The page number, if found
     """
+    if page.page_number == 1:
+        return 1  # The first page should always be page 1
+
     box = (0, 0, page.width, header_line)
     header = page.crop(box, relative=False, strict=True)
     texts = header.extract_text(layout=True, keep_blank_chars=True).split()
     for text in texts:
         if text.isdigit() and len(text) <= 3:
-            return int(text)
-    return None
+            return int(text)  # Subsequent pages shall be based on the header
+
+    return 0  # 0 implies

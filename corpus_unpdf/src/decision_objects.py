@@ -29,11 +29,12 @@ class Bodyline(NamedTuple):
     `line` | str | The text found based on segmentation
     """
 
-    num: int
+    page_num: int
+    order_num: int
     line: str
 
     @classmethod
-    def split(cls, prelim_lines: list[str]) -> list[Self]:
+    def split(cls, prelim_lines: list[str], page_num: int) -> list[Self]:
         """Get paragraphs using regex `\\s{10,}(?=[A-Z])`
         implying many spaces before a capital letter then
         remove new lines contained in non-paragraph lines.
@@ -45,10 +46,14 @@ class Bodyline(NamedTuple):
             list[Self]: Bodylines of segmented text
         """
         lines = []
-        for num, par in enumerate(prelim_lines, start=1):
-            obj = cls(num=num, line=line_break.sub(" ", par).strip())
+        for order_num, par in enumerate(prelim_lines, start=1):
+            obj = cls(
+                page_num=page_num,
+                order_num=order_num,
+                line=line_break.sub(" ", par).strip(),
+            )
             lines.append(obj)
-        lines.sort(key=lambda obj: obj.num)
+        lines.sort(key=lambda obj: obj.order_num)
         return lines
 
 
@@ -63,11 +68,12 @@ class Footnote(NamedTuple):
     `note` | str | The text found based on segmentation of footnotes
     """
 
+    page_num: int
     fn_id: int
     note: str
 
     @classmethod
-    def extract_notes(cls, text: str) -> list[Self]:
+    def extract_notes(cls, text: str, page_num: int) -> list[Self]:
         """Get footnote digits using regex `\\n\\s+(?P<fn>\\d+)(?=\\s+[A-Z])`
         then for each matching span, the start span becomes the anchor
         for the balance of the text for each remaining foornote in the while
@@ -89,7 +95,11 @@ class Footnote(NamedTuple):
             footnote_num = int(note.group("fn"))
             digit_start, digit_end = note.span()
             footnote_body = text[digit_end:].strip()
-            obj = cls(fn_id=footnote_num, note=footnote_body)
+            obj = cls(
+                page_num=page_num,
+                fn_id=footnote_num,
+                note=footnote_body,
+            )
             notes.append(obj)
             text = text[:digit_start]
         notes.sort(key=lambda obj: obj.fn_id)
@@ -104,7 +114,7 @@ class DecisionPage:
     --:|:--
     `page_num` | The page number of the Decision page
     `body` | The main content above the annex, if existing
-    `lines` | Segments of the `body`'s text in the given `page_num`, see [Bodyline][bodyline]
+    `segments` | Segments of the `body`'s text in the given `page_num`, see [Bodyline][bodyline]
     `annex` | Portion of page containing the footnotes; some pages are annex-free
     `footnotes` | Each footnote item in the `annex`'s text in the given `page_num`, see [Footnote][footnote]
     """  # noqa: E501
@@ -114,16 +124,18 @@ class DecisionPage:
     body_text: str
     annex: CroppedPage | None = None
     annex_text: str | None = None
-    lines: list[Bodyline] = field(default_factory=list)
+    segments: list[Bodyline] = field(default_factory=list)
     footnotes: list[Footnote] = field(default_factory=list)
 
     def __post_init__(self):
         alpha = paragraph_break.split(self.body_text)
         beta = self.body_text.split("\n\n")
         candidates = alpha or beta
-        self.lines = Bodyline.split(candidates)
+        self.segments = Bodyline.split(candidates, self.page_num)
         if self.annex and self.annex_text:
-            self.footnotes = Footnote.extract_notes(self.annex_text)
+            self.footnotes = Footnote.extract_notes(
+                self.annex_text, self.page_num
+            )
 
     @classmethod
     def set(
@@ -166,11 +178,8 @@ class DecisionPage:
         end_of_content, e = get_page_end(im, page)
         page_line = end_y or end_of_content
 
-        page_num = get_page_num(page, header_line) or 0
-
         body = PageCut.set(page=page, y0=header_line, y1=page_line)
         body_text = cls.get_content(body)
-
         annex = None
         annex_text = None
         if e:
@@ -178,7 +187,7 @@ class DecisionPage:
             annex_text = cls.get_content(annex)
 
         return cls(
-            page_num=page_num,
+            page_num=get_page_num(page, header_line),
             body=body,
             body_text=body_text,
             annex=annex,
@@ -229,6 +238,10 @@ class Decision:
     `writer` | When available, the writer of the case
     `notice` | When True, means that there is no `category` available
     `pages` | A list of [Decision Pages with bodies/annexes][decision-pages]
+    `body` | The compiled string consisting of all the page's body_text
+    `annex` | The compiled string consisting of all the page's annex_text, if existing
+    `segments` | Each [bodyline][bodyline] of the body's text
+    `footnotes` | Each [footnote][footnote] in the annex's text
     """
 
     composition: CourtCompositionChoices
@@ -237,3 +250,10 @@ class Decision:
     writer: str | None = None
     notice: bool = False
     pages: list[DecisionPage] = field(default_factory=list)
+    segments: list[Bodyline] = field(default_factory=list)
+    footnotes: list[Footnote] = field(default_factory=list)
+    body: str = ""
+    annex: str = ""
+
+    def __repr__(self) -> str:
+        return f"Decision {self.composition.value}, pages {len(self.pages)}"

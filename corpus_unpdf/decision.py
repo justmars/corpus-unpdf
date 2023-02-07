@@ -132,11 +132,17 @@ def get_decision(path: Path) -> Decision:
         <CourtCompositionChoices.DIV2: 'Second Division'>
         >>> decision.writer
         'CARPIO. J.:'
+        >>> len(decision.pages) # total page count
+        5
+        >>> isinstance(decision.pages[0], DecisionPage) # first page
+        True
         >>> from corpus_unpdf.src import Footnote, Bodyline
-        >>> isinstance(decision.pages[0].lines[0], Bodyline)
+        >>> isinstance(decision.segments[0], Bodyline)
         True
-        >>> decision.pages[0].footnotes == [] # none found, # TODO: can't seem to detect
+        >>> isinstance(decision.footnotes[0], Footnote)
         True
+        >>> len(decision.footnotes) # TODO: limited number detected; should be 15
+        7
 
     Args:
         path (Path): Path to the pdf file.
@@ -146,7 +152,17 @@ def get_decision(path: Path) -> Decision:
     """  # noqa: E501
     meta = DecisionMeta.prep(path)
     with pdfplumber.open(path) as pdf:
+        # create all the pages of the decision
         caso = meta.init(pdf=pdf)
         content_pages = meta.add(pages=pdf.pages)
         caso.pages.extend(content_pages)
+
+        # construct full decision
+        page_break = "\n\n\n\n"
+        for page in caso.pages:
+            caso.body += f"{page_break}{page.body_text}"
+            caso.segments.extend(page.segments)
+            if page.annex_text:
+                caso.annex += f"{page_break}{page.annex_text}"
+                caso.footnotes.extend(page.footnotes)
         return caso
