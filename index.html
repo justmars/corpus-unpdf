@@ -877,11 +877,11 @@ to the page's max width / height.</p>
 <a id="__codelineno-1-3" name="__codelineno-1-3" href="#__codelineno-1-3"></a>brew<span class="w"> </span>info<span class="w"> </span>imagemagick<span class="w"> </span><span class="c1"># check version</span>
 </code></pre></div>
 <p>The last command gets you the local folder installed which will be needed in creating the virtual environment:</p>
-<div class="highlight"><span class="filename">Text Only</span><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>==&gt; imagemagick: stable 7.1.0-59 (bottled), HEAD
-<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>Tools and libraries to manipulate images in many formats
+<div class="highlight"><span class="filename">Bash</span><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a><span class="o">==</span>&gt;<span class="w"> </span>imagemagick:<span class="w"> </span>stable<span class="w"> </span><span class="m">7</span>.1.0-61<span class="w"> </span><span class="o">(</span>bottled<span class="o">)</span>,<span class="w"> </span>HEAD<span class="w"> </span><span class="c1"># note the version number</span>
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>Tools<span class="w"> </span>and<span class="w"> </span>libraries<span class="w"> </span>to<span class="w"> </span>manipulate<span class="w"> </span>images<span class="w"> </span><span class="k">in</span><span class="w"> </span>many<span class="w"> </span>formats
 <a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>https://imagemagick.org/index.php
-<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>/opt/homebrew/Cellar/imagemagick/7.1.0-61 (807 files, 31MB) * &lt;---- first part is the local folder
-<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>x x x
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>/opt/homebrew/Cellar/imagemagick/7.1.0-61<span class="w"> </span><span class="o">(</span><span class="m">807</span><span class="w"> </span>files,<span class="w"> </span>31MB<span class="o">)</span><span class="w"> </span>*<span class="w"> </span><span class="c1"># first part is the local folder</span>
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>x<span class="w"> </span>x<span class="w"> </span>x
 </code></pre></div>
 <p>Note that both <code>tesseract</code> and <code>imagemagick</code> libraries are also made preconditions in <code>.github/workflows/main.yaml</code>:</p>
 <div class="highlight"><span class="filename">YAML</span><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="nt">steps</span><span class="p">:</span>
