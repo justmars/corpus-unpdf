@@ -6,7 +6,7 @@ from .fetch import (
 )
 from .slice import (
     PageCut,
-    get_centered_coordinates,
     get_contours,
+    get_likelihood_centered_coordinates,
     is_match_text,
 )

@@ -227,6 +227,36 @@ class DecisionPage:
 
 
 @dataclass
+class Opinion:
+    """Metadata of a pdf file parsed via `get_opinion()`
+
+    Field | Description
+    --:|:--
+    `label` | How the opinion is labelled
+    `writer` | When available, the writer of the case
+    `pages` | A list of [Decision Pages][decision-pages]
+    `body` | The compiled string consisting of each page's `body_text`
+    `annex` | The compiled string consisting of each page's `annex_text`, if existing
+    `segments` | Each [bodyline][bodyline] of the body's text
+    `footnotes` | Each [footnote][footnote] in the annex's text
+    """
+
+    label: str
+    writer: str
+    pages: list[DecisionPage] = field(default_factory=list)
+    segments: list[Bodyline] = field(default_factory=list)
+    footnotes: list[Footnote] = field(default_factory=list)
+    body: str = ""
+    annex: str = ""
+
+    def __repr__(self) -> str:
+        return (
+            f"{self.writer.title()} | {self.label.title()}: pages"
+            f" {len(self.pages)}"
+        )
+
+
+@dataclass
 class Decision:
     """Metadata of a pdf file parsed via `get_decision()`
 
@@ -237,9 +267,9 @@ class Decision:
     `header` | The top portion of the page, usually excluded from metadata
     `writer` | When available, the writer of the case
     `notice` | When True, means that there is no `category` available
-    `pages` | A list of [Decision Pages with bodies/annexes][decision-pages]
-    `body` | The compiled string consisting of all the page's body_text
-    `annex` | The compiled string consisting of all the page's annex_text, if existing
+    `pages` | A list of [Decision Pages][decision-pages]
+    `body` | The compiled string consisting of each page's `body_text`
+    `annex` | The compiled string consisting of each page's `annex_text`, if existing
     `segments` | Each [bodyline][bodyline] of the body's text
     `footnotes` | Each [footnote][footnote] in the annex's text
     """

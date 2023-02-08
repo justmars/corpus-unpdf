@@ -30,3 +30,7 @@ Typically used in the title page of a Decision document to determine the positio
 ## Notice
 
 ::: corpus_unpdf.src.content_markers.PositionNotice
+
+## Opinion
+
+::: corpus_unpdf.src.content_markers.PositionOpinion

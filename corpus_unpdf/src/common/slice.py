@@ -62,7 +62,7 @@ def get_contours(im: numpy.ndarray, rectangle_size: tuple[int, int]) -> list:
     return sorted(cnts, key=lambda x: cv2.boundingRect(x)[1])
 
 
-def get_centered_coordinates(
+def get_likelihood_centered_coordinates(
     im: numpy.ndarray, text_to_match: str
 ) -> tuple[int, int, int, int] | None:
     """With a image `im`, get all contours found in the center
@@ -75,8 +75,8 @@ def get_centered_coordinates(
         >>> from pathlib import Path
         >>> x = Path().cwd() / "tests" / "data" / "decision.pdf"
         >>> page, im = get_page_and_img(x, 0)
-        >>> get_centered_coordinates(im, 'Decision') # None found
-        >>> get_centered_coordinates(im, 'Resolution')
+        >>> get_likelihood_centered_coordinates(im, 'Decision') # None found
+        >>> get_likelihood_centered_coordinates(im, 'Resolution')
         (1068, 2108, 564, 92)
         >>> page.pdf.close()
 

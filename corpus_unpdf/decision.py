@@ -10,9 +10,11 @@ from pdfplumber.pdf import PDF
 from .src import (
     Decision,
     DecisionPage,
+    Opinion,
     PositionCourtComposition,
     PositionDecisionCategoryWriter,
     PositionNotice,
+    PositionOpinion,
     get_end_page_pos,
     get_start_page_pos,
 )
@@ -117,6 +119,16 @@ class DecisionMeta(NamedTuple):
                     logger.warning("Detected blank page.")
 
 
+def construct(obj: Decision | Opinion):
+    for page in obj.pages:
+        obj.body += f"\n\n\n\n{page.body_text}"
+        obj.segments.extend(page.segments)
+        if page.annex_text:
+            obj.annex += f"\n\n\n\n{page.annex_text}"
+            obj.footnotes.extend(page.footnotes)
+    return obj
+
+
 def get_decision(path: Path) -> Decision:
     """From a _*.pdf_ file found in `path`, extract relevant [metadata][decisionmeta]
     to generate a [decision][decision-document] having [pages][decision-pages].
@@ -156,13 +168,60 @@ def get_decision(path: Path) -> Decision:
         caso = meta.init(pdf=pdf)
         content_pages = meta.add(pages=pdf.pages)
         caso.pages.extend(content_pages)
-
         # construct full decision
-        page_break = "\n\n\n\n"
-        for page in caso.pages:
-            caso.body += f"{page_break}{page.body_text}"
-            caso.segments.extend(page.segments)
-            if page.annex_text:
-                caso.annex += f"{page_break}{page.annex_text}"
-                caso.footnotes.extend(page.footnotes)
-        return caso
+        obj = construct(caso)
+        if isinstance(obj, Decision):
+            return obj
+        raise Exception("Bad construction of Decision.")
+
+
+def get_opinion(path: Path) -> Opinion:
+    """From a _*.pdf_ file found in `path`, extract relevant opinion metadata
+    to generate an [opinion][opinion-document] having [pages][decision-pages].
+    Each of which will contain a body and, likely, an annex for footnotes.
+
+    Examples:
+        >>> from pathlib import Path
+        >>> x = Path().cwd() / "tests" / "data" / "opinion.pdf"
+        >>> opinion = get_opinion(x)
+        >>> opinion.writer
+        'HERNANDO, J.:'
+        >>> opinion.label
+        'DISSENTING OPINION'
+        >>> len(opinion.pages) # total page count
+        28
+        >>> isinstance(opinion.pages[0], DecisionPage) # first page
+        True
+        >>> from corpus_unpdf.src import Footnote, Bodyline
+        >>> isinstance(opinion.segments[0], Bodyline)
+        True
+        >>> isinstance(opinion.footnotes[0], Footnote)
+        True
+        >>> len(opinion.footnotes)
+        49
+
+    Args:
+        path (Path): Path to the pdf file.
+
+    Returns:
+        Self: Instance of an Opinion with pages populated
+    """  # noqa: E501
+    with pdfplumber.open(path) as pdf:
+        meta = PositionOpinion.from_pdf(pdf)
+        # initialize the opinion
+        start_page = pdf.pages[0]
+        start_y = meta.writer_pct_height * start_page.height
+        opinion = Opinion(
+            label=meta.label,
+            writer=meta.writer,
+            pages=[DecisionPage.set(page=start_page, start_y=start_y)],
+        )
+        # create all the pages of the opinion
+        for page in pdf.pages[1:]:
+            if page_valid := DecisionPage.set(page=page):
+                opinion.pages.append(page_valid)
+        # construct full opinion
+        obj = construct(opinion)
+        if isinstance(obj, Opinion):
+            return obj
+        raise Exception("Bad construction of Opinion.")

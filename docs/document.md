@@ -4,6 +4,10 @@
 
 ::: corpus_unpdf.src.decision_objects.Decision
 
+## Opinion Document
+
+::: corpus_unpdf.src.decision_objects.Opinion
+
 ## Decision Pages
 
 ::: corpus_unpdf.src.decision_objects.DecisionPage

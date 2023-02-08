@@ -23,7 +23,7 @@ criteria.
 
 ### Centered text matching contours
 
-:::corpus_unpdf.src.common.slice.get_centered_coordinates
+:::corpus_unpdf.src.common.slice.get_likelihood_centered_coordinates
 
 ### Get slice of page
 
