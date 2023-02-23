@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "corpus-unpdf"
-version = "0.0.9"
+version = "0.0.10"
 description = "Parse Philippine Supreme Court decisions issued in PDF format as text."
 authors = ["Marcelino G. Veloso III <mars@veloso.one>"]
 readme = "README.md"
@@ -23,7 +23,7 @@ python = "^3.11"
 python-dotenv = "^0.21"
 pdfplumber = "^0.7.6"
 pillow = "^9.4.0"
-opencv-python = "^4.7.0.68"
+opencv-python = "^4.7.0.72"
 pytesseract = "^0.3.10"
 loguru = "^0.6.0"
 
@@ -35,7 +35,7 @@ pre-commit = "^2.21"
 jupyter = "^1.0.0"
 mkdocs = "^1.4.2"
 mkdocstrings = { extras = ["python"], version = "^0.20.0" }
-mkdocs-material = "^9.0.11"
+mkdocs-material = "^9.0.13"
 black = "^23.1.0"
 rich = "^13.3.1"
 
