@@ -99,10 +99,10 @@ brew info imagemagick # check version
 The last command gets you the local folder installed which will be needed in creating the virtual environment:
 
 ```sh
-==> imagemagick: stable 7.1.0-62 (bottled), HEAD # note the version number
+==> imagemagick: stable 7.1.0-62_1 (bottled), HEAD # note the version number
 Tools and libraries to manipulate images in many formats
 https://imagemagick.org/index.php
-/opt/homebrew/Cellar/imagemagick/7.1.0-62 (807 files, 31MB) * # first part is the local folder
+/opt/homebrew/Cellar/imagemagick/7.1.0-62_1 (807 files, 31MB) * # first part is the local folder
 x x x
 ```
 
@@ -135,7 +135,7 @@ steps:
 Create an .env file and use the folder as the environment variable `MAGICK_HOME`:
 
 ```.env
-MAGICK_HOME=/opt/homebrew/Cellar/imagemagick/7.1.0-62
+MAGICK_HOME=/opt/homebrew/Cellar/imagemagick/7.1.0-62_1
 ```
 
 This configuration will allow `pdfplumber` to detect `imagemagick`.
