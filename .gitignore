@@ -6,8 +6,10 @@
 *.db-wal
 body.txt
 annex.txt
+poetry.lock
 /data
 /temp
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
