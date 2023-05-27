@@ -133,9 +133,7 @@ class DecisionPage:
         candidates = alpha or beta
         self.segments = Bodyline.split(candidates, self.page_num)
         if self.annex and self.annex_text:
-            self.footnotes = Footnote.extract_notes(
-                self.annex_text, self.page_num
-            )
+            self.footnotes = Footnote.extract_notes(self.annex_text, self.page_num)
 
     @classmethod
     def set(
@@ -250,10 +248,7 @@ class Opinion:
     annex: str = ""
 
     def __repr__(self) -> str:
-        return (
-            f"{self.writer.title()} | {self.label.title()}: pages"
-            f" {len(self.pages)}"
-        )
+        return f"{self.writer.title()} | {self.label.title()}: pages {len(self.pages)}"
 
 
 @dataclass

@@ -13,9 +13,7 @@ def get_img_from_page(page: Page) -> numpy.ndarray:
     )
 
 
-def get_page_and_img(
-    pdfpath: str | Path, index: int
-) -> tuple[Page, numpy.ndarray]:
+def get_page_and_img(pdfpath: str | Path, index: int) -> tuple[Page, numpy.ndarray]:
     """Combines `OpenCV` with `pdfplumber`.
 
     Examples:

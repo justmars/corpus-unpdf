@@ -104,9 +104,7 @@ class DecisionMeta(NamedTuple):
                 continue
             if nxt.page_number == self.end_page_num:
                 logger.debug(f"Finalize {nxt.page_number=}.")
-                if page_valid := DecisionPage.set(
-                    page=nxt, end_y=self.end_page_pos
-                ):
+                if page_valid := DecisionPage.set(page=nxt, end_y=self.end_page_pos):
                     yield page_valid
                 else:
                     logger.warning("Detected blank page.")

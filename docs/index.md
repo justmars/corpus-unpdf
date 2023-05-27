@@ -98,13 +98,13 @@ brew info imagemagick # check version
 
 The last command gets you the local folder installed which will be needed in creating the virtual environment:
 
-```sh
-==> imagemagick: stable 7.1.0-62_1 (bottled), HEAD # note the version number
-Tools and libraries to manipulate images in many formats
-https://imagemagick.org/index.php
-/opt/homebrew/Cellar/imagemagick/7.1.0-62_1 (807 files, 31MB) * # first part is the local folder
-x x x
-```
+  ```sh
+  ==> imagemagick: stable 7.1.1-10 (bottled), HEAD # note the version number
+  Tools and libraries to manipulate images in many formats
+  https://imagemagick.org/index.php
+  /opt/homebrew/Cellar/imagemagick/7.1.1-10 (807 files, 31MB) * # first part is the local folder
+  x x x
+  ```
 
 Note that both `tesseract` and `imagemagick` libraries are also made preconditions in `.github/workflows/main.yaml`:
 
@@ -135,7 +135,7 @@ steps:
 Create an .env file and use the folder as the environment variable `MAGICK_HOME`:
 
 ```.env
-MAGICK_HOME=/opt/homebrew/Cellar/imagemagick/7.1.0-62_1
+MAGICK_HOME=/opt/homebrew/Cellar/imagemagick/7.1.1-10
 ```
 
 This configuration will allow `pdfplumber` to detect `imagemagick`.

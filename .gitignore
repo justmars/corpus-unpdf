@@ -4,6 +4,8 @@
 *.db
 *.db-shm
 *.db-wal
+body.txt
+annex.txt
 /data
 /temp
 

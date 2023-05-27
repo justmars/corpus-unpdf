@@ -51,9 +51,7 @@ def get_contours(im: numpy.ndarray, rectangle_size: tuple[int, int]) -> list:
     """  # noqa: E501
     gray = cv2.cvtColor(im, cv2.COLOR_BGR2GRAY)
     blur = cv2.GaussianBlur(gray, (7, 7), 0)
-    thresh = cv2.threshold(
-        blur, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU
-    )[1]
+    thresh = cv2.threshold(blur, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)[1]
     kernel = cv2.getStructuringElement(cv2.MORPH_RECT, rectangle_size)
     dilate = cv2.dilate(thresh, kernel, iterations=1)
     cv2.imwrite("temp/sample_dilated.png", dilate)
