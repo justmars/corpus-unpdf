@@ -5,8 +5,7 @@ import cv2
 import numpy
 import pytesseract
 from pdfplumber.pdf import PDF
-
-from .common import (
+from start_ocr import (
     get_contours,
     get_img_from_page,
     get_likelihood_centered_coordinates,

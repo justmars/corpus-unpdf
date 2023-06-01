@@ -1,8 +1,8 @@
 from pathlib import Path
 
 import cv2
+from start_ocr import get_contours, get_pages_and_imgs, is_match_text
 
-from .common import get_contours, get_pages_and_imgs, is_match_text
 from .content_markers import PositionDecisionCategoryWriter, PositionNotice
 
 

@@ -1,8 +1,7 @@
 from pathlib import Path
 
 import cv2
-
-from .common import get_contours, get_reverse_pages_and_imgs, is_match_text
+from start_ocr import get_contours, get_reverse_pages_and_imgs, is_match_text
 
 
 def get_end_page_pos(path: Path) -> tuple[int, int] | None:

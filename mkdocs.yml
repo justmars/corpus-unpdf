@@ -27,10 +27,6 @@ nav:
     - Content:
       - Start: document-parts/starter.md
       - End: document-parts/ender.md
-    - Y-Axis:
-      - Header: document-parts/header.md
-      - Footer: document-parts/footer.md
-    - Utils: document-parts/utils.md
 extra:
   homepage: https://mv3.dev
   social:

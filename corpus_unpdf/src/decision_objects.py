@@ -6,11 +6,15 @@ import cv2
 import numpy
 import pytesseract
 from pdfplumber.page import CroppedPage, Page
+from start_ocr import (
+    PageCut,
+    get_header_line,
+    get_img_from_page,
+    get_page_end,
+    get_page_num,
+)
 
-from .common import PageCut, get_img_from_page
 from .content_markers import CourtCompositionChoices, DecisionCategoryChoices
-from .page_footer import get_page_end
-from .page_header import get_header_line, get_page_num
 
 line_break = re.compile(r"\s*\n+\s*")
 

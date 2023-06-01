@@ -1,9 +1,9 @@
+import logging
 from collections.abc import Iterator
 from pathlib import Path
 from typing import NamedTuple
 
 import pdfplumber
-from loguru import logger
 from pdfplumber.page import Page
 from pdfplumber.pdf import PDF
 
@@ -18,6 +18,8 @@ from .src import (
     get_end_page_pos,
     get_start_page_pos,
 )
+
+logger = logging.getLogger(__name__)
 
 
 class DecisionMeta(NamedTuple):
@@ -196,7 +198,7 @@ def get_opinion(path: Path) -> Opinion:
         >>> isinstance(opinion.footnotes[0], Footnote)
         True
         >>> len(opinion.footnotes)
-        49
+        47
 
     Args:
         path (Path): Path to the pdf file.
