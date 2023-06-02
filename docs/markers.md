@@ -1,11 +1,10 @@
 # Markers
 
-Typically used in the title page of a Decision document to determine the positions of Y-coordinates and to extract the metadata associated with the page.
+Typically used in title page of a Decision document to determine the positions of Y-coordinates and to extract the metadata associated with the page.
 
 !!! Warning
 
-      Not all markers are found in the preliminary page. Hence, the need to find
-      the anchoring start of content.
+      Not all markers are found in the preliminary page. Hence, need to find anchoring start of content.
 
 ## Court Composition
 

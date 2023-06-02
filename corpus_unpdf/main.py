@@ -13,15 +13,20 @@ from ._markers import (
     FrontpageMeta,
     PositionCourtComposition,
     PositionDecisionCategoryWriter,
-    PositionMeta,
     PositionNotice,
 )
+from ._positions import PositionMeta
 
 logger = logging.getLogger(__name__)
 
 
 @dataclass
 class OpinionCollection(Collection):
+    """Inherits from `start_ocr`'s Collection.
+
+    Using `OpinionCollection.set(<path-to-pdf)` can extract content and metadata of the file.
+    """  # noqa: E501
+
     ...
 
     @classmethod
@@ -33,6 +38,11 @@ class OpinionCollection(Collection):
 
 @dataclass
 class DecisionCollection(Collection, FrontpageMeta):
+    """Inherits from `start_ocr`'s `Collection` with custom `FrontpageMeta`.
+
+    Using `DecisionCollection.set(<path-to-pdf)` can extract content and metadata of the file.
+    """  # noqa: E501
+
     ...
 
     @classmethod
@@ -69,12 +79,16 @@ class DecisionCollection(Collection, FrontpageMeta):
             return caso
 
     @classmethod
-    def init(cls, pdf: PDF, pos: PositionMeta):
-        """Add the metadata of a DecisionCollectionVariant and extract the first page of the content proper which may not necessarily be page 1.
+    def init(cls, pdf: PDF, pos: PositionMeta) -> Self:
+        """Extract first page of the content proper which may not necessarily be page 1.
+
+        Args:
+            pdf (PDF): The `pdfplumber`-formatted PDF
+            pos (PositionMeta): Contains true start and end position / pages
 
         Returns:
-            DecisionCollectionVariant: A Decision instance, if all elements match.
-        """  # noqa: E501
+            Self: DecisionCollection instance.
+        """
         start_page = pdf.pages[pos.start_index]
         if isinstance(pos.start_indicator, PositionNotice):
             return cls(
@@ -104,8 +118,7 @@ class DecisionCollection(Collection, FrontpageMeta):
         raise Exception("Unexpected initialization of decision.")
 
     def limit_pages(self, pages: list[Page], pos: PositionMeta):
-        """Ensure that only the pages covered by the `pos` are included
-        in the final Decision collection."""
+        """Ensure only  pages covered by the `pos` are included in the final Decision collection."""  # noqa: E501
         for nxt in pages:
             if nxt.page_number <= pos.start_page_num:
                 continue

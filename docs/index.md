@@ -15,20 +15,10 @@ _end_ | there will be a deliberate _end_ **y-axis** position
 
 The **y-axis** is relevant to slice the _header_ and the _footer_ to arrive at the meat of each page.
 
-## Decision
+## `DecisionCollection`
 
-### get_decision
+::: corpus_unpdf.main.DecisionCollection
 
-:::corpus_unpdf.decision.get_decision
+## `OpinionCollection`
 
-### Decision
-
-::: corpus_unpdf.decision.DecisionCollectionVariant
-
-### DecisionMeta
-
-:::corpus_unpdf.decision.DecisionMeta
-
-## Opinion Document
-
-::: corpus_unpdf.decision.OpinionCollection
+::: corpus_unpdf.main.OpinionCollection

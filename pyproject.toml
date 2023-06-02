@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "corpus-unpdf"
-version = "0.0.12"
+version = "0.1.0"
 description = "Parse Philippine Supreme Court decisions issued in PDF format as text."
 authors = ["Marcelino G. Veloso III <mars@veloso.one>"]
 readme = "README.md"
@@ -20,7 +20,7 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = "^3.11"
-start-ocr = "^0.0.2"
+start-ocr = "^0.0.3"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.3"

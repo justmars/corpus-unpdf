@@ -1,5 +1,9 @@
 # Positions
 
+## PositionMeta
+
+::: corpus_unpdf._positions.PositionMeta
+
 ## Terminal Start: Page, Position
 
 ::: corpus_unpdf._positions.get_start_page_pos
