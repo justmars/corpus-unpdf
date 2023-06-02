@@ -1,25 +1,85 @@
 import logging
 from collections.abc import Iterator
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import NamedTuple
 
 import pdfplumber
-from pdfplumber.page import Page
+from pdfplumber.page import CroppedPage, Page
 from pdfplumber.pdf import PDF
+from start_ocr import Bodyline, Content, Footnote
 
-from .src import (
-    Decision,
-    DecisionPage,
-    Opinion,
+from ._markers import (
+    CourtCompositionChoices,
+    DecisionCategoryChoices,
     PositionCourtComposition,
     PositionDecisionCategoryWriter,
     PositionNotice,
     PositionOpinion,
-    get_end_page_pos,
-    get_start_page_pos,
 )
+from ._positions import get_end_page_pos, get_start_page_pos
 
 logger = logging.getLogger(__name__)
+
+
+@dataclass
+class Opinion:
+    """Metadata of a pdf file parsed via `get_opinion()`
+
+    Field | Description
+    --:|:--
+    `label` | How the opinion is labelled
+    `writer` | When available, the writer of the case
+    `pages` | A list of `Content` pages, see `start-ocr`
+    `body` | The compiled string consisting of each page's `body_text`
+    `annex` | The compiled string consisting of each page's `annex_text`, if existing
+    `segments` | Each `Bodyline` of the body's text, see `start-ocr`
+    `footnotes` | Each `Footnote` of the body's annex, see `start-ocr`
+    """
+
+    label: str
+    writer: str
+    pages: list[Content] = field(default_factory=list)
+    segments: list[Bodyline] = field(default_factory=list)
+    footnotes: list[Footnote] = field(default_factory=list)
+    body: str = ""
+    annex: str = ""
+
+    def __repr__(self) -> str:
+        return f"{self.writer.title()} | {self.label.title()}: pages {len(self.pages)}"
+
+
+@dataclass
+class Decision:
+    """Metadata of a pdf file parsed via `get_decision()`
+
+    Field | Description
+    --:|:--
+    `composition` | The composition of the Supreme Court that decided the case
+    `category` | When available, whether the case is a "Decision" or a "Resolution"
+    `header` | The top portion of the page, usually excluded from metadata
+    `writer` | When available, the writer of the case
+    `notice` | When True, means that there is no `category` available
+    `pages` | A list of `Content` pages, see `start-ocr`
+    `body` | The compiled string consisting of each page's `body_text`
+    `annex` | The compiled string consisting of each page's `annex_text`, if existing
+    `segments` | Each `Bodyline` of the body's text, see `start-ocr`
+    `footnotes` | Each `Footnote` of the body's annex, see `start-ocr`
+    """
+
+    composition: CourtCompositionChoices
+    category: DecisionCategoryChoices | None = None
+    header: CroppedPage | None = None
+    writer: str | None = None
+    notice: bool = False
+    pages: list[Content] = field(default_factory=list)
+    segments: list[Bodyline] = field(default_factory=list)
+    footnotes: list[Footnote] = field(default_factory=list)
+    body: str = ""
+    annex: str = ""
+
+    def __repr__(self) -> str:
+        return f"Decision {self.composition.value}, pages {len(self.pages)}"
 
 
 class DecisionMeta(NamedTuple):
@@ -29,10 +89,10 @@ class DecisionMeta(NamedTuple):
     --:|:--:|:--
     `start_index` | int | The zero-based integer `x`, i.e. get specific `pdfplumber.pages[x]`
     `start_page_num` | int | The 1-based integer to describe human-readable page number
-    `start_indicator` | [PositionDecisionCategoryWriter][decision-category-writer] or [PositionNotice][notice] | Marking the [start of content proper][start-of-content]
+    `start_indicator` | [PositionDecisionCategoryWriter][decision-category-writer] or [PositionNotice][notice] | Marking the start of the content proper
     `writer` | str | When [PositionDecisionCategoryWriter][decision-category-writer]  is selected, the writer found underneath the category
     `notice` | bool | Will be marked `True`, if [PositionNotice][notice] is selected; default is `False`.
-    `pages` | list[[DecisionPage][decision-pages]] | A list of pages having material content
+    `pages` | list[Content] | A list of pages having material content
     """  # noqa: E501
 
     start_index: int
@@ -78,7 +138,7 @@ class DecisionMeta(NamedTuple):
                 composition=composition,
                 notice=True,
                 pages=[
-                    DecisionPage.set(
+                    Content.set(
                         page=start_page,
                         start_y=self.start_indicator.position_pct_height
                         * start_page.height,
@@ -91,7 +151,7 @@ class DecisionMeta(NamedTuple):
                 category=self.start_indicator.element,
                 writer=self.start_indicator.writer,
                 pages=[
-                    DecisionPage.set(
+                    Content.set(
                         page=start_page,
                         start_y=self.start_indicator.writer_pct_height
                         * start_page.height,
@@ -100,20 +160,20 @@ class DecisionMeta(NamedTuple):
             )
         raise Exception("Unexpected initialization of decision.")
 
-    def add(self, pages: list[Page]) -> Iterator[DecisionPage]:
+    def add(self, pages: list[Page]) -> Iterator[Content]:
         for nxt in pages:
             if nxt.page_number <= self.start_page_num:
                 continue
             if nxt.page_number == self.end_page_num:
                 logger.debug(f"Finalize {nxt.page_number=}.")
-                if page_valid := DecisionPage.set(page=nxt, end_y=self.end_page_pos):
+                if page_valid := Content.set(page=nxt, end_y=self.end_page_pos):
                     yield page_valid
                 else:
                     logger.warning("Detected blank page.")
                 break
             else:
                 logger.debug(f"Initialize {nxt.page_number=}.")
-                if page_valid := DecisionPage.set(page=nxt):
+                if page_valid := Content.set(page=nxt):
                     yield page_valid
                 else:
                     logger.warning("Detected blank page.")
@@ -130,9 +190,9 @@ def construct(obj: Decision | Opinion):
 
 
 def get_decision(path: Path) -> Decision:
-    """From a _*.pdf_ file found in `path`, extract relevant [metadata][decisionmeta]
-    to generate a [decision][decision-document] having [pages][decision-pages].
-    Each of which will contain a body and, likely, an annex for footnotes.
+    """From a _*.pdf_ file found in `path`, extract relevant metadata
+    to generate a decision having content pages. Each of which will contain a body and,
+    likely, an annex for footnotes.
 
     Examples:
         >>> from pathlib import Path
@@ -146,9 +206,8 @@ def get_decision(path: Path) -> Decision:
         'CARPIO. J.:'
         >>> len(decision.pages) # total page count
         5
-        >>> isinstance(decision.pages[0], DecisionPage) # first page
+        >>> isinstance(decision.pages[0], Content) # first page
         True
-        >>> from corpus_unpdf.src import Footnote, Bodyline
         >>> isinstance(decision.segments[0], Bodyline)
         True
         >>> isinstance(decision.footnotes[0], Footnote)
@@ -177,8 +236,7 @@ def get_decision(path: Path) -> Decision:
 
 def get_opinion(path: Path) -> Opinion:
     """From a _*.pdf_ file found in `path`, extract relevant opinion metadata
-    to generate an [opinion][opinion-document] having [pages][decision-pages].
-    Each of which will contain a body and, likely, an annex for footnotes.
+    to generate an opinion having content pages. Each of which will contain a body and, likely, an annex for footnotes.
 
     Examples:
         >>> from pathlib import Path
@@ -190,15 +248,14 @@ def get_opinion(path: Path) -> Opinion:
         'DISSENTING OPINION'
         >>> len(opinion.pages) # total page count
         28
-        >>> isinstance(opinion.pages[0], DecisionPage) # first page
+        >>> isinstance(opinion.pages[0], Content) # first page
         True
-        >>> from corpus_unpdf.src import Footnote, Bodyline
         >>> isinstance(opinion.segments[0], Bodyline)
         True
         >>> isinstance(opinion.footnotes[0], Footnote)
         True
         >>> len(opinion.footnotes)
-        47
+        50
 
     Args:
         path (Path): Path to the pdf file.
@@ -214,11 +271,11 @@ def get_opinion(path: Path) -> Opinion:
         opinion = Opinion(
             label=meta.label,
             writer=meta.writer,
-            pages=[DecisionPage.set(page=start_page, start_y=start_y)],
+            pages=[Content.set(page=start_page, start_y=start_y)],
         )
         # create all the pages of the opinion
         for page in pdf.pages[1:]:
-            if page_valid := DecisionPage.set(page=page):
+            if page_valid := Content.set(page=page):
                 opinion.pages.append(page_valid)
         # construct full opinion
         obj = construct(opinion)

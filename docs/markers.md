@@ -5,32 +5,32 @@ Typically used in the title page of a Decision document to determine the positio
 !!! Warning
 
       Not all markers are found in the preliminary page. Hence, the need to find
-      the anchoring [start of content][start-of-content].
+      the anchoring start of content.
 
 ## Court Composition
 
 ### Composition Choices
 
-::: corpus_unpdf.src.content_markers.CourtCompositionChoices
+::: corpus_unpdf._markers.CourtCompositionChoices
 
 ### Extract Composition
 
-::: corpus_unpdf.src.content_markers.PositionCourtComposition
+::: corpus_unpdf._markers.PositionCourtComposition
 
 ## Decision Category & Writer
 
 ### Category Choices
 
-::: corpus_unpdf.src.content_markers.DecisionCategoryChoices
+::: corpus_unpdf._markers.DecisionCategoryChoices
 
 ### Extract Category
 
-::: corpus_unpdf.src.content_markers.PositionDecisionCategoryWriter
+::: corpus_unpdf._markers.PositionDecisionCategoryWriter
 
 ## Notice
 
-::: corpus_unpdf.src.content_markers.PositionNotice
+::: corpus_unpdf._markers.PositionNotice
 
 ## Opinion
 
-::: corpus_unpdf.src.content_markers.PositionOpinion
+::: corpus_unpdf._markers.PositionOpinion

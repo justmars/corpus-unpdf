@@ -20,25 +20,23 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = "^3.11"
-start-ocr = "^0.0.1"
+start-ocr = "^0.0.2"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.3"
 pytest-env = "^0.8.1"
-pytest-datadir = "^1.4.1"
-pytest-cov = "^2.12.1"
-pre-commit = "^2.21"
-jupyter = "^1.0.0"
-mkdocs = "^1.4.2"
-mkdocstrings = { extras = ["python"], version = "^0.20.0" }
+pytest-datadir = "^1.4"
+pytest-cov = "^4.1"
+pre-commit = "^3.3"
+mkdocs = "^1.4"
+mkdocstrings = { extras = ["python"], version = "^0.22" }
 mkdocs-material = "^9.1"
-rich = "^13.3.1"
+ipykernel = "^6.23"
 
 [tool.pytest.ini_options]
 env = ["MAGICK_HOME=/opt/homebrew/Cellar/imagemagick/7.1.1-10"]
-minversion = "7.2"
-filterwarnings = ['ignore::DeprecationWarning']
-addopts = "-raxq --doctest-modules --cov tests"
+minversion = "7.3"
+addopts = "-ra -x -q --doctest-modules --cov tests"
 testpaths = ["tests", "corpus_unpdf"]
 
 [tool.ruff]

@@ -110,7 +110,7 @@ class PositionDecisionCategoryWriter(NamedTuple):
     `coordinates` | tuple[int, int, int, int] | The opencv rectangle found in the page where the `composition` element is found
     `writer` | str | The string found indicating the name of the writer
     `category_pct_height` | float | The `y` + height `h` of the `coordinates` over the `im_h` image height; used so the pdfplumber can utilize its cropping mechanism.
-    `writer_pct_height` | float | The writer's coordinates are found below the category coordinates. This can then be used to signify the anchoring [start of the document][start-of-content].
+    `writer_pct_height` | float | The writer's coordinates are found below the category coordinates. This can then be used to signify the anchoring start of the document.
     """  # noqa: E501
 
     element: DecisionCategoryChoices
@@ -148,7 +148,7 @@ class PositionOpinion(NamedTuple):
     `writer` | str | The string found indicating the name of the writer
     `coordinates` | tuple[int, int, int, int] | The opencv rectangle found in the page where the `label` is found
     `opinion_pct_height` | float | The `y` + height `h` of the `coordinates` over the `im_h` image height; used so the pdfplumber can utilize its cropping mechanism.
-    `writer_pct_height` | float | The writer's coordinates are found below the label `coordinates`. This can then be used to signify the anchoring [start of the document][start-of-content].
+    `writer_pct_height` | float | The writer's coordinates are found below the label `coordinates`. This can then be used to signify the anchoring start of the document.
     """  # noqa: E501
 
     label: str

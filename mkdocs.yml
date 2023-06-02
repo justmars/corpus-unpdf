@@ -20,13 +20,9 @@ theme:
         name: Switch to light mode
 nav:
   - Overview: index.md
-  - Decision: decision.md
   - Document: document.md
-  - Parts:
-    - Markers: document-parts/markers.md
-    - Content:
-      - Start: document-parts/starter.md
-      - End: document-parts/ender.md
+  - Markers: markers.md
+  - Positions: positions.md
 extra:
   homepage: https://mv3.dev
   social:

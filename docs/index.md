@@ -1,16 +1,32 @@
 # corpus-unpdf Docs
 
-Requires `start-ocr`.
+Utilizes [`start-ocr`](https://github.com/justmars/start-ocr) "primitive" functions.
 
-## Flow
+## Applicability
 
-1. As a document:
-      1. Determine _start_ page and _start_ "y-axis" position coordinate as [start elements][start-of-content], note that is greatly affected by [markers][markers]
-      2. Determine _end_ page and _start_ "y-axis" position coordinate as [end elements][end-of-content]
-2. For _each page_:
-      1. Determine "y-axis" to slice [header][header-of-page]
-      2. Determine "y-axis" to slice [footer][footer-of-page]
+Documents in PH Supreme Court 2023 website:
 
-!!! Note
+1. Decision / Resolution
+2. Separate Opinions in the latter
 
-    For slicing to work, each pdf's page, opened and cropped via `pdfplumber`, must be converted an to an `opencv` image format (i.e. `numpy.ndarray`). This enables discovery of [contours][get-contours-from-image] that can act as borders for slicing content from the page.
+Each document will have:
+
+Page type | Note
+--:|:--
+_start_ | there will be a deliberate _start_ "y-axis" position affected by _markers_
+_content_ | see `start-ocr`
+_end_ | there will be a deliberate _end_ "y-axis" position
+
+The y-axis is relevant to slice the _header_ and the _footer_ to arrive at the meat of each page.
+
+## get_decision
+
+:::corpus_unpdf.decision.get_decision
+
+## DecisionMeta
+
+:::corpus_unpdf.decision.DecisionMeta
+
+## get_opinion
+
+:::corpus_unpdf.decision.get_opinion
