@@ -299,6 +299,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#metadata" class="md-nav__link">
+    Metadata
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#court-composition" class="md-nav__link">
     Court Composition
   </a>
@@ -409,6 +416,13 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#metadata" class="md-nav__link">
+    Metadata
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#court-composition" class="md-nav__link">
     Court Composition
   </a>
@@ -488,7 +502,34 @@
 
 
 <h1 id="markers">Markers</h1>
-<p>Typically used in title page of a Decision document to determine the positions of Y-coordinates and to extract the metadata associated with the page.</p>
+<h2 id="metadata">Metadata</h2>
+<p>Each document will have:</p>
+<table>
+<thead>
+<tr>
+<th align="right">Page type</th>
+<th align="left">Note</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td align="right"><em>start</em></td>
+<td align="left">there will be a deliberate <em>start</em> <strong>y-axis</strong> position affected by <em>markers</em>.</td>
+</tr>
+<tr>
+<td align="right"><em>content</em></td>
+<td align="left">see <a href="https://github.com/justmars/start-ocr"><code>start-ocr</code></a> "primitives" <code>Bodyline</code> for content segments, <code>Footnote</code> for discovered footnote partials.</td>
+</tr>
+<tr>
+<td align="right"><em>end</em></td>
+<td align="left">there will be a deliberate <em>end</em> <strong>y-axis</strong> position.</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Y-axis cutting</p>
+<p>The <strong>y-axis</strong> is relevant for <em>start</em> and <em>end</em>... since the <em>header</em> and the <em>footer</em> are cut out be to arrive at the meat of each page. And each page can then be dissected into segments and footnotes.</p>
+</div>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>Not all markers are found in the preliminary page. Hence, need to find anchoring start of content.</p>
