@@ -1,8 +1,11 @@
+from dataclasses import dataclass
 from enum import Enum
+from pathlib import Path
 from typing import NamedTuple, Self
 
 import numpy as np
 import pytesseract
+from pdfplumber.page import CroppedPage
 from pdfplumber.pdf import PDF
 from start_ocr import get_img_from_page, get_likelihood_centered_coordinates
 
@@ -127,3 +130,66 @@ class PositionDecisionCategoryWriter(NamedTuple):
                     writer_pct_height=y1 / im_h,
                 )
         return None
+
+
+class PositionMeta(NamedTuple):
+    """Metadata required to determine the true start and end pages of a given pdf Path.
+
+    Field | Type | Description
+    --:|:--:|:--
+    `start_index` | int | The zero-based integer `x`, i.e. get specific `pdfplumber.pages[x]`
+    `start_page_num` | int | The 1-based integer to describe human-readable page number
+    `start_indicator` | [PositionDecisionCategoryWriter][decision-category-writer] or [PositionNotice][notice] | Marking the start of the content proper
+    `writer` | str | When [PositionDecisionCategoryWriter][decision-category-writer]  is selected, the writer found underneath the category
+    `notice` | bool | Will be marked `True`, if [PositionNotice][notice] is selected; default is `False`.
+    """  # noqa: E501
+
+    start_index: int
+    start_page_num: int
+    start_indicator: PositionDecisionCategoryWriter | PositionNotice
+    end_page_num: int
+    end_page_pos: float | int
+
+    @classmethod
+    def prep(cls, path: Path):
+        from ._positions import get_end_page_pos, get_start_page_pos
+
+        if not (starter := get_start_page_pos(path)):
+            raise Exception("Could not detect start of content.")
+
+        index, start_indicator = starter
+        if not start_indicator:
+            raise Exception("Could not detect start indicator.")
+
+        ender = get_end_page_pos(path)
+        if not ender:
+            raise Exception("Could not detect end of content.")
+        end_page_num, end_page_pos = ender
+
+        return cls(
+            start_index=index,
+            start_page_num=index + 1,
+            start_indicator=start_indicator,
+            end_page_num=end_page_num,
+            end_page_pos=end_page_pos,
+        )
+
+
+@dataclass
+class FrontpageMeta:
+    """Metadata of the frontpage`
+
+    Field | Description
+    --:|:--
+    `composition` | The composition of the Supreme Court that decided the case
+    `category` | When available, whether the case is a "Decision" or a "Resolution"
+    `header` | The top portion of the page, usually excluded from metadata
+    `writer` | When available, the writer of the case
+    `notice` | When True, means that there is no `category` available
+    """
+
+    composition: CourtCompositionChoices
+    category: DecisionCategoryChoices | None = None
+    header: CroppedPage | None = None
+    writer: str | None = None
+    notice: bool = False

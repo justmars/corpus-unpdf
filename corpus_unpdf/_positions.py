@@ -10,6 +10,9 @@ from start_ocr import (
 
 from ._markers import PositionDecisionCategoryWriter, PositionNotice
 
+ORDERED = "so ordered"
+AUTHORITY = "by authority of the court"
+
 
 def get_start_page_pos(
     path: Path,
@@ -18,10 +21,10 @@ def get_start_page_pos(
     _exceptionally_ does not correspond to the actual start of the content.
 
     The actual start of content depends on either the detection of a
-    Notice or a Category
+    `Notice` or a `Category`
 
     This requires searching the page from start to finish, via
-    `get_pages_and_imgs()`
+    `start_ocr.get_pages_and_imgs()`
 
     Examples:
         >>> x = Path().cwd() / "tests" / "data" / "notice.pdf"
@@ -99,7 +102,6 @@ def get_end_page_pos(path: Path) -> tuple[int, int] | None:
         tuple[int, int] | None: The page number from pdfplumber.pages, the Y position
             of that page
     """
-    ORDERED, AUTHORITY = "so ordered", "by authority of the court"
     for page, im in get_reverse_pages_and_imgs(path):
         im_h, im_w, _ = im.shape
         MIDPOINT = im_w / 2
