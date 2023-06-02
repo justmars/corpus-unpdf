@@ -8,6 +8,7 @@ import pdfplumber
 from pdfplumber.page import CroppedPage, Page
 from pdfplumber.pdf import PDF
 from start_ocr import Bodyline, Content, Footnote
+from start_ocr.content import Collection
 
 from ._markers import (
     CourtCompositionChoices,
@@ -15,7 +16,6 @@ from ._markers import (
     PositionCourtComposition,
     PositionDecisionCategoryWriter,
     PositionNotice,
-    PositionOpinion,
 )
 from ._positions import get_end_page_pos, get_start_page_pos
 
@@ -23,34 +23,17 @@ logger = logging.getLogger(__name__)
 
 
 @dataclass
-class Opinion:
-    """Metadata of a pdf file parsed via `get_opinion()`
+class OpinionCollection(Collection):
+    ...
 
-    Field | Description
-    --:|:--
-    `label` | How the opinion is labelled
-    `writer` | When available, the writer of the case
-    `pages` | A list of `Content` pages, see `start-ocr`
-    `body` | The compiled string consisting of each page's `body_text`
-    `annex` | The compiled string consisting of each page's `annex_text`, if existing
-    `segments` | Each `Bodyline` of the body's text, see `start-ocr`
-    `footnotes` | Each `Footnote` of the body's annex, see `start-ocr`
-    """
-
-    label: str
-    writer: str
-    pages: list[Content] = field(default_factory=list)
-    segments: list[Bodyline] = field(default_factory=list)
-    footnotes: list[Footnote] = field(default_factory=list)
-    body: str = ""
-    annex: str = ""
-
-    def __repr__(self) -> str:
-        return f"{self.writer.title()} | {self.label.title()}: pages {len(self.pages)}"
+    @classmethod
+    def set(cls, path: Path):
+        first_page = Collection.preliminary_page(path)
+        return Collection.make(path, preliminary_page=first_page)
 
 
 @dataclass
-class Decision:
+class DecisionCollectionVariant:
     """Metadata of a pdf file parsed via `get_decision()`
 
     Field | Description
@@ -81,9 +64,18 @@ class Decision:
     def __repr__(self) -> str:
         return f"Decision {self.composition.value}, pages {len(self.pages)}"
 
+    def construct(self):
+        for page in self.pages:
+            self.body += f"\n\n{page.body_text}"
+            self.segments.extend(page.segments)
+            if page.annex_text:
+                self.annex += f"\n\n{page.annex_text}"
+                self.footnotes.extend(page.footnotes)
+        return self
+
 
 class DecisionMeta(NamedTuple):
-    """Metadata required to create a [decision][decision-document].
+    """Metadata required to create a DecisionCollectionVariant.
 
     Field | Type | Description
     --:|:--:|:--
@@ -123,18 +115,17 @@ class DecisionMeta(NamedTuple):
             end_page_pos=end_page_pos,
         )
 
-    def init(self, pdf: PDF) -> Decision:
-        """Add the metadata of a [Decision][decision-document] and extract the first
-        page of the content proper which may not necessarily be page 1.
+    def init(self, pdf: PDF) -> DecisionCollectionVariant:
+        """Add the metadata of a DecisionCollectionVariant and extract the first page of the content proper which may not necessarily be page 1.
 
         Returns:
-            Decision: A Decision instance, if all elements match.
-        """
+            DecisionCollectionVariant: A Decision instance, if all elements match.
+        """  # noqa: E501
         logger.debug(f"Initialize {self=}")
         composition = PositionCourtComposition.from_pdf(pdf).element
         start_page = pdf.pages[self.start_index]
         if isinstance(self.start_indicator, PositionNotice):
-            return Decision(
+            return DecisionCollectionVariant(
                 composition=composition,
                 notice=True,
                 pages=[
@@ -146,7 +137,7 @@ class DecisionMeta(NamedTuple):
                 ],
             )
         elif isinstance(self.start_indicator, PositionDecisionCategoryWriter):
-            return Decision(
+            return DecisionCollectionVariant(
                 composition=composition,
                 category=self.start_indicator.element,
                 writer=self.start_indicator.writer,
@@ -179,23 +170,10 @@ class DecisionMeta(NamedTuple):
                     logger.warning("Detected blank page.")
 
 
-def construct(obj: Decision | Opinion):
-    for page in obj.pages:
-        obj.body += f"\n\n\n\n{page.body_text}"
-        obj.segments.extend(page.segments)
-        if page.annex_text:
-            obj.annex += f"\n\n\n\n{page.annex_text}"
-            obj.footnotes.extend(page.footnotes)
-    return obj
-
-
-def get_decision(path: Path) -> Decision:
-    """From a _*.pdf_ file found in `path`, extract relevant metadata
-    to generate a decision having content pages. Each of which will contain a body and,
-    likely, an annex for footnotes.
+def get_decision(path: Path) -> DecisionCollectionVariant:
+    """From a _*.pdf_ file found in `path`, extract relevant metadata to generate a decision having content pages. Each of which will contain a body and, likely, an annex for footnotes.
 
     Examples:
-        >>> from pathlib import Path
         >>> x = Path().cwd() / "tests" / "data" / "decision.pdf"
         >>> decision = get_decision(x)
         >>> decision.category
@@ -213,7 +191,7 @@ def get_decision(path: Path) -> Decision:
         >>> isinstance(decision.footnotes[0], Footnote)
         True
         >>> len(decision.footnotes) # TODO: limited number detected; should be 15
-        7
+        10
 
     Args:
         path (Path): Path to the pdf file.
@@ -223,62 +201,7 @@ def get_decision(path: Path) -> Decision:
     """  # noqa: E501
     meta = DecisionMeta.prep(path)
     with pdfplumber.open(path) as pdf:
-        # create all the pages of the decision
-        caso = meta.init(pdf=pdf)
-        content_pages = meta.add(pages=pdf.pages)
-        caso.pages.extend(content_pages)
-        # construct full decision
-        obj = construct(caso)
-        if isinstance(obj, Decision):
-            return obj
-        raise Exception("Bad construction of Decision.")
-
-
-def get_opinion(path: Path) -> Opinion:
-    """From a _*.pdf_ file found in `path`, extract relevant opinion metadata
-    to generate an opinion having content pages. Each of which will contain a body and, likely, an annex for footnotes.
-
-    Examples:
-        >>> from pathlib import Path
-        >>> x = Path().cwd() / "tests" / "data" / "opinion.pdf"
-        >>> opinion = get_opinion(x)
-        >>> opinion.writer
-        'HERNANDO, J.:'
-        >>> opinion.label
-        'DISSENTING OPINION'
-        >>> len(opinion.pages) # total page count
-        28
-        >>> isinstance(opinion.pages[0], Content) # first page
-        True
-        >>> isinstance(opinion.segments[0], Bodyline)
-        True
-        >>> isinstance(opinion.footnotes[0], Footnote)
-        True
-        >>> len(opinion.footnotes)
-        50
-
-    Args:
-        path (Path): Path to the pdf file.
-
-    Returns:
-        Self: Instance of an Opinion with pages populated
-    """  # noqa: E501
-    with pdfplumber.open(path) as pdf:
-        meta = PositionOpinion.from_pdf(pdf)
-        # initialize the opinion
-        start_page = pdf.pages[0]
-        start_y = meta.writer_pct_height * start_page.height
-        opinion = Opinion(
-            label=meta.label,
-            writer=meta.writer,
-            pages=[Content.set(page=start_page, start_y=start_y)],
-        )
-        # create all the pages of the opinion
-        for page in pdf.pages[1:]:
-            if page_valid := Content.set(page=page):
-                opinion.pages.append(page_valid)
-        # construct full opinion
-        obj = construct(opinion)
-        if isinstance(obj, Opinion):
-            return obj
-        raise Exception("Bad construction of Opinion.")
+        caso = meta.init(pdf=pdf)  # create all the pages of the decision
+        caso.pages.extend(meta.add(pages=pdf.pages))
+        caso.construct()  # construct full decision
+        return caso
