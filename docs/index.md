@@ -1,24 +1,25 @@
 # corpus-unpdf Docs
 
-Applies [`start-ocr`](https://github.com/justmars/start-ocr) "primitives" on documents in PH Supreme Court 2023 website:
+Apply image processing / OCR to main and separate opinions in the PH Supreme Court website.
 
-1. Decision / Resolution
-2. Separate Opinions in the latter
+## `MainOpinionPages`
+
+::: corpus_unpdf.main.MainOpinionPages
+
+## `SeparateOpinionPages`
+
+::: corpus_unpdf.main.SeparateOpinionPages
+
+## Metadata
 
 Each document will have:
 
 Page type | Note
 --:|:--
-_start_ | there will be a deliberate _start_ **y-axis** position affected by _markers_
-_content_ | see `start-ocr`
-_end_ | there will be a deliberate _end_ **y-axis** position
+_start_ | there will be a deliberate _start_ **y-axis** position affected by _markers_.
+_content_ | see [`start-ocr`](https://github.com/justmars/start-ocr) "primitives" `Bodyline` for content segments, `Footnote` for discovered footnote partials.
+_end_ | there will be a deliberate _end_ **y-axis** position.
 
-The **y-axis** is relevant to slice the _header_ and the _footer_ to arrive at the meat of each page.
+!!! note "Y-axis cutting"
 
-## `DecisionCollection`
-
-::: corpus_unpdf.main.DecisionCollection
-
-## `OpinionCollection`
-
-::: corpus_unpdf.main.OpinionCollection
+    The **y-axis** is relevant for _start_ and _end_... since the _header_ and the _footer_ are cut out be to arrive at the meat of each page. And each page can then be dissected into segments and footnotes.

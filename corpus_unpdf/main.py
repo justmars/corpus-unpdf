@@ -21,26 +21,41 @@ logger = logging.getLogger(__name__)
 
 
 @dataclass
-class OpinionCollection(Collection):
-    """Inherits from `start_ocr`'s Collection.
+class SeparateOpinionPages(Collection):
+    """Handles content and metadata of separate opinions, i.e. the concurring, dissenting opinions to a main
+    opinion of a _Decision_ or _Resolution_.
 
-    Using `OpinionCollection.set(<path-to-pdf)` can extract content and metadata of the file.
+    Given a PDF file, can use `SeparateOpinionPages.set(<path-to-pdf)` to extract content and metadata of the file. The fields of this data structure inherits from `start_ocr`'s `Collection`.
     """  # noqa: E501
 
     ...
 
     @classmethod
     def set(cls, path: Path):
-        """Limited extraction: only interested in content unlike decisions where metadata is relevant. Also assumes first page will always be the logical start."""  # noqa: E501
-        first_page = Collection.preliminary_page(path)
+        """Limited extraction: only interested in content unlike decisions where metadata is relevant. Also assumes first page will always be the logical start.
+
+        Examples:
+            >>> x = Path().cwd() / "tests" / "data" / "opinion.pdf"
+            >>> opinion = SeparateOpinionPages.set(x)
+            >>> len(opinion.pages) # total page count
+            10
+            >>> from start_ocr import Bodyline, Footnote, Content
+            >>> isinstance(opinion.pages[0], Content) # first page
+            True
+            >>> isinstance(opinion.segments[0], Bodyline)
+            True
+            >>> isinstance(opinion.footnotes[0], Footnote)
+            True
+        """  # noqa: E501
+        first_page = Collection.preliminary_page(path)  # uses the sample execution
         return Collection.make(path, preliminary_page=first_page)
 
 
 @dataclass
-class DecisionCollection(Collection, FrontpageMeta):
-    """Inherits from `start_ocr`'s `Collection` with custom `FrontpageMeta`.
+class MainOpinionPages(Collection, FrontpageMeta):
+    """The main opinion of a _Decision_ or _Resolution_ are formatted differenly from separate opinions.
 
-    Using `DecisionCollection.set(<path-to-pdf)` can extract content and metadata of the file.
+    Given a PDF file, can use `MainOpinionPages.set(<path-to-pdf)` to extract content and metadata of the file. The fields of this data structure inherits from `start_ocr`'s `Collection` with a custom `FrontpageMeta`.
     """  # noqa: E501
 
     ...
@@ -51,7 +66,7 @@ class DecisionCollection(Collection, FrontpageMeta):
 
         Examples:
             >>> x = Path().cwd() / "tests" / "data" / "decision.pdf"
-            >>> decision = DecisionCollection.set(x)
+            >>> decision = MainOpinionPages.set(x)
             >>> decision.category
             <DecisionCategoryChoices.RESO: 'Resolution'>
             >>> decision.composition
@@ -72,14 +87,14 @@ class DecisionCollection(Collection, FrontpageMeta):
         """  # noqa: E501
         pos = PositionMeta.prep(path)
         with pdfplumber.open(path) as pdf:
-            caso = cls.init(pdf=pdf, pos=pos)  # all pages
-            caso.limit_pages(pages=pdf.pages, pos=pos)  # limited pages
+            caso = cls._init(pdf=pdf, pos=pos)  # all pages
+            caso._limit_pages(pages=pdf.pages, pos=pos)  # limited pages
             caso.join_segments()
             caso.join_annexes()
             return caso
 
     @classmethod
-    def init(cls, pdf: PDF, pos: PositionMeta) -> Self:
+    def _init(cls, pdf: PDF, pos: PositionMeta) -> Self:
         """Extract first page of the content proper which may not necessarily be page 1.
 
         Args:
@@ -87,7 +102,7 @@ class DecisionCollection(Collection, FrontpageMeta):
             pos (PositionMeta): Contains true start and end position / pages
 
         Returns:
-            Self: DecisionCollection instance.
+            Self: MainOpinionPages instance.
         """
         start_page = pdf.pages[pos.start_index]
         if isinstance(pos.start_indicator, PositionNotice):
@@ -117,8 +132,8 @@ class DecisionCollection(Collection, FrontpageMeta):
             )
         raise Exception("Unexpected initialization of decision.")
 
-    def limit_pages(self, pages: list[Page], pos: PositionMeta):
-        """Ensure only  pages covered by the `pos` are included in the final Decision collection."""  # noqa: E501
+    def _limit_pages(self, pages: list[Page], pos: PositionMeta):
+        """Only add pages included in the `pos` metadata when generating the Decision collection."""  # noqa: E501
         for nxt in pages:
             if nxt.page_number <= pos.start_page_num:
                 continue
