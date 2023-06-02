@@ -22,10 +22,10 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class SeparateOpinionPages(Collection):
-    """Handles content and metadata of separate opinions, i.e. the concurring, dissenting opinions to a main
-    opinion of a _Decision_ or _Resolution_.
+    """Handles content and metadata of separate opinions, i.e. the concurring, dissenting opinions to a [main
+    opinion][mainopinionpages] of a _Decision_ or _Resolution_.
 
-    Given a PDF file, can use `SeparateOpinionPages.set(<path-to-pdf)` to extract content and metadata of the file. The fields of this data structure inherits from `start_ocr`'s `Collection`.
+    Given a PDF file, can use `SeparateOpinionPages.set(<path-to-pdf)` to extract _content pages (only)_ of the file. The fields of this data structure inherits from `start_ocr`'s `Collection`.
     """  # noqa: E501
 
     ...
@@ -53,9 +53,14 @@ class SeparateOpinionPages(Collection):
 
 @dataclass
 class MainOpinionPages(Collection, FrontpageMeta):
-    """The main opinion of a _Decision_ or _Resolution_ are formatted differenly from separate opinions.
+    """The main opinion of a _Decision_ or _Resolution_, specifically its front and last pages, is formatted differenly from [separate opinions][separateopinionpages]. The following metadata are required to be parsed:
 
-    Given a PDF file, can use `MainOpinionPages.set(<path-to-pdf)` to extract content and metadata of the file. The fields of this data structure inherits from `start_ocr`'s `Collection` with a custom `FrontpageMeta`.
+    1. [Composition][court-composition], i.e. whether _En Banc_ or by divison.
+    2. [Category][decision-category-writer], i.e. whether a _Decision_ or a _Resolution_.
+    2. [Writer][decision-category-writer], i.e. who penned the main opinion.
+    3. [Notice][notice], i.e. whether it is of a particular category of decisions.
+
+    Given a PDF file, can use `MainOpinionPages.set(<path-to-pdf)` to extract content pages _and the above metadata_ of the file. The fields of this data structure inherits from `start_ocr`'s `Collection` with a custom `FrontpageMeta`.
     """  # noqa: E501
 
     ...
